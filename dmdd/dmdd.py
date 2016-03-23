@@ -10,8 +10,15 @@ import os,os.path,shutil
 import pickle
 import logging
 import time
+from math import cos, pi
 
 on_rtd = False
+
+time_info = True
+if time_info:
+    time_tag = 'with_Time'
+else:
+    time_tag = ''
 
 try:
     import numpy.random as random
@@ -34,7 +41,7 @@ if not on_rtd:
     from globals import *
 
 try:
-    MAIN_PATH = os.environ['DMDD_MAIN_PATH']
+    MAIN_PATH = '/Users/SamWitte/Desktop/dmdd/Storage'
 except KeyError:
     logging.warning('DMDD_MAIN_PATH environment variable not defined, defaulting to:   ~/.dmdd')
     MAIN_PATH = os.path.expanduser('~/.dmdd') #os.getcwd()
@@ -284,9 +291,11 @@ class MultinestRun(object):
             for kw,val in sim.experiment.parameters.iteritems():
                 kwargs[kw] = val
             kwargs['energy_resolution'] = sim.experiment.energy_resolution
-            
-            res += self.fit_model.loglikelihood(sim.Q, sim.experiment.efficiency, **kwargs)
-
+            if not time_info:
+                res += self.fit_model.loglikelihood(sim.Q, sim.experiment.efficiency, **kwargs)
+            else:
+                time_pass = np.append(sim.Q[:,1],[sim.experiment.start_t, sim.experiment.end_t])
+                res += self.fit_model.loglikelihood(sim.Q[:,0], time_pass, sim.experiment.efficiency, **kwargs)
         return res
 
   
@@ -422,6 +431,7 @@ class MultinestRun(object):
                 raise ValueError('Unknown prior: {}'.format(self.prior))
         
             nparams = len(self.fit_model.param_names)
+            
             pymultinest.run(self.loglikelihood_total, prior_function, nparams, **self.mn_params)
     
             #create pickle file with all info defining this run.
@@ -587,7 +597,7 @@ class Simulation(object):
 
     """
     def __init__(self, name, experiment,
-                 model, parvals,
+                 model, parvals, 
                  path=SIM_PATH, force_sim=False,
                  asimov=False, nbins_asimov=20,
                  plot_nbins=20, plot_theory=True, 
@@ -619,7 +629,7 @@ class Simulation(object):
         sorted_parvals = np.array(self.param_values)[inds]
         for parname, parval in zip(sorted_parnames, sorted_parvals):
             self.file_basename += '_{}_{:.2f}'.format(parname, parval)
-
+        self.file_basename += time_tag
         #calculate total expected rate
         dRdQ_params = model.default_rate_parameters.copy()
         allpars = model.default_rate_parameters.copy()
@@ -635,12 +645,25 @@ class Simulation(object):
     
         self.model_Qgrid = np.linspace(experiment.Qmin,experiment.Qmax,1000)
         efficiencies = experiment.efficiency(self.model_Qgrid)
-        self.model_dRdQ = self.model.dRdQ(self.model_Qgrid,**dRdQ_params)
-        R_integrand =  self.model_dRdQ * efficiencies
-        self.model_R = np.trapz(R_integrand,self.model_Qgrid)
+        
+        if not time_info:
+            self.model_dRdQ = self.model.dRdQ(self.model_Qgrid,**dRdQ_params)
+            R_integrand =  self.model_dRdQ * efficiencies
+            self.model_R = np.trapz(R_integrand,self.model_Qgrid)
+        else:
+            self.model_dRdQ = dRdQ_time(self.model.dRdQ, self.dRdQ_params,
+                                self.model_Qgrid, 0.5*(experiment.end_t +
+                                experiment.start_t)) #this is just a time average, not worth doing more?
+            time_range = np.linspace(experiment.start_t,experiment.end_t, 2000)
+            dtime = time_range[1]-time_range[0]
+            self.model_R = 0.0
+            for x in time_range:
+                self.model_R += (np.trapz(efficiencies * dRdQ_time(self.model.dRdQ, self.dRdQ_params,
+                                self.model_Qgrid, x), self.model_Qgrid) / (experiment.end_t -
+                                experiment.start_t) * dtime)
+        
         self.model_N = self.model_R * experiment.exposure * YEAR_IN_S
-    
-    
+       
         #create dictionary of all parameters relevant to simulation
         self.allpars = allpars
         self.allpars['experiment'] = experiment.name    
@@ -674,7 +697,10 @@ class Simulation(object):
             if asimov:
                 raise ValueError('Asimov simulations not yet implemented!')
             else:
-                Q = self.simulate_data()
+                if not time_info:
+                    Q = self.simulate_data()
+                else:
+                    Q = self.simulate_data_wtime()
                 np.savetxt(self.datafile,Q)
                 fout = open(self.picklefile,'wb')
                 pickle.dump(self.allpars,fout)
@@ -693,7 +719,10 @@ class Simulation(object):
         if asimov:
             raise ValueError('Asimov not yet implemented!')
         else:
-            self.N = len(self.Q)
+            if time_info:
+                self.N = len(self.Q[:,0])
+            else:
+                self.N = len(self.Q)
 
         if force_sim or (not os.path.exists(self.plotfile)):
             self.plot_data(plot_nbins=plot_nbins, plot_theory=plot_theory, save_plot=True)
@@ -728,6 +757,57 @@ class Simulation(object):
         if not self.silent:
             print "simulated: %i events (expected %.0f)." % (Nevents,Nexpected)
         return Q
+        
+        
+    def simulate_data_wtime(self):
+        """
+        Do Poisson simulation of data according to scattering model's dR/dQ.
+        """
+        Nexpected = self.model_N
+
+        if Nexpected > 0:
+            Nevents = poisson.rvs(Nexpected)
+            
+            total = 0
+            Xlist = []
+            Ylist = []
+            
+            while total < Nevents:
+                U = np.random.rand() #random number between 0 and 1
+                x = (np.random.rand() * (self.experiment.end_t - self.experiment.start_t) +
+                    self.experiment.start_t)
+                y = (np.random.rand() * (self.experiment.Qmax - self.experiment.Qmin) +
+                    self.experiment.Qmin) #same as above line
+
+                pdf = self.pdf_fun(y, x)
+                env = 10.
+                if U < (pdf)/(env): # if condition is met, accept point
+                    total = total + 1 #add one to the count
+                    Xlist.append(x)
+                    Ylist.append(y)
+                else:
+                    pass #otherwise do nothing
+
+
+            Q = np.zeros((Nevents,2))
+            for i in range(0, len(Xlist)):
+                Q[i] = Ylist[i],Xlist[i]
+
+        else:
+            Q = np.array([])
+            Nevents = 0
+            Nexpected = 0
+
+        if not self.silent:
+            print "simulated: %i events (expected %.0f)." % (Nevents,Nexpected)
+        return Q
+        
+    def pdf_fun(self, Q, t):
+        q_hold = np.array([Q])
+        efficiency = self.experiment.efficiency(q_hold)
+        res = (dRdQ_time(self.model.dRdQ, self.dRdQ_params, q_hold, t) *
+                        efficiency / self.model_R)
+        return res
 	    
     def plot_data(self, plot_nbins=20, plot_theory=True, save_plot=True,
                   make_plot=True, return_plot_items=False):
@@ -755,8 +835,10 @@ class Simulation(object):
             If ``True``, then function will return lots of things.
             
         """
-
-        Qhist,bins = np.histogram(self.Q,plot_nbins)
+        if not time_info:
+            Qhist,bins = np.histogram(self.Q,plot_nbins)
+        else:
+            Qhist,bins = np.histogram(self.Q[:,0],plot_nbins)
         Qbins = (bins[1:]+bins[:-1])/2. 
         binsize = Qbins[1]-Qbins[0] #valid only for uniform gridding.
         Qwidths = (bins[1:]-bins[:-1])/2.
@@ -789,6 +871,42 @@ class Simulation(object):
             plt.legend(prop={'size':20},numpoints=1)
             if save_plot:
                 plt.savefig(self.plotfile, bbox_extra_artists=[xlabel, ylabel], bbox_inches='tight')
+
+        if time_info:
+            Thist,tbins = np.histogram(self.Q[:,1], 12)
+            time_bins = (tbins[1:]+tbins[:-1])/2.
+            t_binsize = time_bins[1]-time_bins[0] #valid only for uniform gridding.
+            Twidths = (tbins[1:]-tbins[:-1])/2.
+            txerr = Twidths
+            tyerr = Thist**0.5
+
+            Tbins_theory = np.linspace(0,1,1000)
+            Thist_theory = np.zeros(1000)
+            for i in range(0, len(Tbins_theory)):
+                Thist_theory[i] = ((np.trapz(self.experiment.efficiency(self.model_Qgrid) * dRdQ_time(self.model.dRdQ, self.dRdQ_params,
+                                self.model_Qgrid, Tbins_theory[i]), self.model_Qgrid)) *
+                                t_binsize*self.experiment.exposure*YEAR_IN_S)
+                    
+            if make_plot:
+                plt.figure()
+                plt.title('%s (total events = %i)' % (self.experiment.name,self.N), fontsize=18)
+                xlabel = 'Time [years]'
+                ylabel = 'Number of events'
+                ax = plt.gca()
+                fig = plt.gcf()
+                xlabel = ax.set_xlabel(xlabel,fontsize=18)
+                ylabel = ax.set_ylabel(ylabel,fontsize=18)
+                if plot_theory:
+                    if self.model.name in MODELNAME_TEX.keys():
+                        label='True model ({})'.format(MODELNAME_TEX[self.model.name])
+                    else:
+                        label='True model'
+                    plt.plot(Tbins_theory, Thist_theory,lw=3,
+                         color='blue',
+                         label=label)
+                plt.errorbar(time_bins, Thist,xerr=txerr,yerr=tyerr,marker='o',color='black',linestyle='None',label='Simulated data')
+
+                plt.legend(prop={'size':20},numpoints=1)
 
 
         if return_plot_items:
@@ -887,11 +1005,19 @@ class UV_Model(Model):
                                     fnfp_LS_massless=1.,  fnfp_f1_massless=1.,  fnfp_f2_massless=1.,  fnfp_f3_massless=1.,
                                     v_lag=220.,  v_rms=220.,  v_esc=544.,  rho_x=0.3)
         
-        Model.__init__(self,name,param_names,
+        if time_info == False:
+            Model.__init__(self,name,param_names,
                        rate_UV.dRdQ,
                        rate_UV.loglikelihood,
                        default_rate_parameters,
-                       **kwargs)  
+                       **kwargs)
+        else:
+            
+            Model.__init__(self,name,param_names,
+                       rate_UV.dRdQ,
+                       rate_UV.loglikelihood_time,
+                       default_rate_parameters,
+                       **kwargs)
 
         
 class Experiment(object):
@@ -938,8 +1064,8 @@ class Experiment(object):
 
     """
     #pass the name of element instead of A, use natural isotope abundances for now.
-    def __init__(self, name, element, Qmin, Qmax, exposure,
-                 efficiency_fn, 
+    def __init__(self, name, element, Qmin, Qmax, total_target_mass,
+                 efficiency_fn, start_t, end_t,
                  tex_name=None, energy_resolution=True):
         """
         Exposure in kg-yr
@@ -950,12 +1076,15 @@ class Experiment(object):
         self.name = name
         self.Qmin = Qmin
         self.Qmax = Qmax
-        self.exposure = exposure
+        self.start_t = start_t
+        self.end_t = end_t
+        self.total_target_mass = total_target_mass
+        self.exposure = total_target_mass * (end_t - start_t)
         self.element = element
         self.efficiency = efficiency_fn
         self.parameters = {'Qmin':Qmin,
                            'Qmax':Qmax,
-                           'exposure':exposure,
+                           'exposure':self.exposure,
                            'element':element}
         if tex_name is None:
             tex_name = name
@@ -1214,3 +1343,17 @@ def Nexpected(element, Qmin, Qmax, exposure, efficiency,
 
 ############################################
 ############################################
+def dRdQ_time(dRdQ_func, dRdQ_param, Q_vals, t):
+    """
+    Changes v_lag to v_lag + v_earth * (0.49) * Cos(2 pi (t - 0.42))
+    """
+    kwags = dRdQ_param
+    kwags['v_lag'] = 220.0 + 29.8 * 0.49 * cos(2.0 * pi
+                        * (t - 0.42))
+    
+    result = dRdQ_func(Q_vals,**kwags)
+    kwags['v_lag'] = 220.0
+    
+    return result
+
+
