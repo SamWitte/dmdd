@@ -14,7 +14,7 @@ from math import cos, pi
 
 on_rtd = False
 
-time_info = True
+time_info = False
 if time_info:
     time_tag = 'with_Time'
 else:
@@ -651,9 +651,7 @@ class Simulation(object):
             R_integrand =  self.model_dRdQ * efficiencies
             self.model_R = np.trapz(R_integrand,self.model_Qgrid)
         else:
-            self.model_dRdQ = dRdQ_time(self.model.dRdQ, self.dRdQ_params,
-                                self.model_Qgrid, 0.5*(experiment.end_t +
-                                experiment.start_t)) #this is just a time average, not worth doing more?
+            self.model_dRdQ = self.model.dRdQ(self.model_Qgrid,**dRdQ_params)
             time_range = np.linspace(experiment.start_t,experiment.end_t, 2000)
             dtime = time_range[1]-time_range[0]
             self.model_R = 0.0
@@ -711,7 +709,10 @@ class Simulation(object):
             if asimov:
                 raise ValueError('Asimov simulations not yet implemented!')
             else:
-                Q = np.loadtxt(self.datafile)
+                if time_info:
+                    Q = np.loadtxt(self.datafile)
+                else:
+                    Q = np.loadtxt(self.datafile)[:, 0]
                 self.Q = np.atleast_1d(Q)
                 self.N = len(self.Q)
                 
@@ -873,14 +874,20 @@ class Simulation(object):
                 plt.savefig(self.plotfile, bbox_extra_artists=[xlabel, ylabel], bbox_inches='tight')
 
         if time_info:
-            Thist,tbins = np.histogram(self.Q[:,1], 12)
+            arrangetime = np.zeros(len(self.Q[:,1]))
+            for i in range(0, len(self.Q[:,1])):
+                if self.Q[i,1] < 0.17:                
+                    arrangetime[i] = self.Q[i,1]+1.
+                else:
+                    arrangetime[i] = self.Q[i,1]
+            Thist,tbins = np.histogram(arrangetime, 2)
             time_bins = (tbins[1:]+tbins[:-1])/2.
             t_binsize = time_bins[1]-time_bins[0] #valid only for uniform gridding.
             Twidths = (tbins[1:]-tbins[:-1])/2.
             txerr = Twidths
             tyerr = Thist**0.5
 
-            Tbins_theory = np.linspace(0,1,1000)
+            Tbins_theory = np.linspace(0.17,1.17,1000)
             Thist_theory = np.zeros(1000)
             for i in range(0, len(Tbins_theory)):
                 Thist_theory[i] = ((np.trapz(self.experiment.efficiency(self.model_Qgrid) * dRdQ_time(self.model.dRdQ, self.dRdQ_params,
