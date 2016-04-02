@@ -711,7 +711,8 @@ class Simulation(object):
             else:
                 if time_info:
                     Q = np.loadtxt(self.datafile)
-                else:
+                else:                    
+                    self.datafile = '{}/{}.dat'.format(self.path,self.file_basename + 'with_Time')
                     Q = np.loadtxt(self.datafile)[:, 0]
                 self.Q = np.atleast_1d(Q)
                 self.N = len(self.Q)
