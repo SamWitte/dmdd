@@ -238,6 +238,7 @@ class MultinestRun(object):
                 self.foldername += '_{}_{:.2f}'.format(parname, parval)   
 
         self.foldername += '_{}_nlive{}'.format(prior,self.mn_params['n_live_points'])  
+        self.foldername += time_tag
         self.chainspath = '{}/{}/'.format(chains_root,self.foldername)
         self.chainsfile = self.chainspath + '/' + self.mn_params['outputfiles_basename'] + 'post_equal_weights.dat'
 
@@ -696,7 +697,7 @@ class Simulation(object):
                 raise ValueError('Asimov simulations not yet implemented!')
             else:
                 if not time_info:
-                    Q = self.simulate_data()
+                    Q = self.simulate_data_wtime()
                 else:
                     Q = self.simulate_data_wtime()
                 np.savetxt(self.datafile,Q)
