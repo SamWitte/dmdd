@@ -966,7 +966,7 @@ def R_time(object efficiency_fn, DTYPE_t start_time, DTYPE_t end_time, DTYPE_t m
 
     cdef np.ndarray[DTYPE_t] dRdQs
     result = 0.
-    for x in range(0, timespace):
+    for x in range(0, len(timespace)):
         v_lag = v_rms + v_erth_proj * np.cos(two_pi * (timespace[x] - mod_phase))
         dRdQs = dRdQ(Qs, mass=mass,
                                           v_lag=v_lag, v_rms=v_rms, v_esc= v_esc, rho_x=rho_x,
