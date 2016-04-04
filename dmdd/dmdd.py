@@ -655,8 +655,11 @@ class Simulation(object):
             self.model_dRdQ = self.model.dRdQ(self.model_Qgrid,**dRdQ_params)
             time_range = np.linspace(experiment.start_t,experiment.end_t, 2000)
             dtime = time_range[1]-time_range[0]
+            self.model_dRdQ = 0.0
             self.model_R = 0.0
             for x in time_range:
+                self.model_dRdQ += (efficiencies * dRdQ_time(self.model.dRdQ, self.dRdQ_params,
+                                self.model_Qgrid, x) / (experiment.end_t - experiment.start_t) * dtime)
                 self.model_R += (np.trapz(efficiencies * dRdQ_time(self.model.dRdQ, self.dRdQ_params,
                                 self.model_Qgrid, x), self.model_Qgrid) / (experiment.end_t -
                                 experiment.start_t) * dtime)
