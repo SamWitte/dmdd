@@ -630,7 +630,7 @@ class Simulation(object):
         sorted_parvals = np.array(self.param_values)[inds]
         for parname, parval in zip(sorted_parnames, sorted_parvals):
             self.file_basename += '_{}_{:.2f}'.format(parname, parval)
-        self.file_basename += time_tag
+#        self.file_basename += time_tag
         #calculate total expected rate
         dRdQ_params = model.default_rate_parameters.copy()
         allpars = model.default_rate_parameters.copy()
@@ -713,7 +713,6 @@ class Simulation(object):
                 if time_info:
                     Q = np.loadtxt(self.datafile)
                 else:                    
-                    self.datafile = '{}/{}.dat'.format(self.path,self.file_basename + 'with_Time')
                     Q = np.loadtxt(self.datafile)[:, 0]
                 self.Q = np.atleast_1d(Q)
                 self.N = len(self.Q)
@@ -838,10 +837,11 @@ class Simulation(object):
             If ``True``, then function will return lots of things.
             
         """
-        if not time_info:
-            Qhist,bins = np.histogram(self.Q,plot_nbins)
-        else:
+        if time_info:
             Qhist,bins = np.histogram(self.Q[:,0],plot_nbins)
+        else:
+            Qhist,bins = np.histogram(self.Q,plot_nbins)
+        print(self.Q)
         Qbins = (bins[1:]+bins[:-1])/2. 
         binsize = Qbins[1]-Qbins[0] #valid only for uniform gridding.
         Qwidths = (bins[1:]-bins[:-1])/2.
