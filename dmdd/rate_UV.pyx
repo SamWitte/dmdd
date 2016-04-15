@@ -956,7 +956,7 @@ def R_time(object efficiency_fn, DTYPE_t start_time, DTYPE_t end_time, DTYPE_t m
         expQ = expQmin + i*expQstep
         Qs[i] = 10**expQ
 
-    cdef np.ndarray[DTYPE_t] timespace = np.linspace(start_time, end_time, 500)
+    cdef np.ndarray[DTYPE_t] timespace = np.linspace(start_time, end_time, 1000)
     cdef DTYPE_t dtime = timespace[1] - timespace[0]
 
     cdef DTYPE_t v_erth_proj = 29.8 * 0.49
@@ -966,8 +966,8 @@ def R_time(object efficiency_fn, DTYPE_t start_time, DTYPE_t end_time, DTYPE_t m
 
     cdef np.ndarray[DTYPE_t] dRdQs
     result = 0.
-    for x in range(0, len(timespace)):
-        v_lag = v_rms + v_erth_proj * np.cos(two_pi * (timespace[x] - mod_phase))
+    for i in range(0, len(timespace)):
+        v_lag = v_rms + v_erth_proj * np.cos(two_pi * (timespace[i] - mod_phase))
         dRdQs = dRdQ(Qs, mass=mass,
                                           v_lag=v_lag, v_rms=v_rms, v_esc= v_esc, rho_x=rho_x,
                                           element=element,
@@ -1129,8 +1129,9 @@ def loglikelihood_time(np.ndarray[DTYPE_t] Q, np.ndarray[DTYPE_t] tim, object ef
     tot += Nevents * log(Nexp) - Nexp 
     if energy_resolution:
         tot -= Nevents * log(Rate)
-        for i in range(Nevents):
+        for i in range(0, Nevents):
             v_lag = v_rms + v_erth_proj * np.cos(two_pi * (tim[i] - mod_phase))
+
             event_inf = dRdQ(np.array([Q[i]]), mass=mass,
                                         v_lag=v_lag, v_rms=v_rms, v_esc= v_esc, rho_x=rho_x, element=element,
                                         fnfp_si=fnfp_si, fnfp_sd=fnfp_sd,
@@ -1145,6 +1146,7 @@ def loglikelihood_time(np.ndarray[DTYPE_t] Q, np.ndarray[DTYPE_t] tim, object ef
                                           sigma_si_massless = sigma_si_massless, sigma_sd_massless=sigma_sd_massless,
                                           sigma_anapole_massless=sigma_anapole_massless, sigma_magdip_massless=sigma_magdip_massless, sigma_elecdip_massless=sigma_elecdip_massless,
                        sigma_LS_massless=sigma_LS_massless, sigma_f1_massless=sigma_f1_massless, sigma_f2_massless=sigma_f2_massless, sigma_f3_massless=sigma_f3_massless) * efficiency_fn(np.array([Q[i]]))
+
             if event_inf==0.:
                 return -1.*INFINITY #if an event is seen where the model expects zero events (behind the V_lag), this model is excluded, and loglikelihood=-Infinity.
             tot += log(event_inf)
