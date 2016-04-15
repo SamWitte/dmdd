@@ -14,7 +14,7 @@ from math import cos, pi
 
 on_rtd = False
 
-time_info = False
+time_info = True
 if time_info:
     time_tag = 'with_Time'
 else:
@@ -652,7 +652,6 @@ class Simulation(object):
             R_integrand =  self.model_dRdQ * efficiencies
             self.model_R = np.trapz(R_integrand,self.model_Qgrid)
         else:
-            self.model_dRdQ = self.model.dRdQ(self.model_Qgrid,**dRdQ_params)
             time_range = np.linspace(experiment.start_t,experiment.end_t, 2000)
             dtime = time_range[1]-time_range[0]
             self.model_dRdQ = 0.0
@@ -663,9 +662,10 @@ class Simulation(object):
                 self.model_R += (np.trapz(efficiencies * dRdQ_time(self.model.dRdQ, self.dRdQ_params,
                                 self.model_Qgrid, x), self.model_Qgrid) / (experiment.end_t -
                                 experiment.start_t) * dtime)
-        
+
         self.model_N = self.model_R * experiment.exposure * YEAR_IN_S
-       
+
+        
         #create dictionary of all parameters relevant to simulation
         self.allpars = allpars
         self.allpars['experiment'] = experiment.name    
@@ -815,7 +815,7 @@ class Simulation(object):
         return res
 	    
     def plot_data(self, plot_nbins=20, plot_theory=True, save_plot=True,
-                  make_plot=True, return_plot_items=False):
+                  make_plot=False, return_plot_items=False):
         """
         Plot simuated data.
 
@@ -844,7 +844,7 @@ class Simulation(object):
             Qhist,bins = np.histogram(self.Q[:,0],plot_nbins)
         else:
             Qhist,bins = np.histogram(self.Q,plot_nbins)
-        print(self.Q)
+        
         Qbins = (bins[1:]+bins[:-1])/2. 
         binsize = Qbins[1]-Qbins[0] #valid only for uniform gridding.
         Qwidths = (bins[1:]-bins[:-1])/2.
