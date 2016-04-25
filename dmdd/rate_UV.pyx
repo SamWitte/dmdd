@@ -958,7 +958,7 @@ def R_time(object efficiency_fn, DTYPE_t start_time, DTYPE_t end_time, DTYPE_t m
         expQ = expQmin + i*expQstep
         Qs[i] = 10**expQ
 
-    cdef np.ndarray[DTYPE_t] timespace = np.linspace(start_time, end_time, 2)
+    cdef np.ndarray[DTYPE_t] timespace = np.linspace(start_time, end_time, 1000)
     cdef DTYPE_t dtime = timespace[1] - timespace[0]
 
     cdef DTYPE_t v_erth_proj = 14.602
