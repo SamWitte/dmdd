@@ -913,7 +913,7 @@ def R_time(object efficiency_fn, DTYPE_t start_time, DTYPE_t end_time, DTYPE_t m
          DTYPE_t fnfp_anapole_massless=1., DTYPE_t fnfp_magdip_massless=1., DTYPE_t fnfp_elecdip_massless=1.,
          DTYPE_t fnfp_LS_massless=1., DTYPE_t fnfp_f1_massless=1., DTYPE_t fnfp_f2_massless=1., DTYPE_t fnfp_f3_massless=1.,
          DTYPE_t v_lag=220., DTYPE_t v_rms=220., DTYPE_t v_esc=544., DTYPE_t rho_x=0.3,
-         str element='xenon', DTYPE_t Qmin=2., DTYPE_t Qmax=30.):
+         str element='xenon', DTYPE_t Qmin=2., DTYPE_t Qmax=30., DTYPE_t newvar=1.):
     """
     Theoretical total integrated recoil-energy rate.
 
@@ -952,13 +952,14 @@ def R_time(object efficiency_fn, DTYPE_t start_time, DTYPE_t end_time, DTYPE_t m
     cdef DTYPE_t expQmax = log10(Qmax)
     cdef DTYPE_t expQstep = (expQmax - expQmin)/(npoints - 1)
     cdef np.ndarray[DTYPE_t] Qs = np.empty(npoints,dtype=float)
-    cdef DTYPE_t v_lag_instant
+    cdef v_lag_instant
+    
 
     for i in xrange(npoints):
         expQ = expQmin + i*expQstep
         Qs[i] = 10**expQ
 
-    cdef np.ndarray[DTYPE_t] timespace = np.linspace(start_time, end_time, 1000)
+    cdef np.ndarray[DTYPE_t] timespace = np.linspace(start_time, end_time, 2)
     cdef DTYPE_t dtime = timespace[1] - timespace[0]
 
     cdef DTYPE_t v_erth_proj = 14.602
@@ -971,7 +972,7 @@ def R_time(object efficiency_fn, DTYPE_t start_time, DTYPE_t end_time, DTYPE_t m
     for i in range(0, len(timespace)):
         v_lag_instant = v_rms + v_erth_proj * cos(two_pi * (timespace[i] - mod_phase))
         dRdQs = dRdQ(Qs, mass=mass,
-                                          v_lag=v_lag, v_rms=v_rms, v_esc= v_esc, rho_x=rho_x,
+                                          v_lag=v_lag_instant, v_rms=v_rms, v_esc= v_esc, rho_x=rho_x,
                                           element=element,
                                           fnfp_si=fnfp_si, fnfp_sd=fnfp_sd, fnfp_si_massless=fnfp_si_massless, fnfp_sd_massless=fnfp_sd_massless,
                                           fnfp_anapole=fnfp_anapole, fnfp_magdip=fnfp_magdip, fnfp_elecdip=fnfp_elecdip, fnfp_anapole_massless=fnfp_anapole_massless, fnfp_magdip_massless=fnfp_magdip_massless, fnfp_elecdip_massless=fnfp_elecdip_massless,
@@ -1068,7 +1069,7 @@ def loglikelihood(np.ndarray[DTYPE_t] Q, object efficiency_fn, DTYPE_t mass=50.,
 
 
 @cython.boundscheck(False)
-def loglikelihood_time(np.ndarray[DTYPE_t] Q, np.ndarray[DTYPE_t] tim, object efficiency_fn,
+def loglikelihood_time(np.ndarray[DTYPE_t] Q, DTYPE_t start_time, DTYPE_t end_time, np.ndarray[DTYPE_t] tim, object efficiency_fn,
          DTYPE_t mass=50.,
          DTYPE_t sigma_si=0.,DTYPE_t sigma_sd=0.,
          DTYPE_t sigma_anapole=0.,DTYPE_t sigma_magdip=0., DTYPE_t sigma_elecdip=0.,
@@ -1099,8 +1100,7 @@ def loglikelihood_time(np.ndarray[DTYPE_t] Q, np.ndarray[DTYPE_t] tim, object ef
     cdef DTYPE_t Nexp
     cdef DTYPE_t v_erth_proj = 29.8 * 0.49
     cdef DTYPE_t mod_phase = 0.42
-    cdef DTYPE_t start_time = tim[-2]
-    cdef DTYPE_t end_time = tim[-1]
+    
 
     tim = tim[0:Nevents]
 
