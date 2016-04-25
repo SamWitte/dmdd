@@ -18,6 +18,7 @@ cdef extern from "math.h":
     double erf(double)
     double log10(double)
     double log(double)
+    double cos(double)
 
 #constants for this module:
 cdef DTYPE_t ratenorm = 1.6817124283286463e31 # conversion from cm**-1 * GeV**-2 to DRU = cts / keV / kg / sec
@@ -951,15 +952,16 @@ def R_time(object efficiency_fn, DTYPE_t start_time, DTYPE_t end_time, DTYPE_t m
     cdef DTYPE_t expQmax = log10(Qmax)
     cdef DTYPE_t expQstep = (expQmax - expQmin)/(npoints - 1)
     cdef np.ndarray[DTYPE_t] Qs = np.empty(npoints,dtype=float)
+    cdef DTYPE_t v_lag_instant
 
     for i in xrange(npoints):
         expQ = expQmin + i*expQstep
         Qs[i] = 10**expQ
 
-    cdef np.ndarray[DTYPE_t] timespace = np.linspace(start_time, end_time, 1000)
+    cdef np.ndarray[DTYPE_t] timespace = np.linspace(start_time, end_time, 2)
     cdef DTYPE_t dtime = timespace[1] - timespace[0]
 
-    cdef DTYPE_t v_erth_proj = 29.8 * 0.49
+    cdef DTYPE_t v_erth_proj = 14.602
     cdef DTYPE_t mod_phase = 0.42
     cdef DTYPE_t two_pi = 2.0 * 3.1415
 
@@ -967,7 +969,7 @@ def R_time(object efficiency_fn, DTYPE_t start_time, DTYPE_t end_time, DTYPE_t m
     cdef np.ndarray[DTYPE_t] dRdQs
     result = 0.
     for i in range(0, len(timespace)):
-        v_lag = v_rms + v_erth_proj * np.cos(two_pi * (timespace[i] - mod_phase))
+        v_lag_instant = v_rms + v_erth_proj * cos(two_pi * (timespace[i] - mod_phase))
         dRdQs = dRdQ(Qs, mass=mass,
                                           v_lag=v_lag, v_rms=v_rms, v_esc= v_esc, rho_x=rho_x,
                                           element=element,
