@@ -160,6 +160,80 @@ def plot_theoryfitdata(Qbins, Qhist, xerr, yerr, Qbins_theory, Qhist_theory, Qhi
     if save_file:
         plt.savefig(filename, bbox_extra_artists=[xlabel, ylabel], bbox_inches='tight')
       
+      
+def plot_theoryfitdata_time(Qbins, Qhist, xerr, yerr, Qbins_theory, Qhist_theory, Qhist_fit,
+                       filename=None, save_file=True, Ntot=None, fitmodel=None, simmodel=None,
+                       experiment=None, labelfont=18, legendfont=16,titlefont=20, mass=None):
+
+    plt.figure()
+    title = ''
+    if experiment is not None:
+        title += experiment
+    if Ntot is not None:
+        title = title + ' (total events: {}'.format(Ntot)
+    if mass is not None:
+        title += ', mass: {:.0f} GeV'.format(mass)
+    title += ')'
+    plt.title(title, fontsize=titlefont)
+    
+    xlabel = 'Time  [Years]'
+    ylabel = 'Number of events'
+    ax = plt.gca()
+    fig = plt.gcf()
+    xlabel = ax.set_xlabel(xlabel,fontsize=labelfont)
+    ylabel = ax.set_ylabel(ylabel,fontsize=labelfont)
+    
+    label1 = 'True model'
+    if simmodel is not None:
+        label1 += ' ({})'.format(simmodel)
+    plt.plot(Qbins_theory, Qhist_theory,lw=3,color='blue',label=label1)
+    plt.errorbar(Qbins, Qhist,xerr=xerr,yerr=yerr,marker='o',color='black',linestyle='None',label='Simulated data')
+    label2 = '$\mathcal{L}_{max}$'
+    if fitmodel is not None:
+        label2 += ' (fit {})'.format(fitmodel)
+    plt.plot(Qbins_theory, Qhist_fit,'--',lw=3,color='red',label=label2)
+
+    plt.legend(prop={'size':legendfont},numpoints=1)
+    if save_file:
+        plt.savefig(filename, bbox_extra_artists=[xlabel, ylabel], bbox_inches='tight')
+        
+        
+def plot_theoryfitdata_residual(Qbins, Qhist, xerr, yerr, Qbins_theory, Qhist_theory, Qhist_fit,
+                       filename=None, save_file=True, Ntot=None, fitmodel=None, simmodel=None,
+                       experiment=None, labelfont=18, legendfont=16,titlefont=20, mass=None):
+
+    plt.figure()
+    title = ''
+    if experiment is not None:
+        title += experiment
+    if Ntot is not None:
+        title = title + ' (total events: {}'.format(Ntot)
+    if mass is not None:
+        title += ', mass: {:.0f} GeV'.format(mass)
+    title += ')'
+    plt.title(title, fontsize=titlefont)
+    
+    xlabel = 'Time  [Years]'
+    ylabel = 'Residual  [Events]'
+    ax = plt.gca()
+    fig = plt.gcf()
+    xlabel = ax.set_xlabel(xlabel,fontsize=labelfont)
+    ylabel = ax.set_ylabel(ylabel,fontsize=labelfont)
+    
+    label1 = 'True model'
+    if simmodel is not None:
+        label1 += ' ({})'.format(simmodel)
+    plt.plot(Qbins_theory, Qhist_theory,lw=3,color='blue',label=label1)
+    plt.errorbar(Qbins, Qhist,xerr=xerr,yerr=yerr,marker='o',color='black',linestyle='None',label='Simulated data')
+    label2 = '$\mathcal{L}_{max}$'
+    if fitmodel is not None:
+        label2 += ' (fit {})'.format(fitmodel)
+    plt.plot(Qbins_theory, Qhist_fit,'--',lw=3,color='red',label=label2)
+
+    plt.legend(prop={'size':legendfont},numpoints=1)
+    if save_file:
+        plt.savefig(filename, bbox_extra_artists=[xlabel, ylabel], bbox_inches='tight')
+      
 ############################################
 ############################################
 def spectrum(element, efficiency=eff.efficiency_unit,
