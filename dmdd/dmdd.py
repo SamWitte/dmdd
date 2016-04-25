@@ -18,7 +18,7 @@ time_info = True
 if time_info:
     time_tag = 'with_Time'
 else:
-    time_tag = ''
+    time_tag = 'No_Time'
 
 try:
     import numpy.random as random
@@ -476,8 +476,9 @@ class MultinestRun(object):
                 
         for sim in self.simulations:
             filename = self.chainspath + '/{}_theoryfitdata_{}.pdf'.format(self.sim_name, sim.experiment.name)
-            Qbins, Qhist, xerr, yerr, Qbins_theory, Qhist_theory, binsize = sim.plot_data(make_plot=False,
-                                                                                          return_plot_items=True)
+            Qbins, Qhist, xerr, yerr, Qbins_theory, Qhist_theory, binsize, time_bins, Thist, txerr, tyerr, \
+            Tbins_theory, Thist_theory, t_binsize = sim.plot_data(make_plot=False, return_plot_items=True)
+            
             fitmodel_dRdQ_params['element'] = sim.experiment.element
             fitmodel_dRdQ = sim.model.dRdQ(Qbins_theory,**fitmodel_dRdQ_params)
             Ntot = sim.N
@@ -497,6 +498,45 @@ class MultinestRun(object):
                                     filename=filename, save_file=True, Ntot=Ntot, 
                                     fitmodel=fitmodel_title, simmodel=simmodel_title,
                                     experiment=sim.experiment.name, labelfont=18, legendfont=17,titlefont=20, mass=self.param_values['mass'])
+         
+         
+        if True:
+            for sim in self.simulations:
+                Ntot = sim.N
+                fitmodel_dRdQ_params['element'] = sim.experiment.element
+                fitmodel_dRdQ = sim.model.dRdQ(Qbins_theory,**fitmodel_dRdQ_params)
+                filename = self.chainspath + '/{}_theoryfitdata_TIME_{}.pdf'.format(self.sim_name, sim.experiment.name)
+                Qbins, Qhist, xerr, yerr, Qbins_theory, Qhist_theory, binsize, time_bins, Thist, txerr, tyerr, \
+                Tbins_theory, Thist_theory, t_binsize = sim.plot_data(make_plot=False, return_plot_items=True)
+                Thist_fit = np.zeros(len(Tbins_theory))
+                if self.fit_model.modelname_tex is None:
+                    if self.fit_model.name in MODELNAME_TEX:
+                        fitmodel_title = MODELNAME_TEX[self.fit_model.name]
+                    else:
+                        fitmodel_title = self.fit_model.name
+                if self.sim_model.modelname_tex is None:
+                    if self.sim_model.name in MODELNAME_TEX:
+                        simmodel_title = MODELNAME_TEX[self.sim_model.name]
+                    else:
+                            simmodel_title = self.sim_model.name
+                for i in range(0, len(Tbins_theory)):
+                    Thist_fit[i] = ((np.trapz(sim.experiment.efficiency(sim.model_Qgrid) * dRdQ_time(sim.model.dRdQ, 
+                                    fitmodel_dRdQ_params, sim.model_Qgrid, Tbins_theory[i]), sim.model_Qgrid)) *
+                                    t_binsize*sim.experiment.exposure*YEAR_IN_S)
+                dp.plot_theoryfitdata_time(time_bins, Thist, txerr, tyerr, Tbins_theory, Thist_theory, Thist_fit,
+                                        filename=filename, save_file=True, Ntot=Ntot, 
+                                        fitmodel=fitmodel_title, simmodel=simmodel_title,
+                                        experiment=sim.experiment.name, labelfont=18, legendfont=17,titlefont=20, mass=self.param_values['mass'])
+                filename = self.chainspath + '/{}_theoryfitdata_Residual_{}.pdf'.format(self.sim_name, sim.experiment.name)
+                ResHist = [(Thist[i] - Ntot / 10.) / (Ntot / 10.) for i in range(len(Thist))]
+                Ryerr = tyerr / (Ntot / 10.)
+                Rhist_theory = (Thist_theory - np.mean(Thist_theory)) / np.mean(Thist_theory)
+                Rhist_fit = (Thist_fit - np.mean(Thist_fit)) / np.mean(Thist_fit)
+                dp.plot_theoryfitdata_residual(time_bins, ResHist, txerr, Ryerr, Tbins_theory, Rhist_theory, Rhist_fit,
+                                        filename=filename, save_file=True, Ntot=Ntot, 
+                                        fitmodel=fitmodel_title, simmodel=simmodel_title,
+                                        experiment=sim.experiment.name, labelfont=18, legendfont=17,titlefont=20, mass=self.param_values['mass'])
+                                        
             
         #make 2d posterior plots:
         samples = np.loadtxt(self.chainspath + self.mn_params['outputfiles_basename'] + 'post_equal_weights.dat')
@@ -726,7 +766,7 @@ class Simulation(object):
             raise ValueError('Asimov not yet implemented!')
         else:
             if time_info:
-                self.N = len(self.Q[:,0])
+                self.N = len(self.Q)
             else:
                 self.N = len(self.Q)
 
@@ -880,21 +920,21 @@ class Simulation(object):
                 plt.savefig(self.plotfile, bbox_extra_artists=[xlabel, ylabel], bbox_inches='tight')
 
         if time_info:
-            arrangetime = np.zeros(len(self.Q[:,1]))
-            for i in range(0, len(self.Q[:,1])):
-                if self.Q[i,1] < 0.17:                
-                    arrangetime[i] = self.Q[i,1]+1.
-                else:
-                    arrangetime[i] = self.Q[i,1]
-            Thist,tbins = np.histogram(arrangetime, 2)
+ #           arrangetime = np.zeros(len(self.Q[:,1]))
+ #           for i in range(0, len(self.Q[:,1])):
+ #               if self.Q[i,1] < 0.17:                
+ #                   arrangetime[i] = self.Q[i,1]+1.
+ #               else:
+ #                   arrangetime[i] = self.Q[i,1]
+            Thist,tbins = np.histogram(self.Q[:,1], bins=[0.,.1,.2,.3,.4,.5,.6,.7,.8,.9,1.])
             time_bins = (tbins[1:]+tbins[:-1])/2.
             t_binsize = time_bins[1]-time_bins[0] #valid only for uniform gridding.
             Twidths = (tbins[1:]-tbins[:-1])/2.
             txerr = Twidths
             tyerr = Thist**0.5
 
-            Tbins_theory = np.linspace(0.17,1.17,1000)
-            Thist_theory = np.zeros(1000)
+            Tbins_theory = np.linspace(0.,1.,500)
+            Thist_theory = np.zeros(500)
             for i in range(0, len(Tbins_theory)):
                 Thist_theory[i] = ((np.trapz(self.experiment.efficiency(self.model_Qgrid) * dRdQ_time(self.model.dRdQ, self.dRdQ_params,
                                 self.model_Qgrid, Tbins_theory[i]), self.model_Qgrid)) *
@@ -923,7 +963,7 @@ class Simulation(object):
 
 
         if return_plot_items:
-            return Qbins, Qhist, xerr, yerr, Qbins_theory, Qhist_theory, binsize
+            return Qbins, Qhist, xerr, yerr, Qbins_theory, Qhist_theory, binsize, time_bins, Thist, txerr, tyerr, Tbins_theory, Thist_theory, t_binsize
     
 class Model(object):
     """
@@ -1324,7 +1364,7 @@ def compare_dictionaries(d1,d2,debug=False,rtol=1e-5):
 
 ############################################
 ############################################
-def Nexpected(element, Qmin, Qmax, exposure, efficiency,
+def Nexpected(element, Qmin, Qmax, exposure, efficiency, start_t, end_t,
               sigma_name, sigma_val, fnfp_name=None, fnfp_val=None,
               mass=50.,
               v_esc=540., v_lag=220., v_rms=220., rho_x=0.3):
@@ -1346,7 +1386,10 @@ def Nexpected(element, Qmin, Qmax, exposure, efficiency,
         }
     if (fnfp_val is not None) and  (fnfp_name is not None):
         kwargs[fnfp_name] = fnfp_val
-        
+
+#   FOR SOME REASON THIS FUNCTION ISN'T RECOGNIZED?
+#    res = rate_UV.R_time(efficiency, start_t, end_t, **kwargs) * YEAR_IN_S * exposure
+
     res = rate_UV.R(efficiency, **kwargs) * YEAR_IN_S * exposure
     return res
 
