@@ -22,6 +22,7 @@ cdef extern from "math.h":
 
 #constants for this module:
 cdef DTYPE_t ratenorm = 1.6817124283286463e31 # conversion from cm**-1 * GeV**-2 to DRU = cts / keV / kg / sec
+cdef DTYPE_t two_pi = 6.28318530718
 
 #physical constants from constants.py:
 cdef DTYPE_t mN = const.NUCLEON_MASS # Nucleon mass in GeV
@@ -964,7 +965,6 @@ def R_time(object efficiency_fn, DTYPE_t start_time, DTYPE_t end_time, DTYPE_t m
 
     cdef DTYPE_t v_erth_proj = 14.602
     cdef DTYPE_t mod_phase = 0.42
-    cdef DTYPE_t two_pi = 2.0 * 3.1415
 
 
     cdef np.ndarray[DTYPE_t] dRdQs
@@ -1069,7 +1069,7 @@ def loglikelihood(np.ndarray[DTYPE_t] Q, object efficiency_fn, DTYPE_t mass=50.,
 
 
 @cython.boundscheck(False)
-def loglikelihood_time(np.ndarray[DTYPE_t] Q, DTYPE_t start_time, DTYPE_t end_time, np.ndarray[DTYPE_t] tim, object efficiency_fn,
+def loglikelihood_time(np.ndarray[DTYPE_t] Q, np.ndarray[DTYPE_t] tim, object efficiency_fn,
          DTYPE_t mass=50.,
          DTYPE_t sigma_si=0.,DTYPE_t sigma_sd=0.,
          DTYPE_t sigma_anapole=0.,DTYPE_t sigma_magdip=0., DTYPE_t sigma_elecdip=0.,
@@ -1100,6 +1100,7 @@ def loglikelihood_time(np.ndarray[DTYPE_t] Q, DTYPE_t start_time, DTYPE_t end_ti
     cdef DTYPE_t Nexp
     cdef DTYPE_t v_erth_proj = 29.8 * 0.49
     cdef DTYPE_t mod_phase = 0.42
+    cdef DTYPE_t v_lag_instant
     
 
     tim = tim[0:Nevents]
@@ -1107,10 +1108,9 @@ def loglikelihood_time(np.ndarray[DTYPE_t] Q, DTYPE_t start_time, DTYPE_t end_ti
     cdef DTYPE_t event_inf
     cdef DTYPE_t tot = 0.
     cdef DTYPE_t Tobs = exposure * 24. * 3600. * 365.
-    cdef DTYPE_t two_pi = 2.0 * 3.1415
 
 
-    cdef DTYPE_t Rate = R_time(efficiency_fn, start_time, end_time, mass=mass,
+    cdef DTYPE_t Rate = R(efficiency_fn, mass=mass,
                                          v_rms=v_rms, v_lag=v_lag, v_esc=v_esc, rho_x=rho_x,
                                           fnfp_si=fnfp_si, fnfp_sd=fnfp_sd,
                                           fnfp_anapole=fnfp_anapole, fnfp_magdip=fnfp_magdip, fnfp_elecdip=fnfp_elecdip,
@@ -1132,10 +1132,10 @@ def loglikelihood_time(np.ndarray[DTYPE_t] Q, DTYPE_t start_time, DTYPE_t end_ti
     if energy_resolution:
         tot -= Nevents * log(Rate)
         for i in range(0, Nevents):
-            v_lag = v_rms + v_erth_proj * np.cos(two_pi * (tim[i] - mod_phase))
+            v_lag_instant = v_rms + v_erth_proj * np.cos(two_pi * (tim[i] - mod_phase))
 
             event_inf = dRdQ(np.array([Q[i]]), mass=mass,
-                                        v_lag=v_lag, v_rms=v_rms, v_esc= v_esc, rho_x=rho_x, element=element,
+                                        v_lag=v_lag_instant, v_rms=v_rms, v_esc= v_esc, rho_x=rho_x, element=element,
                                         fnfp_si=fnfp_si, fnfp_sd=fnfp_sd,
                                           fnfp_anapole=fnfp_anapole, fnfp_magdip=fnfp_magdip, fnfp_elecdip=fnfp_elecdip,
                                           fnfp_LS=fnfp_LS, fnfp_f1=fnfp_f1, fnfp_f2=fnfp_f2, fnfp_f3=fnfp_f3,

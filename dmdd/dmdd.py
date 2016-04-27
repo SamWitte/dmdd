@@ -296,8 +296,10 @@ class MultinestRun(object):
             if not time_info:
                 res += self.fit_model.loglikelihood(sim.Q, sim.experiment.efficiency, **kwargs)
             else:
-                time_pass = np.append(sim.Q[:,1],[sim.experiment.start_t, sim.experiment.end_t])
-                res += self.fit_model.loglikelihood(sim.Q[:,0], time_pass, sim.experiment.efficiency, **kwargs)
+                #time_pass = np.append(sim.Q[:,1],[sim.experiment.start_t, sim.experiment.end_t])
+                #res += self.fit_model.loglikelihood(sim.Q[:,0], time_pass, sim.experiment.efficiency, **kwargs)
+                res += self.fit_model.loglikelihood(sim.Q[:,0], sim.Q[:,1],
+                                                    sim.experiment.efficiency, **kwargs)
         return res
 
   
@@ -693,16 +695,15 @@ class Simulation(object):
             R_integrand =  self.model_dRdQ * efficiencies
             self.model_R = np.trapz(R_integrand,self.model_Qgrid)
         else:
-            time_range = np.linspace(experiment.start_t,experiment.end_t, 2000)
+            time_range = np.linspace(0.,1., 2000)
             dtime = time_range[1]-time_range[0]
             self.model_dRdQ = 0.0
             self.model_R = 0.0
             for x in time_range:
                 self.model_dRdQ += (efficiencies * dRdQ_time(self.model.dRdQ, self.dRdQ_params,
-                                self.model_Qgrid, x) / (experiment.end_t - experiment.start_t) * dtime)
+                                self.model_Qgrid, x) * dtime)
                 self.model_R += (np.trapz(efficiencies * dRdQ_time(self.model.dRdQ, self.dRdQ_params,
-                                self.model_Qgrid, x), self.model_Qgrid) / (experiment.end_t -
-                                experiment.start_t) * dtime)
+                                self.model_Qgrid, x), self.model_Qgrid) * dtime)
 
         self.model_N = self.model_R * experiment.exposure * YEAR_IN_S
 
@@ -820,8 +821,7 @@ class Simulation(object):
             
             while total < Nevents:
                 U = np.random.rand() #random number between 0 and 1
-                x = (np.random.rand() * (self.experiment.end_t - self.experiment.start_t) +
-                    self.experiment.start_t)
+                x = np.random.rand() 
                 y = (np.random.rand() * (self.experiment.Qmax - self.experiment.Qmin) +
                     self.experiment.Qmin) #same as above line
 
@@ -1118,7 +1118,7 @@ class Experiment(object):
     """
     #pass the name of element instead of A, use natural isotope abundances for now.
     def __init__(self, name, element, Qmin, Qmax, total_target_mass,
-                 efficiency_fn, start_t, end_t,
+                 efficiency_fn, 
                  tex_name=None, energy_resolution=True):
         """
         Exposure in kg-yr
@@ -1129,10 +1129,8 @@ class Experiment(object):
         self.name = name
         self.Qmin = Qmin
         self.Qmax = Qmax
-        self.start_t = start_t
-        self.end_t = end_t
         self.total_target_mass = total_target_mass
-        self.exposure = total_target_mass * (end_t - start_t)
+        self.exposure = total_target_mass 
         self.element = element
         self.efficiency = efficiency_fn
         self.parameters = {'Qmin':Qmin,
@@ -1364,7 +1362,7 @@ def compare_dictionaries(d1,d2,debug=False,rtol=1e-5):
 
 ############################################
 ############################################
-def Nexpected(element, Qmin, Qmax, exposure, efficiency, start_t, end_t,
+def Nexpected(element, Qmin, Qmax, exposure, efficiency,
               sigma_name, sigma_val, fnfp_name=None, fnfp_val=None,
               mass=50.,
               v_esc=540., v_lag=220., v_rms=220., rho_x=0.3):
@@ -1386,9 +1384,6 @@ def Nexpected(element, Qmin, Qmax, exposure, efficiency, start_t, end_t,
         }
     if (fnfp_val is not None) and  (fnfp_name is not None):
         kwargs[fnfp_name] = fnfp_val
-
-#   FOR SOME REASON THIS FUNCTION ISN'T RECOGNIZED?
-#    res = rate_UV.R_time(efficiency, start_t, end_t, **kwargs) * YEAR_IN_S * exposure
 
     res = rate_UV.R(efficiency, **kwargs) * YEAR_IN_S * exposure
     return res
