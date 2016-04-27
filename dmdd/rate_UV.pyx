@@ -1069,7 +1069,7 @@ def loglikelihood(np.ndarray[DTYPE_t] Q, object efficiency_fn, DTYPE_t mass=50.,
 
 
 @cython.boundscheck(False)
-def loglikelihood_time(np.ndarray[DTYPE_t] Q, DTYPE_t start_time, DTYPE_t end_time, np.ndarray[DTYPE_t] tim, object efficiency_fn,
+def loglikelihood_time(np.ndarray[DTYPE_t] Q, np.ndarray[DTYPE_t] tim, object efficiency_fn,
          DTYPE_t mass=50.,
          DTYPE_t sigma_si=0.,DTYPE_t sigma_sd=0.,
          DTYPE_t sigma_anapole=0.,DTYPE_t sigma_magdip=0., DTYPE_t sigma_elecdip=0.,
@@ -1110,7 +1110,7 @@ def loglikelihood_time(np.ndarray[DTYPE_t] Q, DTYPE_t start_time, DTYPE_t end_ti
     cdef DTYPE_t two_pi = 2.0 * 3.1415
 
 
-    cdef DTYPE_t Rate = R_time(efficiency_fn, start_time, end_time, mass=mass,
+    cdef DTYPE_t Rate = R(efficiency_fn, mass=mass,
                                          v_rms=v_rms, v_lag=v_lag, v_esc=v_esc, rho_x=rho_x,
                                           fnfp_si=fnfp_si, fnfp_sd=fnfp_sd,
                                           fnfp_anapole=fnfp_anapole, fnfp_magdip=fnfp_magdip, fnfp_elecdip=fnfp_elecdip,
