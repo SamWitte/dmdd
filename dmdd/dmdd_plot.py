@@ -214,7 +214,7 @@ def plot_theoryfitdata_residual(Qbins, Qhist, xerr, yerr, Qbins_theory, Qhist_th
     plt.title(title, fontsize=titlefont)
     
     xlabel = 'Time  [Years]'
-    ylabel = 'Residual  [Events]'
+    ylabel = 'Residual  [Percent]'
     ax = plt.gca()
     fig = plt.gcf()
     xlabel = ax.set_xlabel(xlabel,fontsize=labelfont)

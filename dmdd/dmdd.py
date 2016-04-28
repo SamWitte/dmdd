@@ -14,11 +14,6 @@ from math import cos, pi
 
 on_rtd = False
 
-time_info = True
-if time_info:
-    time_tag = 'with_Time'
-else:
-    time_tag = 'No_Time'
 
 try:
     import numpy.random as random
@@ -175,17 +170,22 @@ class MultinestRun(object):
                  asimov=False, nbins_asimov=20,
                  n_live_points=2000, evidence_tolerance=0.1,
                  sampling_efficiency=0.3, resume=False, basename='1-',
-                 silent=False, empty_run=False):
+                 silent=False, empty_run=False, time_info=True):
        
         if type(experiments) == Experiment:
             experiments = [experiments]
             
         self.silent = silent
-            
+        self.time_info=time_info
         self.sim_name = sim_name
         self.experiments = experiments
         self.sim_model = sim_model
         self.fit_model = fit_model
+        
+        if time_info:
+            time_tag = 'With_Time'
+        else:
+            time_tag = 'No_Time'
 
         self.param_values = param_values
         self.prior_ranges = prior_ranges
@@ -293,11 +293,10 @@ class MultinestRun(object):
             for kw,val in sim.experiment.parameters.iteritems():
                 kwargs[kw] = val
             kwargs['energy_resolution'] = sim.experiment.energy_resolution
-            if not time_info:
+            if not self.time_info:
                 res += self.fit_model.loglikelihood(sim.Q, sim.experiment.efficiency, **kwargs)
             else:
-                time_pass = np.append(sim.Q[:,1],[sim.experiment.start_t, sim.experiment.end_t])
-                res += self.fit_model.loglikelihood(sim.Q[:,0], time_pass, sim.experiment.efficiency, **kwargs)
+                res += self.fit_model.loglikelihood(sim.Q[:,0], sim.Q[:,1], sim.experiment.efficiency, **kwargs)
         return res
 
   
@@ -643,11 +642,17 @@ class Simulation(object):
                  path=SIM_PATH, force_sim=False,
                  asimov=False, nbins_asimov=20,
                  plot_nbins=20, plot_theory=True, 
-                 silent=False):
+                 silent=False, time_info=True):
         self.silent = silent
         if not set(parvals.keys())==set(model.param_names):
             raise ValueError('Must pass parameter value dictionary corresponding exactly to model.param_names')
         
+        self.time_info=time_info
+        if time_info:
+            time_tag = 'With_Time'
+        else:
+            time_tag = 'No_Time'
+
         self.model = model #underlying model
         self.experiment = experiment
     
@@ -688,7 +693,7 @@ class Simulation(object):
         self.model_Qgrid = np.linspace(experiment.Qmin,experiment.Qmax,1000)
         efficiencies = experiment.efficiency(self.model_Qgrid)
         
-        if not time_info:
+        if not self.time_info:
             self.model_dRdQ = self.model.dRdQ(self.model_Qgrid,**dRdQ_params)
             R_integrand =  self.model_dRdQ * efficiencies
             self.model_R = np.trapz(R_integrand,self.model_Qgrid)
@@ -728,7 +733,10 @@ class Simulation(object):
             fin = open(self.picklefile,'rb')
             allpars_old = pickle.load(fin)
             fin.close()
-            if not compare_dictionaries(self.allpars,allpars_old):
+
+            dictComp = DictDiffer(self.allpars,allpars_old)
+            
+            if bool(dictComp.changed()):
                 print('Existing simulation does not match current parameters.  Forcing simulation.\n\n')
                 force_sim = True
                 
@@ -740,7 +748,7 @@ class Simulation(object):
             if asimov:
                 raise ValueError('Asimov simulations not yet implemented!')
             else:
-                if not time_info:
+                if not self.time_info:
                     Q = self.simulate_data_wtime()
                 else:
                     Q = self.simulate_data_wtime()
@@ -754,7 +762,7 @@ class Simulation(object):
             if asimov:
                 raise ValueError('Asimov simulations not yet implemented!')
             else:
-                if time_info:
+                if self.time_info:
                     Q = np.loadtxt(self.datafile)
                 else:                    
                     Q = np.loadtxt(self.datafile)[:, 0]
@@ -765,7 +773,7 @@ class Simulation(object):
         if asimov:
             raise ValueError('Asimov not yet implemented!')
         else:
-            if time_info:
+            if self.time_info:
                 self.N = len(self.Q)
             else:
                 self.N = len(self.Q)
@@ -881,7 +889,7 @@ class Simulation(object):
             If ``True``, then function will return lots of things.
             
         """
-        if time_info:
+        if self.time_info:
             Qhist,bins = np.histogram(self.Q[:,0],plot_nbins)
         else:
             Qhist,bins = np.histogram(self.Q,plot_nbins)
@@ -919,7 +927,7 @@ class Simulation(object):
             if save_plot:
                 plt.savefig(self.plotfile, bbox_extra_artists=[xlabel, ylabel], bbox_inches='tight')
 
-        if time_info:
+        if self.time_info:
  #           arrangetime = np.zeros(len(self.Q[:,1]))
  #           for i in range(0, len(self.Q[:,1])):
  #               if self.Q[i,1] < 0.17:                
@@ -962,9 +970,12 @@ class Simulation(object):
                 plt.legend(prop={'size':20},numpoints=1)
 
 
-        if return_plot_items:
+        if return_plot_items and self.time_info:
             return Qbins, Qhist, xerr, yerr, Qbins_theory, Qhist_theory, binsize, time_bins, Thist, txerr, tyerr, Tbins_theory, Thist_theory, t_binsize
-    
+        else:
+            return Qbins, Qhist, xerr, yerr, Qbins_theory, Qhist_theory, binsize
+
+
 class Model(object):
     """
     A generic class describing a dark-matter scattering model.
@@ -1014,13 +1025,14 @@ class Model(object):
                  dRdQ_fn, loglike_fn,
                  default_rate_parameters, tex_names=None,
                  fixed_params=None,
-                 modelname_tex=None):
+                 modelname_tex=None, time_info=True):
         """
             fixed_params: dictionary
             
             tex_names is dictionary
         """
         self.name = name
+
         self.param_names = param_names
         self.dRdQ = dRdQ_fn
         self.loglikelihood = loglike_fn
@@ -1044,7 +1056,7 @@ class UV_Model(Model):
     ``rate_UV`` module.
     
     """
-    def __init__(self,name,param_names,**kwargs):
+    def __init__(self,name,param_names,time_info=True,**kwargs):
         default_rate_parameters = dict(mass=50., sigma_si=0., sigma_sd=0., sigma_anapole=0., sigma_magdip=0., sigma_elecdip=0.,
                                     sigma_LS=0., sigma_f1=0., sigma_f2=0., sigma_f3=0.,
                                     sigma_si_massless=0., sigma_sd_massless=0.,
@@ -1058,7 +1070,13 @@ class UV_Model(Model):
                                     fnfp_LS_massless=1.,  fnfp_f1_massless=1.,  fnfp_f2_massless=1.,  fnfp_f3_massless=1.,
                                     v_lag=220.,  v_rms=220.,  v_esc=544.,  rho_x=0.3)
         
-        if time_info == False:
+        self.time_info=time_info
+        if self.time_info:
+            time_tag = 'With_Time'
+        else:
+            time_tag = 'No_Time'
+        
+        if self.time_info == False:
             Model.__init__(self,name,param_names,
                        rate_UV.dRdQ,
                        rate_UV.loglikelihood,
@@ -1411,5 +1429,27 @@ def dRdQ_time(dRdQ_func, dRdQ_param, Q_vals, t):
     kwags['v_lag'] = 220.0
     
     return result
+
+
+class DictDiffer(object):
+    """
+        Calculate the difference between two dictionaries as:
+        (1) items added
+        (2) items removed
+        (3) keys same in both but changed values
+        (4) keys same in both and unchanged values
+        """
+    def __init__(self, current_dict, past_dict):
+        self.current_dict, self.past_dict = current_dict, past_dict
+        self.set_current, self.set_past = set(current_dict.keys()), set(past_dict.keys())
+        self.intersect = self.set_current.intersection(self.set_past)
+    def added(self):
+        return self.set_current - self.intersect
+    def removed(self):
+        return self.set_past - self.intersect
+    def changed(self):
+        return set(o for o in self.intersect if self.past_dict[o] != self.current_dict[o])
+    def unchanged(self):
+        return set(o for o in self.intersect if self.past_dict[o] == self.current_dict[o])
 
 
