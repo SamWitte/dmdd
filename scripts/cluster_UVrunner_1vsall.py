@@ -24,9 +24,9 @@ parser.add_argument('--startsim', type=int, default=1)
 parser.add_argument('--nfit', type=int, default=50)
 parser.add_argument('--startfit', type=int, default=1)
 parser.add_argument('--prior',default='logflat')
-parser.add_argument('--experiments',nargs='+',default=['XeG3'])#['F','Ge', 'Xe','Ge Xe','I','Ge Xe I','Ge Xe F'],['Ilo','Xelo', 'Xehi','Xewide'],['Ar','Ge Xe Ar'],['He', 'Na', 'Ge','Ge He','Ge Na']
-#parser.add_argument('--path',default='/home/verag/Projects/Repositories/dmdd-AM/scripts/')
-parser.add_argument('--path',default='/Users/verag/Research/Repositories/dmdd-AM/scripts/')
+parser.add_argument('--experiments',nargs='+',default=['Xe'])
+parser.add_argument('--path',default='/home/verag/Projects/Repositories/dmdd-AM/scripts/')
+#parser.add_argument('--path',default='/Users/verag/Research/Repositories/dmdd-AM/scripts/')
 
 
 
