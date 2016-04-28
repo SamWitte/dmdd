@@ -158,7 +158,6 @@ if DO_SIM:
     fout.write('#$ -cwd\n')
     fout.write('#$ -t 1-{}\n'.format(NSIMGROUPS))
     fout.write('#$ -V\n')
-    fout.write('cd /Users/SamWitte/Desktop/dmdd/runs_uv \n')
     fout.write('bash simUVcommands_{}_$SGE_TASK_ID.sh\n'.format(TAG))
     fout.close()
                                 
