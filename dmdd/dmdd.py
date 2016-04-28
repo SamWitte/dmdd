@@ -14,11 +14,6 @@ from math import cos, pi
 
 on_rtd = False
 
-time_info = True
-if time_info:
-    time_tag = 'with_Time'
-else:
-    time_tag = 'No_Time'
 
 try:
     import numpy.random as random
@@ -175,11 +170,17 @@ class MultinestRun(object):
                  asimov=False, nbins_asimov=20,
                  n_live_points=2000, evidence_tolerance=0.1,
                  sampling_efficiency=0.3, resume=False, basename='1-',
-                 silent=False, empty_run=False):
+                 silent=False, empty_run=False, time_info=True):
        
         if type(experiments) == Experiment:
             experiments = [experiments]
-            
+
+        self.time_info = time_info
+        if self.time_info:
+            self.time_tag = 'with_Time'
+        else:
+            self.time_tag = 'no_Time'
+        
         self.silent = silent
             
         self.sim_name = sim_name
@@ -239,7 +240,7 @@ class MultinestRun(object):
                 self.foldername += '_{}_{:.2f}'.format(parname, parval)   
 
         self.foldername += '_{}_nlive{}'.format(prior,self.mn_params['n_live_points'])  
-        self.foldername += time_tag
+        self.foldername += self.time_tag
         self.chainspath = '{}/{}/'.format(chains_root,self.foldername)
         self.chainsfile = self.chainspath + '/' + self.mn_params['outputfiles_basename'] + 'post_equal_weights.dat'
 
@@ -293,12 +294,10 @@ class MultinestRun(object):
             for kw,val in sim.experiment.parameters.iteritems():
                 kwargs[kw] = val
             kwargs['energy_resolution'] = sim.experiment.energy_resolution
-            if not time_info:
+            if not self.time_info:
                 res += self.fit_model.loglikelihood(sim.Q, sim.experiment.efficiency, **kwargs)
             else:
-                #time_pass = np.append(sim.Q[:,1],[sim.experiment.start_t, sim.experiment.end_t])
-                #res += self.fit_model.loglikelihood(sim.Q[:,0], time_pass, sim.experiment.efficiency, **kwargs)
-                res += self.fit_model.loglikelihood(sim.Q[:,0], sim.Q[:,1],
+                res += self.fit_model.loglikelihood(sim.Q, sim.t,
                                                     sim.experiment.efficiency, **kwargs)
         return res
 
@@ -690,20 +689,16 @@ class Simulation(object):
         self.model_Qgrid = np.linspace(experiment.Qmin,experiment.Qmax,1000)
         efficiencies = experiment.efficiency(self.model_Qgrid)
         
-        if not time_info:
-            self.model_dRdQ = self.model.dRdQ(self.model_Qgrid,**dRdQ_params)
-            R_integrand =  self.model_dRdQ * efficiencies
-            self.model_R = np.trapz(R_integrand,self.model_Qgrid)
-        else:
-            time_range = np.linspace(0.,1., 2000)
-            dtime = time_range[1]-time_range[0]
-            self.model_dRdQ = 0.0
-            self.model_R = 0.0
-            for x in time_range:
-                self.model_dRdQ += (efficiencies * dRdQ_time(self.model.dRdQ, self.dRdQ_params,
-                                self.model_Qgrid, x) * dtime)
-                self.model_R += (np.trapz(efficiencies * dRdQ_time(self.model.dRdQ, self.dRdQ_params,
-                                self.model_Qgrid, x), self.model_Qgrid) * dtime)
+
+        time_range = np.linspace(0.,1., 2000)
+        dtime = time_range[1]-time_range[0]
+        self.model_dRdQ = 0.0
+        self.model_R = 0.0
+        for x in time_range:
+            self.model_dRdQ += (efficiencies * dRdQ_time(self.model.dRdQ, self.dRdQ_params,
+                            self.model_Qgrid, x) * dtime)
+            self.model_R += (np.trapz(efficiencies * dRdQ_time(self.model.dRdQ, self.dRdQ_params,
+                            self.model_Qgrid, x), self.model_Qgrid) * dtime)
 
         self.model_N = self.model_R * experiment.exposure * YEAR_IN_S
 
@@ -741,36 +736,29 @@ class Simulation(object):
             if asimov:
                 raise ValueError('Asimov simulations not yet implemented!')
             else:
-                if not time_info:
-                    Q = self.simulate_data_wtime()
-                else:
-                    Q = self.simulate_data_wtime()
-                np.savetxt(self.datafile,Q)
+                Q,t = self.simulate_data()
+                np.savetxt(self.datafile,np.array([Q,t]).T)
                 fout = open(self.picklefile,'wb')
                 pickle.dump(self.allpars,fout)
                 fout.close()
                 self.Q = np.atleast_1d(Q)
+                self.t = np.atleast_1d(t)
                 self.N = len(self.Q)
         else:
             if asimov:
                 raise ValueError('Asimov simulations not yet implemented!')
             else:
-                if time_info:
-                    Q = np.loadtxt(self.datafile)
-                else:                    
-                    Q = np.loadtxt(self.datafile)[:, 0]
+                Q,t = np.loadtxt(self.datafile,unpack=True)
                 self.Q = np.atleast_1d(Q)
+                self.t = np.atleast_1d(t)
                 self.N = len(self.Q)
                 
 
         if asimov:
             raise ValueError('Asimov not yet implemented!')
         else:
-            if time_info:
-                self.N = len(self.Q)
-            else:
-                self.N = len(self.Q)
-
+            self.N = len(self.Q)
+            
         if force_sim or (not os.path.exists(self.plotfile)):
             self.plot_data(plot_nbins=plot_nbins, plot_theory=plot_theory, save_plot=True)
         else:
@@ -778,35 +766,8 @@ class Simulation(object):
                 print "simulation had %i events (expected %.0f)." % (self.N,self.model_N)
     
         
+  
     def simulate_data(self):
-        """
-        Do Poisson simulation of data according to scattering model's dR/dQ.
-        """
-        Nexpected = self.model_N
-        if Nexpected > 0:
-            npts = 10000
-            Nevents = poisson.rvs(Nexpected)
-      
-            Qgrid = np.linspace(self.experiment.Qmin,self.experiment.Qmax,npts)
-            efficiency = self.experiment.efficiency(Qgrid)
-            pdf = self.model.dRdQ(Qgrid,**self.dRdQ_params) * efficiency / self.model_R
-            cdf = pdf.cumsum()
-            cdf /= cdf.max()
-            u = random.rand(Nevents)
-            Q = np.zeros(Nevents)
-            for i in np.arange(Nevents):
-                Q[i] = Qgrid[np.absolute(cdf - u[i]).argmin()]
-        else:
-            Q = np.array([])
-            Nevents = 0
-            Nexpected = 0
-
-        if not self.silent:
-            print "simulated: %i events (expected %.0f)." % (Nevents,Nexpected)
-        return Q
-        
-        
-    def simulate_data_wtime(self):
         """
         Do Poisson simulation of data according to scattering model's dR/dQ.
         """
@@ -846,7 +807,7 @@ class Simulation(object):
 
         if not self.silent:
             print "simulated: %i events (expected %.0f)." % (Nevents,Nexpected)
-        return Q
+        return np.array(Ylist), np.array(Xlist)
         
     def pdf_fun(self, Q, t):
         q_hold = np.array([Q])
@@ -881,10 +842,8 @@ class Simulation(object):
             If ``True``, then function will return lots of things.
             
         """
-        if time_info:
-            Qhist,bins = np.histogram(self.Q[:,0],plot_nbins)
-        else:
-            Qhist,bins = np.histogram(self.Q,plot_nbins)
+    
+        Qhist,bins = np.histogram(self.Q,plot_nbins)
         
         Qbins = (bins[1:]+bins[:-1])/2. 
         binsize = Qbins[1]-Qbins[0] #valid only for uniform gridding.
@@ -919,47 +878,41 @@ class Simulation(object):
             if save_plot:
                 plt.savefig(self.plotfile, bbox_extra_artists=[xlabel, ylabel], bbox_inches='tight')
 
-        if time_info:
- #           arrangetime = np.zeros(len(self.Q[:,1]))
- #           for i in range(0, len(self.Q[:,1])):
- #               if self.Q[i,1] < 0.17:                
- #                   arrangetime[i] = self.Q[i,1]+1.
- #               else:
- #                   arrangetime[i] = self.Q[i,1]
-            Thist,tbins = np.histogram(self.Q[:,1], bins=[0.,.1,.2,.3,.4,.5,.6,.7,.8,.9,1.])
-            time_bins = (tbins[1:]+tbins[:-1])/2.
-            t_binsize = time_bins[1]-time_bins[0] #valid only for uniform gridding.
-            Twidths = (tbins[1:]-tbins[:-1])/2.
-            txerr = Twidths
-            tyerr = Thist**0.5
 
-            Tbins_theory = np.linspace(0.,1.,500)
-            Thist_theory = np.zeros(500)
-            for i in range(0, len(Tbins_theory)):
-                Thist_theory[i] = ((np.trapz(self.experiment.efficiency(self.model_Qgrid) * dRdQ_time(self.model.dRdQ, self.dRdQ_params,
-                                self.model_Qgrid, Tbins_theory[i]), self.model_Qgrid)) *
-                                t_binsize*self.experiment.exposure*YEAR_IN_S)
-                    
-            if make_plot:
-                plt.figure()
-                plt.title('%s (total events = %i)' % (self.experiment.name,self.N), fontsize=18)
-                xlabel = 'Time [years]'
-                ylabel = 'Number of events'
-                ax = plt.gca()
-                fig = plt.gcf()
-                xlabel = ax.set_xlabel(xlabel,fontsize=18)
-                ylabel = ax.set_ylabel(ylabel,fontsize=18)
-                if plot_theory:
-                    if self.model.name in MODELNAME_TEX.keys():
-                        label='True model ({})'.format(MODELNAME_TEX[self.model.name])
-                    else:
-                        label='True model'
-                    plt.plot(Tbins_theory, Thist_theory,lw=3,
-                         color='blue',
-                         label=label)
-                plt.errorbar(time_bins, Thist,xerr=txerr,yerr=tyerr,marker='o',color='black',linestyle='None',label='Simulated data')
+        Thist,tbins = np.histogram(self.t, bins=[0.,.1,.2,.3,.4,.5,.6,.7,.8,.9,1.])
+        time_bins = (tbins[1:]+tbins[:-1])/2.
+        t_binsize = time_bins[1]-time_bins[0] #valid only for uniform gridding.
+        Twidths = (tbins[1:]-tbins[:-1])/2.
+        txerr = Twidths
+        tyerr = Thist**0.5
 
-                plt.legend(prop={'size':20},numpoints=1)
+        Tbins_theory = np.linspace(0.,1.,500)
+        Thist_theory = np.zeros(500)
+        for i in range(0, len(Tbins_theory)):
+            Thist_theory[i] = ((np.trapz(self.experiment.efficiency(self.model_Qgrid) * dRdQ_time(self.model.dRdQ, self.dRdQ_params,
+                            self.model_Qgrid, Tbins_theory[i]), self.model_Qgrid)) *
+                            t_binsize*self.experiment.exposure*YEAR_IN_S)
+
+        if make_plot:
+            plt.figure()
+            plt.title('%s (total events = %i)' % (self.experiment.name,self.N), fontsize=18)
+            xlabel = 'Time [years]'
+            ylabel = 'Number of events'
+            ax = plt.gca()
+            fig = plt.gcf()
+            xlabel = ax.set_xlabel(xlabel,fontsize=18)
+            ylabel = ax.set_ylabel(ylabel,fontsize=18)
+            if plot_theory:
+                if self.model.name in MODELNAME_TEX.keys():
+                    label='True model ({})'.format(MODELNAME_TEX[self.model.name])
+                else:
+                    label='True model'
+                plt.plot(Tbins_theory, Thist_theory,lw=3,
+                     color='blue',
+                     label=label)
+            plt.errorbar(time_bins, Thist,xerr=txerr,yerr=tyerr,marker='o',color='black',linestyle='None',label='Simulated data')
+
+            plt.legend(prop={'size':20},numpoints=1)
 
 
         if return_plot_items:
@@ -1044,7 +997,7 @@ class UV_Model(Model):
     ``rate_UV`` module.
     
     """
-    def __init__(self,name,param_names,**kwargs):
+    def __init__(self,name,param_names,time_info=True,**kwargs):
         default_rate_parameters = dict(mass=50., sigma_si=0., sigma_sd=0., sigma_anapole=0., sigma_magdip=0., sigma_elecdip=0.,
                                     sigma_LS=0., sigma_f1=0., sigma_f2=0., sigma_f3=0.,
                                     sigma_si_massless=0., sigma_sd_massless=0.,

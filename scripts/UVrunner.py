@@ -21,6 +21,7 @@ from multinest_parameters import *
 
 parser = argparse.ArgumentParser()
 
+parser.add_argument('--timeinfo', action='store_true')
 parser.add_argument('--simmodelname',default='simmodel')
 parser.add_argument('--fitmodelname',default='fitmodel')
 parser.add_argument('--simpars',nargs='+',default=['mass'])
@@ -51,6 +52,8 @@ parser.add_argument('--resume', action='store_true')
 parser.add_argument('--base', default=basename)
 
 args = parser.parse_args()
+time_info = args.timeinfo # do not consider time, unless you get --timeinfo tag
+
 
 experiments = []
 for i,experiment in enumerate(args.exps):
@@ -70,8 +73,8 @@ fixedfit_params = {}
 for i,par in enumerate(args.fixedfitnames):
     fixedfit_params[par] = args.fixedfitvals[i]
 
-simmodel = dmdd.UV_Model(args.simmodelname, args.simpars, fixed_params=fixedsim_params)
-fitmodel = dmdd.UV_Model(args.fitmodelname, args.fitpars, fixed_params=fixedfit_params)
+simmodel = dmdd.UV_Model(args.simmodelname, args.simpars, fixed_params=fixedsim_params, time_info=time_info)
+fitmodel = dmdd.UV_Model(args.fitmodelname, args.fitpars, fixed_params=fixedfit_params, time_info=time_info)
 
 param_values = {}
 for i,par in enumerate(args.simpars):
@@ -82,7 +85,7 @@ UV_run = dmdd.MultinestRun(args.simname, experiments, simmodel, param_values, fi
                                 force_sim=args.forcesim, prior_ranges=prior_ranges, prior=args.prior,
                                 asimov=args.asimov, nbins_asimov=args.nasbin,
                                 n_live_points=args.nlive, evidence_tolerance=args.evtol,
-                                sampling_efficiency=args.seff, resume=args.resume, basename=args.base)
+                                sampling_efficiency=args.seff, resume=args.resume, basename=args.base, time_info=time_info)
 if args.fit:
     UV_run.fit()
 if args.vis:

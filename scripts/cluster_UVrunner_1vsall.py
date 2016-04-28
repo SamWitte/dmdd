@@ -10,6 +10,7 @@ import dmdd
 from dmdd import eff
 
 parser = argparse.ArgumentParser()
+parser.add_argument('--timeinfo', action='store_true')
 parser.add_argument('--nofit', action='store_true')
 parser.add_argument('--dosim', action='store_true')
 parser.add_argument('--dumplims', action='store_true')
@@ -24,14 +25,23 @@ parser.add_argument('--nfit', type=int, default=1)
 parser.add_argument('--startfit', type=int, default=1)
 parser.add_argument('--prior',default='logflat')
 parser.add_argument('--experiments',nargs='+',default=['XeG3'])#['F','Ge', 'Xe','Ge Xe','I','Ge Xe I','Ge Xe F'],['Ilo','Xelo', 'Xehi','Xewide'],['Ar','Ge Xe Ar'],['He', 'Na', 'Ge','Ge He','Ge Na']
-parser.add_argument('--path',default='/home/verag/Projects/Repositories/dmdd-AM/scripts/')
+#parser.add_argument('--path',default='/home/verag/Projects/Repositories/dmdd-AM/scripts/')
+parser.add_argument('--path',default='/Users/verag/Research/Repositories/dmdd-AM/scripts/')
 
 
 
 args = parser.parse_args()
+time_info = args.timeinfo
+if time_info:
+    timetag = '--timeinfo'
+else:
+    timetag = ''
+
 DO_FIT = not args.nofit
 DO_SIM = args.dosim
 TAG = args.tag
+if (len(TAG) == 0) and timetag:
+    TAG = '_time'
 MASSES = args.masses
 NGROUPS = args.ngroups
 NSIM = args.nsim
@@ -53,10 +63,8 @@ print SINGLE_EXPERIMENTS
 DUMP_SIGMA_LIMS = args.dumplims
 LIMFILE = args.limfile            
 
-SI_Higgs = dmdd.UV_Model('SI_Higgs', ['mass', 'sigma_si'], fixed_params={'fnfp_si': 1})
-anapole = dmdd.UV_Model('Anapole', ['mass','sigma_anapole'])
-
-ALLMODELS = [SI_Higgs, anapole]
+SI_Higgs = dmdd.UV_Model('SI_Higgs', ['mass', 'sigma_si'], fixed_params={'fnfp_si': 1}, time_info=time_info)
+anapole = dmdd.UV_Model('Anapole', ['mass','sigma_anapole'], time_info=time_info)
 
 SIMMODELS = [anapole]
 FITMODELS = [SI_Higgs, anapole]
@@ -110,7 +118,7 @@ if DO_SIM:
                 sigma_name = simmod.param_names[1]
                 for i in range(STARTSIM,NSIM+STARTSIM):
                     simname='sim%d' % i
-                    cmd = SCRIPTS_PATH + 'UVrunner.py --simname {} --simpars mass {} --parvals {} {:.16f} -e {}'.format(simname, sigma_name, mass, sigma_vals[mass][simmod.name], experiment)
+                    cmd = SCRIPTS_PATH + 'UVrunner.py {} --simname {} --simpars mass {} --parvals {} {:.16f} -e {}'.format(timetag, simname, sigma_name, mass, sigma_vals[mass][simmod.name], experiment)
                     if len(simmod.fixed_params) > 0:
                         cmd += ' --fixedsimnames {} --fixedsimvals {}'.format(simmod.fixed_params.keys()[0], simmod.fixed_params.values()[0])
                     cmds.append(cmd)
@@ -149,7 +157,7 @@ if DO_FIT:
 
                 for i in range(STARTFIT,NFIT+STARTFIT):
                     simname='sim%d' % i
-                    cmd = SCRIPTS_PATH + 'UVrunner.py --fit --vis --simmodelname {} --simname {} --simpars mass {} --parvals {} {:.16f} -e {}'.format(simmod.name,
+                    cmd = SCRIPTS_PATH + 'UVrunner.py {} --fit --vis --simmodelname {} --simname {} --simpars mass {} --parvals {} {:.16f} -e {}'.format(timetag, simmod.name,
                                                                                                                                                  simname, 
                                                                                                                                                  sigma_name, 
                                                                                                                                                  mass, 
