@@ -25,7 +25,7 @@ parser.add_argument('--startfit', type=int, default=1)
 parser.add_argument('--prior',default='logflat')
 parser.add_argument('--experiments',nargs='+',default=['XeG3'])#['F','Ge', 'Xe','Ge Xe','I','Ge Xe I','Ge Xe F'],['Ilo','Xelo', 'Xehi','Xewide'],['Ar','Ge Xe Ar'],['He', 'Na', 'Ge','Ge He','Ge Na']
 parser.add_argument('--path',default='/home/switte/dmdd/')
-parser.add_argument('--time',default=False)
+parser.add_argument('--time',default='T')
 #'/Users/verag/Research/Repositories/dmdd_2014/scripts/' #macbook
 
 
