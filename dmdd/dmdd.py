@@ -180,7 +180,8 @@ class MultinestRun(object):
             self.time_info = True
         else: 
             self.time_info = False
-
+        print self.time_info
+        
         self.sim_name = sim_name
         self.experiments = experiments
         self.sim_model = sim_model
@@ -258,7 +259,7 @@ class MultinestRun(object):
                                                    force_sim=force_sim,
                                                    asimov=asimov,
                                                    nbins_asimov=nbins_asimov,
-                                                   silent=self.silent))
+                                                   silent=self.silent, time_info=time_info))
 
     def return_chains_loglike(self):
         """
@@ -647,18 +648,18 @@ class Simulation(object):
                  asimov=False, nbins_asimov=20,
                  plot_nbins=20, plot_theory=True, 
                  silent=False, time_info='T'):
+        
         self.silent = silent
         if not set(parvals.keys())==set(model.param_names):
             raise ValueError('Must pass parameter value dictionary corresponding exactly to model.param_names')
         if time_info == 'T':
             self.time_info = True
-        else:
-            self.time_info = False
-        if self.time_info:
             time_tag = 'With_Time'
-        elif not self.time_info:
+        elif time_info == 'F':
+            self.time_info = False
             time_tag = 'No_Time'
-
+        
+        
         self.model = model #underlying model
         self.experiment = experiment
     
@@ -754,10 +755,7 @@ class Simulation(object):
             if asimov:
                 raise ValueError('Asimov simulations not yet implemented!')
             else:
-                if not self.time_info:
-                    Q = self.simulate_data_wtime()
-                else:
-                    Q = self.simulate_data_wtime()
+                Q = self.simulate_data_wtime()
                 np.savetxt(self.datafile,Q)
                 fout = open(self.picklefile,'wb')
                 pickle.dump(self.allpars,fout)
@@ -767,13 +765,14 @@ class Simulation(object):
         else:
             if asimov:
                 raise ValueError('Asimov simulations not yet implemented!')
-            else:
+            else: 
                 if self.time_info:
                     Q = np.loadtxt(self.datafile)
                 else:                    
                     Q = np.loadtxt(self.datafile)[:, 0]
                 self.Q = np.atleast_1d(Q)
                 self.N = len(self.Q)
+                
                 
 
         if asimov:
