@@ -182,7 +182,7 @@ class MultinestRun(object):
         self.sim_model = sim_model
         self.fit_model = fit_model
         
-        if time_info:
+        if self.time_info == True:
             time_tag = 'With_Time'
         else:
             time_tag = 'No_Time'
@@ -648,7 +648,7 @@ class Simulation(object):
             raise ValueError('Must pass parameter value dictionary corresponding exactly to model.param_names')
         
         self.time_info=time_info
-        if time_info:
+        if self.time_info == True:
             time_tag = 'With_Time'
         else:
             time_tag = 'No_Time'
@@ -1071,7 +1071,7 @@ class UV_Model(Model):
                                     v_lag=220.,  v_rms=220.,  v_esc=544.,  rho_x=0.3)
         
         self.time_info=time_info
-        if self.time_info:
+        if self.time_info == True:
             time_tag = 'With_Time'
         else:
             time_tag = 'No_Time'
