@@ -190,8 +190,7 @@ class MultinestRun(object):
             time_tag = 'No_Time'
         elif self.time_info:
             time_tag = 'With_Time'
-        print time_tag, time_info, self.time_info
-        exit()
+    
         self.param_values = param_values
         self.prior_ranges = prior_ranges
         self.prior = prior
