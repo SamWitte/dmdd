@@ -18,14 +18,14 @@ parser.add_argument('--tag',default='')
 parser.add_argument('--masses',nargs='+',default=[500],type=float)
 parser.add_argument('--ngroups', type=int, default=512)
 parser.add_argument('--nsimgroups', type=int, default=512)
-parser.add_argument('--nsim', type=int, default=1)
+parser.add_argument('--nsim', type=int, default=50)
 parser.add_argument('--startsim', type=int, default=1)
-parser.add_argument('--nfit', type=int, default=1)
+parser.add_argument('--nfit', type=int, default=50)
 parser.add_argument('--startfit', type=int, default=1)
 parser.add_argument('--prior',default='logflat')
-parser.add_argument('--experiments',nargs='+',default=['Xe'])#['F','Ge', 'Xe','Ge Xe','I','Ge Xe I','Ge Xe F'],['Ilo','Xelo', 'Xehi','Xewide'],['Ar','Ge Xe Ar'],['He', 'Na', 'Ge','Ge He','Ge Na']
-parser.add_argument('--path',default='/Users/SamWitte/Desktop/dmdd/')
-parser.add_argument('--time',default=True)
+parser.add_argument('--experiments',nargs='+',default=['XeG3'])#['F','Ge', 'Xe','Ge Xe','I','Ge Xe I','Ge Xe F'],['Ilo','Xelo', 'Xehi','Xewide'],['Ar','Ge Xe Ar'],['He', 'Na', 'Ge','Ge He','Ge Na']
+parser.add_argument('--path',default='/home/switte/dmdd/')
+parser.add_argument('--time',default=False)
 #'/Users/verag/Research/Repositories/dmdd_2014/scripts/' #macbook
 
 
@@ -81,7 +81,7 @@ ALLMODELS = [SI_Higgs, millicharge, SD_flavoruniversal, SD_Zmediated, SD_Moira, 
 
 MODELS1 = [SI_Higgs, anapole]
 
-SIMMODELS = [SI_Higgs] #[SI_Higgs,elecdip_heavy,elecdip_0]
+SIMMODELS = [anapole] #[SI_Higgs,elecdip_heavy,elecdip_0]
 FITMODELS = MODELS1
 
 
@@ -158,7 +158,6 @@ if DO_SIM:
     fout.write('#$ -cwd\n')
     fout.write('#$ -t 1-{}\n'.format(NSIMGROUPS))
     fout.write('#$ -V\n')
-    fout.write('cd /Users/SamWitte/Desktop/dmdd/runs_uv \n')
     fout.write('bash simUVcommands_{}_$SGE_TASK_ID.sh\n'.format(TAG))
     fout.close()
                                 
