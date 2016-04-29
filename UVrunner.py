@@ -49,10 +49,10 @@ parser.add_argument('--evtol',type=float, default=evidence_tolerance)
 parser.add_argument('--seff',type=float, default=sampling_efficiency)
 parser.add_argument('--resume', action='store_true')
 parser.add_argument('--base', default=basename)
-parser.add_argument('--time', default=True)
+parser.add_argument('--time', default='True')
 
 args = parser.parse_args()
-
+print args.time[0]
 experiments = []
 for i,experiment in enumerate(args.exps):
     efficiency = dmdd.eff.efficiency_Xe

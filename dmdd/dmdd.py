@@ -170,23 +170,28 @@ class MultinestRun(object):
                  asimov=False, nbins_asimov=20,
                  n_live_points=2000, evidence_tolerance=0.1,
                  sampling_efficiency=0.3, resume=False, basename='1-',
-                 silent=False, empty_run=False, time_info=True):
+                 silent=False, empty_run=False, time_info='T'):
        
         if type(experiments) == Experiment:
             experiments = [experiments]
             
         self.silent = silent
-        self.time_info=time_info
+        if time_info == 'T':
+            self.time_info = True
+        else: 
+            self.time_info = False
+
         self.sim_name = sim_name
         self.experiments = experiments
         self.sim_model = sim_model
         self.fit_model = fit_model
         
-        if self.time_info == True:
-            time_tag = 'With_Time'
-        else:
+        if not self.time_info:
             time_tag = 'No_Time'
-
+        elif self.time_info:
+            time_tag = 'With_Time'
+        print time_tag, time_info, self.time_info
+        exit()
         self.param_values = param_values
         self.prior_ranges = prior_ranges
         self.prior = prior
@@ -642,15 +647,17 @@ class Simulation(object):
                  path=SIM_PATH, force_sim=False,
                  asimov=False, nbins_asimov=20,
                  plot_nbins=20, plot_theory=True, 
-                 silent=False, time_info=True):
+                 silent=False, time_info='T'):
         self.silent = silent
         if not set(parvals.keys())==set(model.param_names):
             raise ValueError('Must pass parameter value dictionary corresponding exactly to model.param_names')
-        
-        self.time_info=time_info
-        if self.time_info == True:
-            time_tag = 'With_Time'
+        if time_info == 'T':
+            self.time_info = True
         else:
+            self.time_info = False
+        if self.time_info:
+            time_tag = 'With_Time'
+        elif not self.time_info:
             time_tag = 'No_Time'
 
         self.model = model #underlying model
@@ -1025,7 +1032,7 @@ class Model(object):
                  dRdQ_fn, loglike_fn,
                  default_rate_parameters, tex_names=None,
                  fixed_params=None,
-                 modelname_tex=None, time_info=True):
+                 modelname_tex=None, time_info='T'):
         """
             fixed_params: dictionary
             
@@ -1056,7 +1063,7 @@ class UV_Model(Model):
     ``rate_UV`` module.
     
     """
-    def __init__(self,name,param_names,time_info=True,**kwargs):
+    def __init__(self,name,param_names,time_info='T',**kwargs):
         default_rate_parameters = dict(mass=50., sigma_si=0., sigma_sd=0., sigma_anapole=0., sigma_magdip=0., sigma_elecdip=0.,
                                     sigma_LS=0., sigma_f1=0., sigma_f2=0., sigma_f3=0.,
                                     sigma_si_massless=0., sigma_sd_massless=0.,
@@ -1070,13 +1077,16 @@ class UV_Model(Model):
                                     fnfp_LS_massless=1.,  fnfp_f1_massless=1.,  fnfp_f2_massless=1.,  fnfp_f3_massless=1.,
                                     v_lag=220.,  v_rms=220.,  v_esc=544.,  rho_x=0.3)
         
-        self.time_info=time_info
-        if self.time_info == True:
-            time_tag = 'With_Time'
+        if time_info == 'T':
+            self.time_info=True
         else:
+            self.time_info = False
+        if self.time_info:
+            time_tag = 'With_Time'
+        elif not self.time_info:
             time_tag = 'No_Time'
         
-        if self.time_info == False:
+        if not self.time_info:
             Model.__init__(self,name,param_names,
                        rate_UV.dRdQ,
                        rate_UV.loglikelihood,
