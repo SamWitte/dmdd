@@ -167,6 +167,7 @@ ALL_EXPERIMENTS['Na+I'] = [na, iod]
 ALL_EXPERIMENTS['XeG3+I++F+'] = [xeG3, iodp, flup]
 ALL_EXPERIMENTS['F+'] = flup
 ALL_EXPERIMENTS['I+'] = iodp
+ALL_EXPERIMENTS['F+Xe'] = [flu, xe]
 ALL_EXPERIMENTS['Xe+'] = xeplus
 
 lux = dmdd.Experiment('LUX','xenon', 5, 23, 30.7, dmdd.eff.efficiency_Xe, 0., 1.,energy_resolution=True)
@@ -340,11 +341,11 @@ def line_plots_1vsall(nsim=100, startsim=1, masses=[50.],
             colors_list = Colors[experiment_names[i]]
     
     if time_info == 'Both':
-        time_list = [True, False]
+        time_list = ['T', 'F']
     elif time_info == 'True':
-        time_list = [True]
+        time_list = ['T']
     elif time_info == 'False':
-        time_list =[False]
+        time_list =['F']
     else:
         print 'ERROR'
 
@@ -424,7 +425,7 @@ def line_plots_1vsall(nsim=100, startsim=1, masses=[50.],
                         
                         for j,fitm in enumerate(models):
                             pardic = {'mass': mass, sigma_names[m.name]: sigma_limvals[mass][m.name]}
-            
+                            
                             mnrun = MultinestRun('sim{}'.format(n), experimentlist, m, pardic, 
                                                     fitm, prior_ranges=prior_ranges,
                                                     force_sim=False,n_live_points=n_live_points,silent=True,
@@ -478,7 +479,7 @@ def line_plots_1vsall(nsim=100, startsim=1, masses=[50.],
                             plt.annotate( '{:.0f}\\%%'.format(success), xy = ( i + 0.5, 1.05 ), 
                                           fontsize=fs2, va='center', ha='center', color='k' )
                     else:
-                        if not tval:
+                        if tval == 'F':
                             ii = 2*i + 1
                         else:
                             ii=2*i
