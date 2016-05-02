@@ -52,7 +52,7 @@ parser.add_argument('--base', default=basename)
 parser.add_argument('--time', default='True')
 
 args = parser.parse_args()
-print args.time[0]
+
 experiments = []
 for i,experiment in enumerate(args.exps):
     efficiency = dmdd.eff.efficiency_Xe
