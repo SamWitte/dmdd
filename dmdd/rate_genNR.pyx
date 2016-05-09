@@ -5,7 +5,7 @@ from cpython cimport bool
 
 import math
 import formgenNR as formgenNR
-from helpers import trapz, eta, zeta
+from helpers import trapz, eta, zeta, eta_GF, zeta_GF
 from dmdd.globals import PAR_NORMS
 import dmdd.constants as const
 DTYPE = np.float
@@ -35,7 +35,17 @@ eltshort = const.ELEMENT_INFO
 
 #######################  "Master" rate functions. 
 
-def dRdQ(np.ndarray[DTYPE_t] Er, DTYPE_t mass=50., np.ndarray[DTYPE_t] c1p=np.array([0.,0.,0.]), np.ndarray[DTYPE_t] c3p=np.array([0.,0.,0.]), np.ndarray[DTYPE_t] c4p=np.array([0.,0.,0.]), np.ndarray[DTYPE_t] c5p=np.array([0.,0.,0.]), np.ndarray[DTYPE_t] c6p=np.array([0.,0.,0.]), np.ndarray[DTYPE_t] c7p=np.array([0.,0.,0.]), np.ndarray[DTYPE_t] c8p=np.array([0.,0.,0.]), np.ndarray[DTYPE_t] c9p=np.array([0.,0.,0.]), np.ndarray[DTYPE_t] c10p=np.array([0.,0.,0.]), np.ndarray[DTYPE_t] c11p=np.array([0.,0.,0.]), np.ndarray[DTYPE_t] c12p=np.array([0.,0.,0.]), np.ndarray[DTYPE_t] c13p=np.array([0.,0.,0.]), np.ndarray[DTYPE_t] c14p=np.array([0.,0.,0.]), np.ndarray[DTYPE_t] c15p=np.array([0.,0.,0.]), np.ndarray[DTYPE_t] c1n=np.array([0.,0.,0.]), np.ndarray[DTYPE_t] c3n=np.array([0.,0.,0.]), np.ndarray[DTYPE_t] c4n=np.array([0.,0.,0.]), np.ndarray[DTYPE_t] c5n=np.array([0.,0.,0.]), np.ndarray[DTYPE_t] c6n=np.array([0.,0.,0.]), np.ndarray[DTYPE_t] c7n=np.array([0.,0.,0.]), np.ndarray[DTYPE_t] c8n=np.array([0.,0.,0.]), np.ndarray[DTYPE_t] c9n=np.array([0.,0.,0.]), np.ndarray[DTYPE_t] c10n=np.array([0.,0.,0.]), np.ndarray[DTYPE_t] c11n=np.array([0.,0.,0.]), np.ndarray[DTYPE_t] c12n=np.array([0.,0.,0.]), np.ndarray[DTYPE_t] c13n=np.array([0.,0.,0.]), np.ndarray[DTYPE_t] c14n=np.array([0.,0.,0.]), np.ndarray[DTYPE_t] c15n=np.array([0.,0.,0.]), DTYPE_t v_lag=220., DTYPE_t v_rms=220., DTYPE_t v_esc=544., str element='xenon', DTYPE_t rho_x=0.3, DTYPE_t c_scale=c_scale_global):
+def dRdQ(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t mass=50., np.ndarray[DTYPE_t] c1p=np.array([0.,0.,0.]), np.ndarray[DTYPE_t] c3p=np.array([0.,0.,0.]),
+         np.ndarray[DTYPE_t] c4p=np.array([0.,0.,0.]), np.ndarray[DTYPE_t] c5p=np.array([0.,0.,0.]), 
+         np.ndarray[DTYPE_t] c6p=np.array([0.,0.,0.]), np.ndarray[DTYPE_t] c7p=np.array([0.,0.,0.]), np.ndarray[DTYPE_t] c8p=np.array([0.,0.,0.]),
+         np.ndarray[DTYPE_t] c9p=np.array([0.,0.,0.]), np.ndarray[DTYPE_t] c10p=np.array([0.,0.,0.]), np.ndarray[DTYPE_t] c11p=np.array([0.,0.,0.]), 
+         np.ndarray[DTYPE_t] c12p=np.array([0.,0.,0.]), np.ndarray[DTYPE_t] c13p=np.array([0.,0.,0.]), np.ndarray[DTYPE_t] c14p=np.array([0.,0.,0.]), 
+         np.ndarray[DTYPE_t] c15p=np.array([0.,0.,0.]), np.ndarray[DTYPE_t] c1n=np.array([0.,0.,0.]), np.ndarray[DTYPE_t] c3n=np.array([0.,0.,0.]), 
+         np.ndarray[DTYPE_t] c4n=np.array([0.,0.,0.]), np.ndarray[DTYPE_t] c5n=np.array([0.,0.,0.]), np.ndarray[DTYPE_t] c6n=np.array([0.,0.,0.]), 
+         np.ndarray[DTYPE_t] c7n=np.array([0.,0.,0.]), np.ndarray[DTYPE_t] c8n=np.array([0.,0.,0.]), np.ndarray[DTYPE_t] c9n=np.array([0.,0.,0.]),
+         np.ndarray[DTYPE_t] c10n=np.array([0.,0.,0.]), np.ndarray[DTYPE_t] c11n=np.array([0.,0.,0.]), np.ndarray[DTYPE_t] c12n=np.array([0.,0.,0.]), 
+         np.ndarray[DTYPE_t] c13n=np.array([0.,0.,0.]), np.ndarray[DTYPE_t] c14n=np.array([0.,0.,0.]), np.ndarray[DTYPE_t] c15n=np.array([0.,0.,0.]), 
+         DTYPE_t v_lag=220., DTYPE_t v_rms=220., DTYPE_t v_esc=544., str element='xenon', DTYPE_t rho_x=0.3, DTYPE_t c_scale=c_scale_global, bool GF=False):
     """
     Differential recoil energy spectrum in counts/keV/kg/sec
 
@@ -85,7 +95,7 @@ def dRdQ(np.ndarray[DTYPE_t] Er, DTYPE_t mass=50., np.ndarray[DTYPE_t] c1p=np.ar
     :type c_scale: ``float``
 
     :param v_lag:
-      Velocity of the solar system with respect to the Milky Way in km/s.
+      Velocity of the solar system with respect to the Milky Way in km/s.
       *Optional*, default to 220.
     :type v_lag: ``float``
     
@@ -163,8 +173,12 @@ def dRdQ(np.ndarray[DTYPE_t] Er, DTYPE_t mass=50., np.ndarray[DTYPE_t] c1p=np.ar
         ff_MPhiPP_q4 = formgenNR.factor_MPhiPP(element_name,y_harm, (c3p[1]*c1p[0]+c3p[0]*c1p[1]+c12p[1]*c11p[0]/4.+c12p[0]*c11p[1]/4.)*mN**2./mass**2.-c15p[0]*c11p[0]/4., (c3p[1]*c1n[0]+c3p[0]*c1n[1]+c12p[1]*c11n[0]/4.+c12p[0]*c11n[1]/4.)*mN**2./mass**2.-c15p[0]*c11n[0]/4., (c3n[1]*c1p[0]+c3n[0]*c1p[1]+c12n[1]*c11p[0]/4.+c12n[0]*c11p[1]/4.)*mN**2./mass**2.-c15n[0]*c11p[0]/4., (c3n[1]*c1n[0]+c3n[0]*c1n[1]+c12n[1]*c11n[0]/4.+c12n[0]*c11n[1]/4.)*mN**2./mass**2.-c15n[0]*c11n[0]/4.)
         ff_SigPDelta_q2 = formgenNR.factor_SigPDelta(element_name,y_harm, (c5p[0]*c4p[0]-c8p[0]*c9p[0])/4., (c5p[0]*c4n[0]-c8p[0]*c9n[0])/4., (c5n[0]*c4p[0]-c8n[0]*c9p[0])/4., (c5n[0]*c4n[0]-c8n[0]*c9n[0])/4.)
         ff_SigPDelta_q4 = formgenNR.factor_SigPDelta(element_name,y_harm, (c5p[1]*c4p[0]+c5p[0]*c4p[1]-c8p[1]*c9p[0]-c8p[0]*c9p[1])/4.*mN**2/mass**2, (c5p[1]*c4n[0]+c5p[0]*c4n[1]-c8p[1]*c9n[0]-c8p[0]*c9n[1])/4.*mN**2/mass**2, (c5n[1]*c4p[0]+c5n[0]*c4p[1]-c8n[1]*c9p[0]-c8n[0]*c9p[1])/4.*mN**2/mass**2, (c5n[1]*c4n[0]+c5n[0]*c4n[1]-c8n[1]*c9n[0]-c8n[0]*c9n[1])/4.*mN**2/mass**2)
-        val_eta = eta(v_min,v_esc,v_rms,v_lag)
-        val_zeta = zeta(v_min,v_esc,v_rms,v_lag)
+        if not GF:        
+            val_eta = eta(v_min,v_esc,v_rms,v_lag)
+            val_zeta = zeta(v_min,v_esc,v_rms,v_lag)
+        elif GF:
+            val_eta = eta_GF(v_min, time)
+            val_zeta = zeta_GF(v_min, time)
         tot = v_independent * ( (ff_M_std + ff_SigPP_std + ff_SigP_std + qsq/mN**2.*(ff_M_q2 + ff_SigPP_q2 + ff_SigP_q2 + ff_PhiPP_q2 + ff_Delta_q2 + ff_MPhiPP_q2 + ff_SigPDelta_q2) + qsq**2./mN**4.*(ff_M_q4 + ff_SigPP_q4 + ff_SigP_q4 + ff_PhiPP_q4 + ff_Delta_q4 + ff_MPhiPP_q4 + ff_SigPDelta_q4))*val_eta + (ff_M_v2 + ff_SigPP_v2 + ff_SigP_v2 + qsq/mN**2.*(ff_M_v2q2 + ff_SigPP_v2q2 + ff_SigP_v2q2))*val_zeta )
         out[i] = tot
     return out
@@ -211,12 +225,13 @@ def R(object efficiency_fn, DTYPE_t mass=50., np.ndarray[DTYPE_t] c1p=np.array([
     cdef DTYPE_t expQmax = log10(Qmax)
     cdef DTYPE_t expQstep = (expQmax - expQmin)/(npoints - 1)
     cdef np.ndarray[DTYPE_t] Qs = np.empty(npoints,dtype=float)
+    cdef DTYPE_t time = 0.
 
     for i in xrange(npoints):
         expQ = expQmin + i*expQstep
         Qs[i] = 10**expQ
         
-    cdef np.ndarray[DTYPE_t] dRdQs = dRdQ(Qs, v_lag=v_lag, v_rms=v_rms, v_esc=v_esc, mass=mass, c1p=c1p, c3p=c3p, c4p=c4p, c5p=c5p, c6p=c6p, c7p=c7p, c8p=c8p, c9p=c9p, c10p=c10p, c11p=c11p, c12p=c12p, c13p=c13p, c14p=c14p, c15p=c15p, c1n=c1n, c3n=c3n, c4n=c4n, c5n=c5n, c6n=c6n, c7n=c7n, c8n=c8n, c9n=c9n, c10n=c10n, c11n=c11n, c12n=c12n, c13n=c13n, c14n=c14n, c15n=c15n, element=element, rho_x=rho_x, c_scale=c_scale) * efficiency_fn(Qs)
+    cdef np.ndarray[DTYPE_t] dRdQs = dRdQ(Qs, time, v_lag=v_lag, v_rms=v_rms, v_esc=v_esc, mass=mass, c1p=c1p, c3p=c3p, c4p=c4p, c5p=c5p, c6p=c6p, c7p=c7p, c8p=c8p, c9p=c9p, c10p=c10p, c11p=c11p, c12p=c12p, c13p=c13p, c14p=c14p, c15p=c15p, c1n=c1n, c3n=c3n, c4n=c4n, c5n=c5n, c6n=c6n, c7n=c7n, c8n=c8n, c9n=c9n, c10n=c10n, c11n=c11n, c12n=c12n, c13n=c13n, c14n=c14n, c15n=c15n, element=element, rho_x=rho_x, c_scale=c_scale, GF=False) * efficiency_fn(Qs)
     result = trapz(dRdQs,Qs)
     return result
 
@@ -239,6 +254,7 @@ def loglikelihood(np.ndarray[DTYPE_t] Q, object efficiency_fn, DTYPE_t mass=50.,
     cdef DTYPE_t Nexp
     cdef DTYPE_t tot = 0.
     cdef DTYPE_t Tobs = exposure * 24. * 3600. * 365.
+    cdef DTYPE_t time = 0.
    
     cdef DTYPE_t Rate = R(efficiency_fn, mass=mass, v_rms=v_rms, v_lag=v_lag, v_esc=v_esc, rho_x=rho_x, c_scale=c_scale, c1p=c1p, c3p=c3p, c4p=c4p, c5p=c5p, c6p=c6p, c7p=c7p, c8p=c8p, c9p=c9p, c10p=c10p, c11p=c11p, c12p=c12p, c13p=c13p, c14p=c14p, c15p=c15p, c1n=c1n, c3n=c3n, c4n=c4n, c5n=c5n, c6n=c6n, c7n=c7n, c8n=c8n, c9n=c9n, c10n=c10n, c11n=c11n, c12n=c12n, c13n=c13n, c14n=c14n, c15n=c15n, Qmin=Qmin, Qmax=Qmax, element=element)
 
@@ -248,7 +264,7 @@ def loglikelihood(np.ndarray[DTYPE_t] Q, object efficiency_fn, DTYPE_t mass=50.,
     tot += Nevents * log(Nexp) - Nexp
     if energy_resolution:
         tot -= Nevents * log(Rate) 
-        out = dRdQ(Q, mass=mass, v_lag=v_lag, v_rms=v_rms, v_esc= v_esc, rho_x=rho_x, c_scale=c_scale, element=element, c1p=c1p, c3p=c3p, c4p=c4p, c5p=c5p, c6p=c6p, c7p=c7p, c8p=c8p, c9p=c9p, c10p=c10p, c11p=c11p, c12p=c12p, c13p=c13p, c14p=c14p, c15p=c15p, c1n=c1n, c3n=c3n, c4n=c4n, c5n=c5n, c6n=c6n, c7n=c7n, c8n=c8n, c9n=c9n, c10n=c10n, c11n=c11n, c12n=c12n, c13n=c13n, c14n=c14n, c15n=c15n) * efficiency_fn(Q)
+        out = dRdQ(Q, time, mass=mass, v_lag=v_lag, v_rms=v_rms, v_esc= v_esc, rho_x=rho_x, c_scale=c_scale, element=element, c1p=c1p, c3p=c3p, c4p=c4p, c5p=c5p, c6p=c6p, c7p=c7p, c8p=c8p, c9p=c9p, c10p=c10p, c11p=c11p, c12p=c12p, c13p=c13p, c14p=c14p, c15p=c15p, c1n=c1n, c3n=c3n, c4n=c4n, c5n=c5n, c6n=c6n, c7n=c7n, c8n=c8n, c9n=c9n, c10n=c10n, c11n=c11n, c12n=c12n, c13n=c13n, c14n=c14n, c15n=c15n, GF=False) * efficiency_fn(Q)
         
     
         for i in range(Nevents):
