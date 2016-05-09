@@ -49,9 +49,15 @@ parser.add_argument('--evtol',type=float, default=evidence_tolerance)
 parser.add_argument('--seff',type=float, default=sampling_efficiency)
 parser.add_argument('--resume', action='store_true')
 parser.add_argument('--base', default=basename)
-parser.add_argument('--time', default='True')
+parser.add_argument('--time', default='T')
+parser.add_argument('--GF', default='F')
 
 args = parser.parse_args()
+
+if args.GF == 'T':
+    GF = True
+elif args.GF == 'F':
+    GF = False
 
 experiments = []
 for i,experiment in enumerate(args.exps):
@@ -71,8 +77,8 @@ fixedfit_params = {}
 for i,par in enumerate(args.fixedfitnames):
     fixedfit_params[par] = args.fixedfitvals[i]
 
-simmodel = dmdd.UV_Model(args.simmodelname, args.simpars, fixed_params=fixedsim_params, time_info=args.time)
-fitmodel = dmdd.UV_Model(args.fitmodelname, args.fitpars, fixed_params=fixedfit_params, time_info=args.time)
+simmodel = dmdd.UV_Model(args.simmodelname, args.simpars, fixed_params=fixedsim_params, time_info=args.time, GF=GF)
+fitmodel = dmdd.UV_Model(args.fitmodelname, args.fitpars, fixed_params=fixedfit_params, time_info=args.time, GF=GF)
 
 param_values = {}
 for i,par in enumerate(args.simpars):
@@ -84,7 +90,7 @@ Haxton_run = dmdd.MultinestRun(args.simname, experiments, simmodel, param_values
                                 asimov=args.asimov, nbins_asimov=args.nasbin,
                                 n_live_points=args.nlive, evidence_tolerance=args.evtol,
                                 sampling_efficiency=args.seff, resume=args.resume, basename=args.base,
-                                time_info=args.time)
+                                time_info=args.time, GF=GF)
 if args.fit:
     Haxton_run.fit()
 if args.vis:
