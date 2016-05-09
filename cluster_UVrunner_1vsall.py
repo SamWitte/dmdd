@@ -15,17 +15,18 @@ parser.add_argument('--dosim', action='store_true')
 parser.add_argument('--dumplims', action='store_true')
 parser.add_argument('--limfile',default=None)
 parser.add_argument('--tag',default='')
-parser.add_argument('--masses',nargs='+',default=[500],type=float)
+parser.add_argument('--masses',nargs='+',default=[50],type=float)
 parser.add_argument('--ngroups', type=int, default=512)
 parser.add_argument('--nsimgroups', type=int, default=512)
-parser.add_argument('--nsim', type=int, default=50)
+parser.add_argument('--nsim', type=int, default=1)
 parser.add_argument('--startsim', type=int, default=1)
-parser.add_argument('--nfit', type=int, default=50)
+parser.add_argument('--nfit', type=int, default=1)
 parser.add_argument('--startfit', type=int, default=1)
 parser.add_argument('--prior',default='logflat')
-parser.add_argument('--experiments',nargs='+',default=['XeG3'])#['F','Ge', 'Xe','Ge Xe','I','Ge Xe I','Ge Xe F'],['Ilo','Xelo', 'Xehi','Xewide'],['Ar','Ge Xe Ar'],['He', 'Na', 'Ge','Ge He','Ge Na']
-parser.add_argument('--path',default='/home/switte/dmdd/')
+parser.add_argument('--experiments',nargs='+',default=['Xe'])#['F','Ge', 'Xe','Ge Xe','I','Ge Xe I','Ge Xe F'],['Ilo','Xelo', 'Xehi','Xewide'],['Ar','Ge Xe Ar'],['He', 'Na', 'Ge','Ge He','Ge Na']
+parser.add_argument('--path',default='/Users/SamWitte/Desktop/dmdd/')
 parser.add_argument('--time',default='T')
+parser.add_argument('--GF', default='T')
 #'/Users/verag/Research/Repositories/dmdd_2014/scripts/' #macbook
 
 
@@ -81,7 +82,7 @@ ALLMODELS = [SI_Higgs, millicharge, SD_flavoruniversal, SD_Zmediated, SD_Moira, 
 
 MODELS1 = [SI_Higgs, anapole]
 
-SIMMODELS = [anapole] #[SI_Higgs,elecdip_heavy,elecdip_0]
+SIMMODELS = [SI_Higgs] #[SI_Higgs,elecdip_heavy,elecdip_0]
 FITMODELS = MODELS1
 
 
@@ -134,11 +135,13 @@ if DO_SIM:
                 sigma_name = simmod.param_names[1]
                 for i in range(STARTSIM,NSIM+STARTSIM):
                     simname='sim%d' % i
-                    cmd = 'cd '+ SCRIPTS_PATH + '\n' + 'python UVrunner.py --simname {} --simpars mass {} --parvals {} {:.16f} -e {}'.format(simname, sigma_name, mass, 
+                    cmd = 'cd '+ SCRIPTS_PATH + '\n' + 'python UVrunner.py --simname {} --simpars mass {} --parvals {} {:.16f} -e {} --GF {}'.format(simname, sigma_name, mass, 
                                                                                                                                                        sigma_vals[mass][simmod.name],
-                                                                                                                                                       experiment)
+                                                                                                                                                       experiment, args.GF)
                     if len(simmod.fixed_params) > 0:
                         cmd += ' --fixedsimnames {} --fixedsimvals {}'.format(simmod.fixed_params.keys()[0], simmod.fixed_params.values()[0])
+
+                    
                     cmds.append(cmd)
                     count += 1
 
@@ -175,12 +178,11 @@ if DO_FIT:
 
                 for i in range(STARTFIT,NFIT+STARTFIT):
                     simname='sim%d' % i
-                    cmd = 'cd ' + SCRIPTS_PATH + '\n' + 'python UVrunner.py --fit --vis --simmodelname {} --simname {} --simpars mass {} --parvals {} {:.16f} -e {} --time {}'.format(simmod.name,
-                                                                                                                                                 simname, 
-                                                                                                                                                 sigma_name, 
-                                                                                                                                                 mass, 
-                                                                                                                                                 sigma_vals[mass][simmod.name], 
-                                                                                                                                                 experiment, args.time)
+                    cmd = 'cd ' + SCRIPTS_PATH + '\n' +\
+                            'python UVrunner.py --fit --vis --simmodelname {} --simname {} --simpars mass {} --parvals {} {:.16f} -e {} --time {} --GF {}'.format(simmod.name, simname, 
+                                                                                                    sigma_name, mass, 
+                                                                                                    sigma_vals[mass][simmod.name], 
+                                                                                                    experiment, args.time, args.GF)
                     if len(simmod.fixed_params) > 0:
                         cmd += ' --fixedsimnames {} --fixedsimvals {}'.format(simmod.fixed_params.keys()[0], simmod.fixed_params.values()[0])
                         
