@@ -37,7 +37,7 @@ eltshort = const.ELEMENT_INFO
 @cython.boundscheck(False)
 def dRdQM(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t v_rms, DTYPE_t v_lag, DTYPE_t v_esc, DTYPE_t mx, DTYPE_t sigp,
           DTYPE_t std_coeff, DTYPE_t v2_coeff, DTYPE_t q2_coeff, DTYPE_t v2q2_coeff, DTYPE_t q4_coeff, DTYPE_t fnfp, 
-          str elt, DTYPE_t rho_x=0.3, bool GF=False):
+          str elt, DTYPE_t rho_x=0.3, bool GF=False, bool time_info=False):
     """
     This is the rate from the M nuclear response alone in units of cts/keV/kg/s. This is functionally equivalent to the standard spin-independent rate.
 
@@ -103,8 +103,8 @@ def dRdQM(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t v_rms, DTYPE_t v_lag, DT
             val_eta = eta(v_min,v_esc,v_rms,v_lag)
             val_zeta = zeta(v_min,v_esc,v_rms,v_lag)
         elif GF:
-            val_eta = eta_GF(v_min, time)
-            val_zeta = zeta_GF(v_min, time)
+            val_eta = eta_GF(v_min, time, time_info)
+            val_zeta = zeta_GF(v_min, time, time_info)
         tot = v_independent * ( (std_coeff + q2_coeff*qsq/q_scale**2. + q4_coeff*qsq**2./q_scale**4.)*val_eta + (v2_coeff + v2q2_coeff*qsq/q_scale**2.)*val_zeta ) * ff
         out[i] = tot
     return out
@@ -112,7 +112,7 @@ def dRdQM(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t v_rms, DTYPE_t v_lag, DT
 # Sigma'' response
 @cython.boundscheck(False)
 def dRdQSigPP(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t v_rms, DTYPE_t v_lag, DTYPE_t v_esc, DTYPE_t mx, DTYPE_t sigp, DTYPE_t std_coeff, 
-              DTYPE_t v2_coeff, DTYPE_t q2_coeff, DTYPE_t v2q2_coeff, DTYPE_t q4_coeff, DTYPE_t fnfp, str elt, DTYPE_t rho_x=0.3, bool GF=False):
+              DTYPE_t v2_coeff, DTYPE_t q2_coeff, DTYPE_t v2q2_coeff, DTYPE_t q4_coeff, DTYPE_t fnfp, str elt, DTYPE_t rho_x=0.3, bool GF=False, bool time_info=False):
     """
     This is the rate from the Sigma'' response in units of cts/keV/kg/s.
 
@@ -141,8 +141,8 @@ def dRdQSigPP(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t v_rms, DTYPE_t v_lag
             val_eta = eta(v_min,v_esc,v_rms,v_lag)
             val_zeta = zeta(v_min,v_esc,v_rms,v_lag)
         elif GF:
-            val_eta = eta_GF(v_min, time)
-            val_zeta = zeta_GF(v_min, time)
+            val_eta = eta_GF(v_min, time, time_info)
+            val_zeta = zeta_GF(v_min, time, time_info)
         tot = v_independent * ( (std_coeff + q2_coeff*qsq/q_scale**2. + q4_coeff*qsq**2./q_scale**4.)*val_eta + (v2_coeff + v2q2_coeff*qsq/q_scale**2.)*val_zeta ) * ff
         out[i] = tot
     return out
@@ -150,7 +150,7 @@ def dRdQSigPP(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t v_rms, DTYPE_t v_lag
 # Sigma' response
 @cython.boundscheck(False)
 def dRdQSigP(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t v_rms, DTYPE_t v_lag, DTYPE_t v_esc, DTYPE_t mx, DTYPE_t sigp, DTYPE_t std_coeff,
-             DTYPE_t v2_coeff, DTYPE_t q2_coeff, DTYPE_t v2q2_coeff, DTYPE_t q4_coeff, DTYPE_t fnfp, str elt, DTYPE_t rho_x=0.3, bool GF=False):
+             DTYPE_t v2_coeff, DTYPE_t q2_coeff, DTYPE_t v2q2_coeff, DTYPE_t q4_coeff, DTYPE_t fnfp, str elt, DTYPE_t rho_x=0.3, bool GF=False, bool time_info=False):
     """
     This is the rate from the Sigma' response in units of cts/keV/kg/s.
 
@@ -179,8 +179,8 @@ def dRdQSigP(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t v_rms, DTYPE_t v_lag,
             val_eta = eta(v_min,v_esc,v_rms,v_lag)
             val_zeta = zeta(v_min,v_esc,v_rms,v_lag)
         elif GF:
-            val_eta = eta_GF(v_min, time)
-            val_zeta = zeta_GF(v_min, time)
+            val_eta = eta_GF(v_min, time, time_info)
+            val_zeta = zeta_GF(v_min, time, time_info)
         tot = v_independent * ( (std_coeff + q2_coeff*qsq/q_scale**2. + q4_coeff*qsq**2./q_scale**4.)*val_eta + (v2_coeff + v2q2_coeff*qsq/q_scale**2.)*val_zeta ) * ff
         out[i] = tot
     return out
@@ -188,7 +188,7 @@ def dRdQSigP(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t v_rms, DTYPE_t v_lag,
 # Phi'' response
 @cython.boundscheck(False)
 def dRdQPhiPP(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t v_rms, DTYPE_t v_lag, DTYPE_t v_esc, DTYPE_t mx, DTYPE_t sigp, DTYPE_t v2_coeff, DTYPE_t q2_coeff, 
-              DTYPE_t v2q2_coeff, DTYPE_t q4_coeff, DTYPE_t fnfp, str elt, DTYPE_t rho_x=0.3, bool GF=False):
+              DTYPE_t v2q2_coeff, DTYPE_t q4_coeff, DTYPE_t fnfp, str elt, DTYPE_t rho_x=0.3, bool GF=False, bool time_info=False):
     """
     This is the rate from the Phi'' response in units of cts/keV/kg/s.
 
@@ -217,8 +217,8 @@ def dRdQPhiPP(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t v_rms, DTYPE_t v_lag
             val_eta = eta(v_min,v_esc,v_rms,v_lag)
             val_zeta = zeta(v_min,v_esc,v_rms,v_lag)
         elif GF:
-            val_eta = eta_GF(v_min, time)
-            val_zeta = zeta_GF(v_min, time)
+            val_eta = eta_GF(v_min, time, time_info)
+            val_zeta = zeta_GF(v_min, time, time_info)
         tot = v_independent * ( (q2_coeff*qsq/q_scale**2. + q4_coeff*qsq**2./q_scale**4.)*val_eta + (v2_coeff + v2q2_coeff*qsq/q_scale**2.)*val_zeta ) * ff
         out[i] = tot
     return out
@@ -226,7 +226,7 @@ def dRdQPhiPP(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t v_rms, DTYPE_t v_lag
 # Delta response
 @cython.boundscheck(False)
 def dRdQDelta(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t v_rms, DTYPE_t v_lag, DTYPE_t v_esc, DTYPE_t mx, DTYPE_t sigp, DTYPE_t v2_coeff, 
-              DTYPE_t q2_coeff, DTYPE_t v2q2_coeff, DTYPE_t q4_coeff, DTYPE_t fnfp, str elt, DTYPE_t rho_x=0.3, bool GF=False):
+              DTYPE_t q2_coeff, DTYPE_t v2q2_coeff, DTYPE_t q4_coeff, DTYPE_t fnfp, str elt, DTYPE_t rho_x=0.3, bool GF=False, bool time_info=False):
     """
     This is the rate from the Delta response in units of cts/keV/kg/s.
 
@@ -255,8 +255,8 @@ def dRdQDelta(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t v_rms, DTYPE_t v_lag
             val_eta = eta(v_min,v_esc,v_rms,v_lag)
             val_zeta = zeta(v_min,v_esc,v_rms,v_lag)
         elif GF:
-            val_eta = eta_GF(v_min, time)
-            val_zeta = zeta_GF(v_min, time)
+            val_eta = eta_GF(v_min, time, time_info)
+            val_zeta = zeta_GF(v_min, time, time_info)
         tot = v_independent * ( (q2_coeff*qsq/q_scale**2. + q4_coeff*qsq**2./q_scale**4.)*val_eta + (v2_coeff + v2q2_coeff*qsq/q_scale**2.)*val_zeta ) * ff
         out[i] = tot
     return out
@@ -264,7 +264,7 @@ def dRdQDelta(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t v_rms, DTYPE_t v_lag
 # MPhi'' response
 @cython.boundscheck(False)
 def dRdQMPhiPP(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t v_rms, DTYPE_t v_lag, DTYPE_t v_esc, DTYPE_t mx, DTYPE_t sigp, DTYPE_t v2_coeff, 
-               DTYPE_t q2_coeff, DTYPE_t v2q2_coeff, DTYPE_t q4_coeff, DTYPE_t fnfp, str elt, DTYPE_t rho_x=0.3, bool GF=False):
+               DTYPE_t q2_coeff, DTYPE_t v2q2_coeff, DTYPE_t q4_coeff, DTYPE_t fnfp, str elt, DTYPE_t rho_x=0.3, bool GF=False, bool time_info=False):
     """
     This is the rate from the M-Phi'' (interference) response in units of cts/keV/kg/s.
 
@@ -293,8 +293,8 @@ def dRdQMPhiPP(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t v_rms, DTYPE_t v_la
             val_eta = eta(v_min,v_esc,v_rms,v_lag)
             val_zeta = zeta(v_min,v_esc,v_rms,v_lag)
         elif GF:
-            val_eta = eta_GF(v_min, time)
-            val_zeta = zeta_GF(v_min, time)
+            val_eta = eta_GF(v_min, time, time_info)
+            val_zeta = zeta_GF(v_min, time, time_info)
         tot = v_independent * ( (q2_coeff*qsq/q_scale**2. + q4_coeff*qsq**2./q_scale**4.)*val_eta + (v2_coeff + v2q2_coeff*qsq/q_scale**2.)*val_zeta ) * ff
         out[i] = tot
     return out
@@ -302,7 +302,7 @@ def dRdQMPhiPP(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t v_rms, DTYPE_t v_la
 # Sig'Delta response
 @cython.boundscheck(False)
 def dRdQSigPDelta(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t v_rms, DTYPE_t v_lag, DTYPE_t v_esc, DTYPE_t mx, DTYPE_t sigp, DTYPE_t v2_coeff, 
-                  DTYPE_t q2_coeff, DTYPE_t v2q2_coeff, DTYPE_t q4_coeff, DTYPE_t fnfp, str elt, DTYPE_t rho_x=0.3, bool GF=False):
+                  DTYPE_t q2_coeff, DTYPE_t v2q2_coeff, DTYPE_t q4_coeff, DTYPE_t fnfp, str elt, DTYPE_t rho_x=0.3, bool GF=False, bool time_info=False):
     """
     This is the rate from the Sigma'-Delta (interference) response in units of cts/keV/kg/s.
 
@@ -345,7 +345,7 @@ def dRdQ(np.ndarray[DTYPE_t] Q, DTYPE_t time, DTYPE_t mass=50.,
          DTYPE_t v2co_M=0., DTYPE_t v2co_SigPP=0., DTYPE_t v2co_SigP=0., DTYPE_t v2co_PhiPP=0., DTYPE_t v2co_Delta=0., DTYPE_t v2co_MPhiPP=0., DTYPE_t v2co_SigPDelta=0.,
          DTYPE_t v2q2co_M=0., DTYPE_t v2q2co_SigPP=0., DTYPE_t v2q2co_SigP=0., DTYPE_t v2q2co_PhiPP=0., DTYPE_t v2q2co_Delta=0., DTYPE_t v2q2co_MPhiPP=0., DTYPE_t v2q2co_SigPDelta=0.,
          DTYPE_t v_lag=220., DTYPE_t v_rms=220., DTYPE_t v_esc=544., DTYPE_t rho_x=0.3,
-         str element='xenon', bool GF=False):
+         str element='xenon', bool GF=False, bool time_info=False):
     """
     differential rate for a particular EFT response. Invoking multiple responses is hazardous since some responses interfere. Use rate_genNR for more complicated EFT scenarios.
     
@@ -427,19 +427,19 @@ def dRdQ(np.ndarray[DTYPE_t] Q, DTYPE_t time, DTYPE_t mass=50.,
     cdef np.ndarray[DTYPE_t] sum
     sum = np.zeros(len(Q))
     if sigma_M!= 0.:
-        sum += dRdQM(Q, time, v_rms, v_lag, v_esc, mass, sigma_M, stdco_M, v2co_M, q2co_M, v2q2co_M, q4co_M, fnfp_M, element, rho_x=rho_x, GF=GF)
+        sum += dRdQM(Q, time, v_rms, v_lag, v_esc, mass, sigma_M, stdco_M, v2co_M, q2co_M, v2q2co_M, q4co_M, fnfp_M, element, rho_x=rho_x, GF=GF, time_info=time_info)
     if sigma_SigPP!= 0.:
-        sum += dRdQSigPP(Q, time, v_rms, v_lag, v_esc, mass, sigma_SigPP, stdco_SigPP, v2co_SigPP, q2co_SigPP, v2q2co_SigPP, q4co_SigPP, fnfp_SigPP, element, rho_x=rho_x, GF=GF)
+        sum += dRdQSigPP(Q, time, v_rms, v_lag, v_esc, mass, sigma_SigPP, stdco_SigPP, v2co_SigPP, q2co_SigPP, v2q2co_SigPP, q4co_SigPP, fnfp_SigPP, element, rho_x=rho_x, GF=GF, time_info=time_info)
     if sigma_SigP!= 0.:
-        sum += dRdQSigP(Q, time, v_rms, v_lag, v_esc, mass, sigma_SigP, stdco_SigP, v2co_SigP, q2co_SigP, v2q2co_SigP, q4co_SigP, fnfp_SigP, element, rho_x=rho_x, GF=GF)
+        sum += dRdQSigP(Q, time, v_rms, v_lag, v_esc, mass, sigma_SigP, stdco_SigP, v2co_SigP, q2co_SigP, v2q2co_SigP, q4co_SigP, fnfp_SigP, element, rho_x=rho_x, GF=GF, time_info=time_info)
     if sigma_PhiPP!= 0.:
-        sum += dRdQPhiPP(Q, time, v_rms, v_lag, v_esc, mass, sigma_PhiPP, v2co_PhiPP, q2co_PhiPP, v2q2co_PhiPP, q4co_PhiPP, fnfp_PhiPP, element, rho_x=rho_x, GF=GF)
+        sum += dRdQPhiPP(Q, time, v_rms, v_lag, v_esc, mass, sigma_PhiPP, v2co_PhiPP, q2co_PhiPP, v2q2co_PhiPP, q4co_PhiPP, fnfp_PhiPP, element, rho_x=rho_x, GF=GF, time_info=time_info)
     if sigma_Delta!= 0.:
-        sum += dRdQDelta(Q, time, v_rms, v_lag, v_esc, mass, sigma_Delta, v2co_Delta, q2co_Delta, v2q2co_Delta, q4co_Delta, fnfp_Delta, element, rho_x=rho_x, GF=GF)
+        sum += dRdQDelta(Q, time, v_rms, v_lag, v_esc, mass, sigma_Delta, v2co_Delta, q2co_Delta, v2q2co_Delta, q4co_Delta, fnfp_Delta, element, rho_x=rho_x, GF=GF, time_info=time_info)
     if sigma_MPhiPP!= 0.:
-        sum += dRdQMPhiPP(Q, time, v_rms, v_lag, v_esc, mass, sigma_MPhiPP, v2co_MPhiPP, q2co_MPhiPP, v2q2co_MPhiPP, q4co_MPhiPP, fnfp_MPhiPP, element, rho_x=rho_x, GF=GF)
+        sum += dRdQMPhiPP(Q, time, v_rms, v_lag, v_esc, mass, sigma_MPhiPP, v2co_MPhiPP, q2co_MPhiPP, v2q2co_MPhiPP, q4co_MPhiPP, fnfp_MPhiPP, element, rho_x=rho_x, GF=GF, time_info=time_info)
     if sigma_SigPDelta!= 0.:
-        sum += dRdQSigPDelta(Q, time, v_rms, v_lag, v_esc, mass, sigma_SigPDelta, v2co_SigPDelta, q2co_SigPDelta, v2q2co_SigPDelta, q4co_SigPDelta, fnfp_SigPDelta, element, rho_x=rho_x, GF=GF)
+        sum += dRdQSigPDelta(Q, time, v_rms, v_lag, v_esc, mass, sigma_SigPDelta, v2co_SigPDelta, q2co_SigPDelta, v2q2co_SigPDelta, q4co_SigPDelta, fnfp_SigPDelta, element, rho_x=rho_x, GF=GF, time_info=time_info)
     return sum
     
 
@@ -454,7 +454,7 @@ def R(object efficiency_fn, DTYPE_t mass=50.,
          DTYPE_t v2co_M=0., DTYPE_t v2co_SigPP=0., DTYPE_t v2co_SigP=0., DTYPE_t v2co_PhiPP=0., DTYPE_t v2co_Delta=0., DTYPE_t v2co_MPhiPP=0., DTYPE_t v2co_SigPDelta=0.,
          DTYPE_t v2q2co_M=0., DTYPE_t v2q2co_SigPP=0., DTYPE_t v2q2co_SigP=0., DTYPE_t v2q2co_PhiPP=0., DTYPE_t v2q2co_Delta=0., DTYPE_t v2q2co_MPhiPP=0., DTYPE_t v2q2co_SigPDelta=0.,
          DTYPE_t v_lag=220., DTYPE_t v_rms=220., DTYPE_t v_esc=544., DTYPE_t rho_x=0.3,
-         str element='xenon', DTYPE_t Qmin=2., DTYPE_t Qmax=30.):
+         str element='xenon', DTYPE_t Qmin=2., DTYPE_t Qmax=30., bool GF=False, bool time_info=False):
     """
     Theoretical total integrated recoil-energy rate.
 
@@ -508,7 +508,7 @@ def R(object efficiency_fn, DTYPE_t mass=50.,
           q2co_M=q2co_M,  q2co_SigPP=q2co_SigPP,  q2co_SigP=q2co_SigP,  q2co_PhiPP=q2co_PhiPP,  q2co_Delta=q2co_Delta,  q2co_MPhiPP=q2co_MPhiPP,  q2co_SigPDelta=q2co_SigPDelta,
           q4co_M=q4co_M,  q4co_SigPP=q4co_SigPP,  q4co_SigP=q4co_SigP,  q4co_PhiPP=q4co_PhiPP,  q4co_Delta=q4co_Delta,  q4co_MPhiPP=q4co_MPhiPP,  q4co_SigPDelta=q4co_SigPDelta,
           v2co_M=v2co_M,  v2co_SigPP=v2co_SigPP,  v2co_SigP=v2co_SigP,  v2co_PhiPP=v2co_PhiPP,  v2co_Delta=v2co_Delta,  v2co_MPhiPP=v2co_MPhiPP,  v2co_SigPDelta=v2co_SigPDelta,
-          v2q2co_M=v2q2co_M,  v2q2co_SigPP=v2q2co_SigPP,  v2q2co_SigP=v2q2co_SigP,  v2q2co_PhiPP=v2q2co_PhiPP,  v2q2co_Delta=v2q2co_Delta,  v2q2co_MPhiPP=v2q2co_MPhiPP,  v2q2co_SigPDelta=v2q2co_SigPDelta, GF=False) * efficiency_fn(Qs)
+          v2q2co_M=v2q2co_M,  v2q2co_SigPP=v2q2co_SigPP,  v2q2co_SigP=v2q2co_SigP,  v2q2co_PhiPP=v2q2co_PhiPP,  v2q2co_Delta=v2q2co_Delta,  v2q2co_MPhiPP=v2q2co_MPhiPP,  v2q2co_SigPDelta=v2q2co_SigPDelta, GF=GF, time_info=time_info) * efficiency_fn(Qs)
     result = trapz(dRdQs,Qs)
     return result
 
@@ -524,7 +524,7 @@ def loglikelihood(np.ndarray[DTYPE_t] Q, object efficiency_fn, DTYPE_t mass=50.,
          DTYPE_t v2co_M=0., DTYPE_t v2co_SigPP=0., DTYPE_t v2co_SigP=0., DTYPE_t v2co_PhiPP=0., DTYPE_t v2co_Delta=0., DTYPE_t v2co_MPhiPP=0., DTYPE_t v2co_SigPDelta=0.,
          DTYPE_t v2q2co_M=0., DTYPE_t v2q2co_SigPP=0., DTYPE_t v2q2co_SigP=0., DTYPE_t v2q2co_PhiPP=0., DTYPE_t v2q2co_Delta=0., DTYPE_t v2q2co_MPhiPP=0., DTYPE_t v2q2co_SigPDelta=0.,
                   DTYPE_t v_lag=220., DTYPE_t v_rms=220., DTYPE_t v_esc=544., DTYPE_t rho_x=0.3,
-                  str element='xenon', DTYPE_t Qmin=2., DTYPE_t Qmax=30., DTYPE_t exposure=1., energy_resolution=True):
+                  str element='xenon', DTYPE_t Qmin=2., DTYPE_t Qmax=30., DTYPE_t exposure=1., energy_resolution=True, bool GF=False, bool time_info=False):
     """
     This is the main log(likelihood) for any combination of EFT responses.
     
@@ -550,7 +550,7 @@ def loglikelihood(np.ndarray[DTYPE_t] Q, object efficiency_fn, DTYPE_t mass=50.,
           q4co_M=q4co_M,  q4co_SigPP=q4co_SigPP,  q4co_SigP=q4co_SigP,  q4co_PhiPP=q4co_PhiPP,  q4co_Delta=q4co_Delta,  q4co_MPhiPP=q4co_MPhiPP,  q4co_SigPDelta=q4co_SigPDelta,
           v2co_M=v2co_M,  v2co_SigPP=v2co_SigPP,  v2co_SigP=v2co_SigP,  v2co_PhiPP=v2co_PhiPP,  v2co_Delta=v2co_Delta,  v2co_MPhiPP=v2co_MPhiPP,  v2co_SigPDelta=v2co_SigPDelta,
           v2q2co_M=v2q2co_M,  v2q2co_SigPP=v2q2co_SigPP,  v2q2co_SigP=v2q2co_SigP,  v2q2co_PhiPP=v2q2co_PhiPP,  v2q2co_Delta=v2q2co_Delta,  v2q2co_MPhiPP=v2q2co_MPhiPP,  v2q2co_SigPDelta=v2q2co_SigPDelta,
-          Qmin=Qmin, Qmax=Qmax, element=element)
+          Qmin=Qmin, Qmax=Qmax, element=element, GF=GF, time_info=time_info)
 
     Nexp = Rate * Tobs
     if Nevents==0 and Nexp==0.:
@@ -565,7 +565,7 @@ def loglikelihood(np.ndarray[DTYPE_t] Q, object efficiency_fn, DTYPE_t mass=50.,
           q2co_M=q2co_M,  q2co_SigPP=q2co_SigPP,  q2co_SigP=q2co_SigP,  q2co_PhiPP=q2co_PhiPP,  q2co_Delta=q2co_Delta,  q2co_MPhiPP=q2co_MPhiPP,  q2co_SigPDelta=q2co_SigPDelta,
           q4co_M=q4co_M,  q4co_SigPP=q4co_SigPP,  q4co_SigP=q4co_SigP,  q4co_PhiPP=q4co_PhiPP,  q4co_Delta=q4co_Delta,  q4co_MPhiPP=q4co_MPhiPP,  q4co_SigPDelta=q4co_SigPDelta,
           v2co_M=v2co_M,  v2co_SigPP=v2co_SigPP,  v2co_SigP=v2co_SigP,  v2co_PhiPP=v2co_PhiPP,  v2co_Delta=v2co_Delta,  v2co_MPhiPP=v2co_MPhiPP,  v2co_SigPDelta=v2co_SigPDelta,
-          v2q2co_M=v2q2co_M,  v2q2co_SigPP=v2q2co_SigPP,  v2q2co_SigP=v2q2co_SigP,  v2q2co_PhiPP=v2q2co_PhiPP,  v2q2co_Delta=v2q2co_Delta,  v2q2co_MPhiPP=v2q2co_MPhiPP,  v2q2co_SigPDelta=v2q2co_SigPDelta, GF=False) * efficiency_fn(Q)
+          v2q2co_M=v2q2co_M,  v2q2co_SigPP=v2q2co_SigPP,  v2q2co_SigP=v2q2co_SigP,  v2q2co_PhiPP=v2q2co_PhiPP,  v2q2co_Delta=v2q2co_Delta,  v2q2co_MPhiPP=v2q2co_MPhiPP,  v2q2co_SigPDelta=v2q2co_SigPDelta, GF=GF, time_info=time_info) * efficiency_fn(Q)
         
     
         for i in range(Nevents):
