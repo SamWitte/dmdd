@@ -480,8 +480,11 @@ class MultinestRun(object):
                 
         for sim in self.simulations:
             filename = self.chainspath + '/{}_theoryfitdata_{}.pdf'.format(self.sim_name, sim.experiment.name)
-            Qbins, Qhist, xerr, yerr, Qbins_theory, Qhist_theory, binsize, time_bins, Thist, txerr, tyerr, \
-            Tbins_theory, Thist_theory, t_binsize = sim.plot_data(make_plot=False, return_plot_items=True)
+            if self.time_info:
+                Qbins, Qhist, xerr, yerr, Qbins_theory, Qhist_theory, binsize, time_bins, Thist, txerr, tyerr, \
+                Tbins_theory, Thist_theory, t_binsize = sim.plot_data(make_plot=False, return_plot_items=True)
+            else:
+                Qbins, Qhist, xerr, yerr, Qbins_theory, Qhist_theory, binsize = sim.plot_data(make_plot=False, return_plot_items=True)
             
             fitmodel_dRdQ_params['element'] = sim.experiment.element
            
@@ -505,7 +508,7 @@ class MultinestRun(object):
                                     experiment=sim.experiment.name, labelfont=18, legendfont=17,titlefont=20, mass=self.param_values['mass'])
          
          
-        if True:
+        if self.time_info:
             for sim in self.simulations:
                 Ntot = sim.N
                 fitmodel_dRdQ_params['element'] = sim.experiment.element
@@ -660,12 +663,7 @@ class Simulation(object):
         self.silent = silent
         if not set(parvals.keys())==set(model.param_names):
             raise ValueError('Must pass parameter value dictionary corresponding exactly to model.param_names')
-        if time_info == 'T':
-            self.time_info = True
-            time_tag = 'With_Time'
-        elif time_info == 'F':
-            self.time_info = False
-            time_tag = 'No_Time'
+        
         
         
         self.model = model #underlying model
@@ -704,7 +702,15 @@ class Simulation(object):
             allpars[kw] = val
         dRdQ_params['element'] = experiment.element
         self.dRdQ_params = dRdQ_params
+       
+        if time_info == 'T':
+            self.time_info = True
+            time_tag = 'With_Time'
+        elif time_info == 'F':
+            self.time_info = False
+            time_tag = 'No_Time'
         
+        dRdQ_params['time_info'] = self.time_info
         dRdQ_params['GF'] = self.GF
         allpars['GF'] = self.GF        
         
@@ -967,8 +973,8 @@ class Simulation(object):
             txerr = Twidths
             tyerr = Thist**0.5
 
-            Tbins_theory = np.linspace(0.,1.,500)
-            Thist_theory = np.zeros(500)
+            Tbins_theory = np.linspace(0.,1.,100)
+            Thist_theory = np.zeros(100)
             
             for i in range(0, len(Tbins_theory)):
               
