@@ -100,7 +100,7 @@ def eta(DTYPE_t v_min, DTYPE_t v_esc, DTYPE_t v_rms, DTYPE_t v_lag):
     return res
 
 
-def eta_GF(DTYPE_t v_min, DTYPE_t time):
+def eta_GF(DTYPE_t v_min, DTYPE_t time, bool time_info):
     """
     Calculated only for v_esc = 533km/s, v_rms = v_lag = 220 km/s
     
@@ -110,18 +110,21 @@ def eta_GF(DTYPE_t v_min, DTYPE_t time):
     cdef DTYPE_t vmin_max=700.
 
     if v_min <= vmin_max:
-        res = 3. * 10.**5. * (interp1d(eta0_a0_tabbed[:,0], eta0_a0_tabbed[:,1])(v_min) + 
-            interp1d(eta0_a1_tabbed[:,0], eta0_a1_tabbed[:,1])(v_min) * cos(2. * np.pi * (time - 0.4178)) +
-            interp1d(eta0_b1_tabbed[:,0], eta0_b1_tabbed[:,1])(v_min) * sin(2. * np.pi * (time - 0.4178))) #+
+        if time_info:
+            res = 3. * 10.**5. * (interp1d(eta0_a0_tabbed[:,0], eta0_a0_tabbed[:,1])(v_min) + 
+                  interp1d(eta0_a1_tabbed[:,0], eta0_a1_tabbed[:,1])(v_min) * cos(2. * np.pi * (time - 0.4178)) +
+                  interp1d(eta0_b1_tabbed[:,0], eta0_b1_tabbed[:,1])(v_min) * sin(2. * np.pi * (time - 0.4178))) #+
 #            interp1d(eta0_a2_tabbed[:,0], eta0_a2_tabbed[:,1])(v_min) * cos(4. * np.pi * (time - 0.4178)) +
 #            interp1d(eta0_b2_tabbed[:,0], eta0_b2_tabbed[:,1])(v_min) * sin(4. * np.pi * (time - 0.4178)))
 #        res = 3. * 10.**5. * griddata(eta0_tabbed[:,0:2],eta0_tabbed[:,2],(v_min,time))
+        else:   
+            res = 3. * 10.**5. * (interp1d(eta0_a0_tabbed[:,0], eta0_a0_tabbed[:,1])(v_min))
     else:
         res = eta(v_min, 533., 220., 220.)
     
     return res
 
-def zeta_GF(DTYPE_t v_min, DTYPE_t time):
+def zeta_GF(DTYPE_t v_min, DTYPE_t time, bool time_info):
     """
     This is the correctly scaled velocity integral for a rate
     with no special velocity dependence.
@@ -132,11 +135,14 @@ def zeta_GF(DTYPE_t v_min, DTYPE_t time):
     cdef DTYPE_t vmin_max=700.
 
     if v_min <= vmin_max:
-        res = (interp1d(eta1_a0_tabbed[:,0], eta1_a0_tabbed[:,1])(v_min) + 
-            interp1d(eta1_a1_tabbed[:,0], eta1_a1_tabbed[:,1])(v_min) * cos(2. * np.pi * (time - 0.4178)) +
-            interp1d(eta1_b1_tabbed[:,0], eta1_b1_tabbed[:,1])(v_min) * sin(2. * np.pi * (time - 0.4178)) )#+
+        if time_info:
+            res = (interp1d(eta1_a0_tabbed[:,0], eta1_a0_tabbed[:,1])(v_min) + 
+                   interp1d(eta1_a1_tabbed[:,0], eta1_a1_tabbed[:,1])(v_min) * cos(2. * np.pi * (time - 0.4178)) +
+                   interp1d(eta1_b1_tabbed[:,0], eta1_b1_tabbed[:,1])(v_min) * sin(2. * np.pi * (time - 0.4178)))  / (3.*10**5.) #+
 #            interp1d(eta1_a2_tabbed[:,0], eta1_a2_tabbed[:,1])(v_min) * cos(4. * np.pi * (time - 0.4178)) +
 #            interp1d(eta1_b2_tabbed[:,0], eta1_b2_tabbed[:,1])(v_min) * sin(4. * np.pi * (time - 0.4178))) / (3.*10**5.) 
+        else:
+            res = interp1d(eta1_a0_tabbed[:,0], eta1_a0_tabbed[:,1])(v_min) / (3.*10**5.) 
     else:
         res = zeta(v_min, 533., 220., 220.)
 
