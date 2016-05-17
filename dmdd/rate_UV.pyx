@@ -993,7 +993,7 @@ def R(object efficiency_fn, DTYPE_t mass=50.,
                                           sigma_si= sigma_si, sigma_sd=sigma_sd, sigma_sd_neutron=sigma_sd_neutron, sigma_si_massless= sigma_si_massless, sigma_sd_massless=sigma_sd_massless,
                                           sigma_anapole=sigma_anapole, sigma_magdip=sigma_magdip, sigma_elecdip=sigma_elecdip, sigma_anapole_massless=sigma_anapole_massless, sigma_magdip_massless=sigma_magdip_massless, sigma_elecdip_massless=sigma_elecdip_massless,
                                           sigma_LS=sigma_LS, sigma_f1=sigma_f1, sigma_f2=sigma_f2, sigma_f3=sigma_f3, sigma_LS_massless=sigma_LS_massless, sigma_f1_massless=sigma_f1_massless, sigma_f2_massless=sigma_f2_massless, sigma_f3_massless=sigma_f3_massless,
-                                          GF=False, time_info=False) * efficiency_fn(Qs)
+                                          GF=GF, time_info=False) * efficiency_fn(Qs)
     result = trapz(dRdQs,Qs)
     return result
 
@@ -1137,7 +1137,7 @@ def loglikelihood(np.ndarray[DTYPE_t] Q, object efficiency_fn, DTYPE_t mass=50.,
                                           sigma_si_massless = sigma_si_massless, sigma_sd_massless=sigma_sd_massless,
                                           sigma_anapole_massless=sigma_anapole_massless, sigma_magdip_massless=sigma_magdip_massless, sigma_elecdip_massless=sigma_elecdip_massless,
                                           sigma_LS_massless=sigma_LS_massless, sigma_f1_massless=sigma_f1_massless, sigma_f2_massless=sigma_f2_massless, sigma_f3_massless=sigma_f3_massless,
-                                          Qmin=Qmin, Qmax=Qmax, element=element, GF=False, time_info=False)
+                                          Qmin=Qmin, Qmax=Qmax, element=element, GF=GF, time_info=False)
 
 
 
@@ -1161,7 +1161,7 @@ def loglikelihood(np.ndarray[DTYPE_t] Q, object efficiency_fn, DTYPE_t mass=50.,
                                           sigma_si_massless = sigma_si_massless, sigma_sd_massless=sigma_sd_massless,
                                           sigma_anapole_massless=sigma_anapole_massless, sigma_magdip_massless=sigma_magdip_massless, sigma_elecdip_massless=sigma_elecdip_massless,
                                           sigma_LS_massless=sigma_LS_massless, sigma_f1_massless=sigma_f1_massless, sigma_f2_massless=sigma_f2_massless, sigma_f3_massless=sigma_f3_massless,
-                                          GF=False, time_info=False) * efficiency_fn(Q)
+                                          GF=GF, time_info=False) * efficiency_fn(Q)
         
     
         for i in range(Nevents):
@@ -1228,7 +1228,7 @@ def loglikelihood_time(np.ndarray[DTYPE_t] Q, np.ndarray[DTYPE_t] tim, object ef
                                           sigma_si_massless = sigma_si_massless, sigma_sd_massless=sigma_sd_massless,
                                           sigma_anapole_massless=sigma_anapole_massless, sigma_magdip_massless=sigma_magdip_massless, sigma_elecdip_massless=sigma_elecdip_massless,
                                           sigma_LS_massless=sigma_LS_massless, sigma_f1_massless=sigma_f1_massless, sigma_f2_massless=sigma_f2_massless, sigma_f3_massless=sigma_f3_massless,
-                                          GF=GF, Qmin=Qmin, Qmax=Qmax, element=element, time_info=time_info)
+                                          GF=GF, Qmin=Qmin, Qmax=Qmax, element=element, time_info=False)
 
     Nexp = Rate * Tobs
     if Nevents==0 and Nexp==0.:
