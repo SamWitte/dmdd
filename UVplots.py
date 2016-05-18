@@ -367,8 +367,10 @@ def line_plots_1vsall(nsim=100, startsim=1, masses=[50.],
         experiment_labels.append(Experiment_LaTeX[exn])
         
     if time_info == 'Both':
-        for x in range(0, len(experiment_labels)):
-            experiment_labels.append(experiment_labels[x] + '\n No Time')
+        for x in range(0, len(experiment_labels)):       
+            newlabel = experiment_labels[2*x] + '\n No Time'
+            experiment_labels = np.insert(experiment_labels, 2*x+1, newlabel)
+
     elif time_info == 'False':
         for x in range(0, len(experiment_labels)):
             experiment_labels[x] = experiment_labels[x] + '\n No Time'
