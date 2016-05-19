@@ -333,8 +333,8 @@ def f_sigma_lims(modelname, mass):
 
 def line_plots_1vsall(nsim=100, startsim=1, masses=[50.],
                       experiment_names=['Xe','Xe+','Ge+Xe','XeG3'],#['I','Ilo'], ['Xe','Xelo','Xehi','Xewide']
-                      simmodels=[SI_Higgs], models=[SI_Higgs, anapole], time_info='True', filelabel='No_Time', allverbose=True,
-                      verbose=True,
+                      simmodels=[SI_Higgs], models=[SI_Higgs, anapole], time_info='True', GF=False, 
+                      filelabel='No_Time', allverbose=True, verbose=True,
                       results_root='/Users/SamWitte/Desktop/dmdd/Storage/results_uv/',
                       saveplots=True, alpha=0.3, xoffset=0.1, fs=20, fs2=18, sigma_lim_file=None, colors_list=None):
     
@@ -433,7 +433,7 @@ def line_plots_1vsall(nsim=100, startsim=1, masses=[50.],
                             mnrun = MultinestRun('sim{}'.format(n), experimentlist, m, pardic, 
                                                     fitm, prior_ranges=prior_ranges,
                                                     force_sim=False,n_live_points=n_live_points,silent=True,
-                                                    time_info=tval)
+                                                    time_info=tval, GF=GF)
                             if allverbose:
                                 print ''
                                 print mnrun.foldername

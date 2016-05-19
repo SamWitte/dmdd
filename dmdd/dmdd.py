@@ -230,8 +230,6 @@ class MultinestRun(object):
         sorted_fitparam_names = np.array(fit_model.param_names)[inds]
         for par in sorted_fitparam_names:
             self.foldername += '_{}'.format(par)
-
-
         
         if len(self.fit_model.fixed_params) > 0:
             self.foldername += '_fixed'
@@ -665,7 +663,6 @@ class Simulation(object):
             raise ValueError('Must pass parameter value dictionary corresponding exactly to model.param_names')
         
         
-        
         self.model = model #underlying model
         self.experiment = experiment
     
@@ -714,32 +711,22 @@ class Simulation(object):
         dRdQ_params['GF'] = self.GF
         allpars['GF'] = self.GF        
         
+       
+        
         self.model_Qgrid = np.linspace(experiment.Qmin,experiment.Qmax, 1000)
         efficiencies = experiment.efficiency(self.model_Qgrid)
-        
-        if not self.time_info:
+
+        if GF:
+            dRdQ_params['time_info'] = False
             self.model_dRdQ = self.model.dRdQ(self.model_Qgrid,0.,**dRdQ_params)
             R_integrand =  self.model_dRdQ * efficiencies
             self.model_R = np.trapz(R_integrand,self.model_Qgrid)
+            dRdQ_params['time_info'] = self.time_info
         else:
-            time_range = np.linspace(experiment.start_t,experiment.end_t, 100)
-            dtime = time_range[1]-time_range[0]
-            self.model_dRdQ = 0.0
-            self.model_R = 0.0
-            if not GF:
-                for x in time_range:
-                    self.model_dRdQ += (efficiencies * dRdQ_time(self.model.dRdQ, self.dRdQ_params,
-                                                                 self.model_Qgrid, x) / (experiment.end_t - experiment.start_t) * dtime)
-                    self.model_R += (np.trapz(efficiencies * dRdQ_time(self.model.dRdQ, self.dRdQ_params,
-                                                                       self.model_Qgrid, x), self.model_Qgrid) / (experiment.end_t -
-                                                                       experiment.start_t) * dtime)
-            elif GF:
-                for x in time_range:
-                    self.model_dRdQ += (efficiencies * self.model.dRdQ(self.model_Qgrid, x, **self.dRdQ_params) 
-                                        / (experiment.end_t - experiment.start_t) * dtime)
-                    
-                    self.model_R += (np.trapz(efficiencies * self.model.dRdQ(self.model_Qgrid, x, **self.dRdQ_params),
-                                              self.model_Qgrid) / (experiment.end_t - experiment.start_t) * dtime)
+            self.model_dRdQ = self.model.dRdQ(self.model_Qgrid,0.,**dRdQ_params)
+            R_integrand =  self.model_dRdQ * efficiencies
+            self.model_R = np.trapz(R_integrand,self.model_Qgrid)
+            
                 
         self.model_N = self.model_R * experiment.exposure * YEAR_IN_S
 
@@ -755,12 +742,12 @@ class Simulation(object):
             if kw in PAR_NORMS:
                 norm_dict[kw] = PAR_NORMS[kw]
         self.allpars['norms'] = norm_dict
-                          
+        
       
         self.datafile = '{}/{}.dat'.format(self.path,self.file_basename)
         self.plotfile = '{}/{}.pdf'.format(self.path,self.file_basename)
         self.picklefile = '{}/{}.pkl'.format(self.path,self.file_basename)
-    
+        
         #control to make sure simulations are forced if they need to be
         if os.path.exists(self.picklefile) and os.path.exists(self.datafile):
             fin = open(self.picklefile,'rb')
@@ -768,7 +755,7 @@ class Simulation(object):
             fin.close()
 
             dictComp = DictDiffer(self.allpars,allpars_old)
-            
+
             if bool(dictComp.changed()):
                 print('Existing simulation does not match current parameters.  Forcing simulation.\n\n')
                 force_sim = True
