@@ -12,7 +12,7 @@ from scipy.integrate import quad
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import matplotlib as mpl
 from scipy.stats import gaussian_kde
-
+import copy
 
 import matplotlib.patheffects as PathEffects
 import matplotlib.gridspec as gridspec
@@ -367,15 +367,20 @@ def line_plots_1vsall(nsim=100, startsim=1, masses=[50.],
         experiment_labels.append(Experiment_LaTeX[exn])
         
     if time_info == 'Both':
-        for x in range(0, len(experiment_labels)):       
-            newlabel = experiment_labels[2*x] + '\n No Time'
-            experiment_labels = np.insert(experiment_labels, 2*x+1, newlabel)
-
+        indexchange = 0.
+        for x in range(0, len(experiment_labels)):     
+            experiment_labels = np.append(experiment_labels,experiment_labels[x+indexchange]+'\n No Time')
+            indexchange += 1
     elif time_info == 'False':
         for x in range(0, len(experiment_labels)):
             experiment_labels[x] = experiment_labels[x] + '\n No Time'
-            
-
+         
+    holdarray = copy.copy(experiment_labels)
+    for x in range(0,experiment_labels.size / 2 - 1):
+        holdarray[2*x]=experiment_labels[x]
+        holdarray[2*x+1] = experiment_labels[x+experiment_labels.size/2]
+        
+    experiment_labels=holdarray
         
     for mass in masses:
         print '{}GeV:'.format(mass)
@@ -501,7 +506,7 @@ def line_plots_1vsall(nsim=100, startsim=1, masses=[50.],
                         
                         
             ax.set_xticks( ticks )
-            ax.set_xticklabels( experiment_labels )
+            ax.set_xticklabels( experiment_labels, size='small' )
             ax.set_title('True model: {} (mass: {:.0f} GeV)'.format(MODELNAME_TEX[m.name], mass), fontsize=fs)
             pl.ylim( ( -0.04, 1.19 ) )
             pl.axhline(0.9, ls='--', color='k', lw=2)
