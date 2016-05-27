@@ -1,4 +1,5 @@
 import numpy as np
+import os
 cimport numpy as np
 cimport cython
 from cpython cimport bool
