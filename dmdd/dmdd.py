@@ -703,20 +703,19 @@ class Simulation(object):
         if time_info == 'T':
             self.time_info = True
             time_tag = 'With_Time'
+            dRdQ_params['time_info'] = True
         elif time_info == 'F':
             self.time_info = False
             time_tag = 'No_Time'
-        
-        dRdQ_params['time_info'] = self.time_info
+            dRdQ_params['time_info'] = False
+               
         dRdQ_params['GF'] = self.GF
         allpars['GF'] = self.GF        
-        
-       
-        
+                     
         self.model_Qgrid = np.linspace(experiment.Qmin,experiment.Qmax, 1000)
         efficiencies = experiment.efficiency(self.model_Qgrid)
 
-        if GF:
+        if self.GF:
             dRdQ_params['time_info'] = False
             self.model_dRdQ = self.model.dRdQ(self.model_Qgrid,0.,**dRdQ_params)
             R_integrand =  self.model_dRdQ * efficiencies
@@ -877,8 +876,12 @@ class Simulation(object):
         
     def pdf_fun(self, Q, t):
         
-        efficiency = self.experiment.efficiency(np.array([Q]))
-        res = self.model.dRdQ(np.array([Q]), t, **self.dRdQ_params) * efficiency / self.model_R
+        efficiency = self.experiment.efficiency(np.array([Q]))        
+        if self.GF:            
+            res = self.model.dRdQ(np.array([Q]), t, **self.dRdQ_params) * efficiency / self.model_R
+        else:   
+            res = (dRdQ_time(self.model.dRdQ, self.dRdQ_params, np.array([Q]), t) *
+                        efficiency / self.model_R)
         
         return res
 	    
