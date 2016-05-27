@@ -24,8 +24,8 @@ parser.add_argument('--nfit', type=int, default=1)
 parser.add_argument('--startfit', type=int, default=1)
 parser.add_argument('--prior',default='logflat')
 parser.add_argument('--experiments',nargs='+',default=['Xe'])#['F','Ge', 'Xe','Ge Xe','I','Ge Xe I','Ge Xe F'],['Ilo','Xelo', 'Xehi','Xewide'],['Ar','Ge Xe Ar'],['He', 'Na', 'Ge','Ge He','Ge Na']
-parser.add_argument('--path',default='/Users/SamWitte/Desktop/dmdd/')
-parser.add_argument('--time',default='T')
+parser.add_argument('--path',default=os.environ['DMDD_AM_MAIN_PATH']+'/../')
+parser.add_argument('--time',default='F')
 parser.add_argument('--GF', default='T')
 #'/Users/verag/Research/Repositories/dmdd_2014/scripts/' #macbook
 
@@ -82,7 +82,7 @@ ALLMODELS = [SI_Higgs, millicharge, SD_flavoruniversal, SD_Zmediated, SD_Moira, 
 
 MODELS1 = [SI_Higgs, anapole]
 
-SIMMODELS = [SI_Higgs] #[SI_Higgs,elecdip_heavy,elecdip_0]
+SIMMODELS = [anapole] #[SI_Higgs,elecdip_heavy,elecdip_0]
 FITMODELS = MODELS1
 
 
