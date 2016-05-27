@@ -8,19 +8,18 @@ from scipy.interpolate import griddata,interp1d,interp2d
 DTYPE = np.float
 ctypedef np.float_t DTYPE_t
 cdef DTYPE_t pi = np.pi #3.14159265359
-#cdef np.float_t[:,:] eta0_tabbed = np.loadtxt('/Users/SamWitte/Desktop/dmdd/dmdd/Eta0_GF.dat')
-#cdef np.float_t[:,:] eta1_tabbed = np.loadtxt('/Users/SamWitte/Desktop/dmdd/dmdd/Eta1_GF.dat')
-cdef np.float_t[:,:] eta0_a0_tabbed = np.loadtxt('/Users/SamWitte/Desktop/dmdd/dmdd/eta0_a0.dat')
-cdef np.float_t[:,:] eta0_a1_tabbed = np.loadtxt('/Users/SamWitte/Desktop/dmdd/dmdd/eta0_a1.dat')
-cdef np.float_t[:,:] eta0_b1_tabbed = np.loadtxt('/Users/SamWitte/Desktop/dmdd/dmdd/eta0_b1.dat')
-#cdef np.float_t[:,:] eta0_a2_tabbed = np.loadtxt('/Users/SamWitte/Desktop/dmdd/dmdd/eta0_a2.dat')
-#cdef np.float_t[:,:] eta0_b2_tabbed = np.loadtxt('/Users/SamWitte/Desktop/dmdd/dmdd/eta0_b2.dat')
-cdef np.float_t[:,:] eta1_a0_tabbed = np.loadtxt('/Users/SamWitte/Desktop/dmdd/dmdd/eta1_a0.dat')
-cdef np.float_t[:,:] eta1_a1_tabbed = np.loadtxt('/Users/SamWitte/Desktop/dmdd/dmdd/eta1_a1.dat')
-cdef np.float_t[:,:] eta1_b1_tabbed = np.loadtxt('/Users/SamWitte/Desktop/dmdd/dmdd/eta1_b1.dat')
-#cdef np.float_t[:,:] eta1_a2_tabbed = np.loadtxt('/Users/SamWitte/Desktop/dmdd/dmdd/eta1_a2.dat')
-#cdef np.float_t[:,:] eta1_b2_tabbed = np.loadtxt('/Users/SamWitte/Desktop/dmdd/dmdd/eta1_b2.dat')
-
+#cdef np.float_t[:,:] eta0_tabbed = np.loadtxt(os.environ['DMDD_AM_MAIN_PATH']+'/..'+'/dmdd/Eta0_GF.dat')
+#cdef np.float_t[:,:] eta1_tabbed = np.loadtxt(os.environ['DMDD_AM_MAIN_PATH']+'/..'+'/dmdd/Eta1_GF.dat')
+cdef np.float_t[:,:] eta0_a0_tabbed = np.loadtxt(os.environ['DMDD_AM_MAIN_PATH']+'/..'+'/dmdd/eta0_a0.dat')
+cdef np.float_t[:,:] eta0_a1_tabbed = np.loadtxt(os.environ['DMDD_AM_MAIN_PATH']+'/..'+'/dmdd/eta0_a1.dat')
+cdef np.float_t[:,:] eta0_b1_tabbed = np.loadtxt(os.environ['DMDD_AM_MAIN_PATH']+'/..'+'/dmdd/eta0_b1.dat')
+#cdef np.float_t[:,:] eta0_a2_tabbed = np.loadtxt(os.environ['DMDD_AM_MAIN_PATH']+'/..'+'/dmdd/eta0_a2.dat')
+#cdef np.float_t[:,:] eta0_b2_tabbed = np.loadtxt(os.environ['DMDD_AM_MAIN_PATH']+'/..'+'/dmdd/eta0_b2.dat')
+cdef np.float_t[:,:] eta1_a0_tabbed = np.loadtxt(os.environ['DMDD_AM_MAIN_PATH']+'/../'+'/dmdd/eta1_a0.dat')
+cdef np.float_t[:,:] eta1_a1_tabbed = np.loadtxt(os.environ['DMDD_AM_MAIN_PATH']+'/../'+'/dmdd/eta1_a1.dat')
+cdef np.float_t[:,:] eta1_b1_tabbed = np.loadtxt(os.environ['DMDD_AM_MAIN_PATH']+'/../'+'/dmdd/eta1_b1.dat')
+#cdef np.float_t[:,:] eta1_a2_tabbed = np.loadtxt(os.environ['DMDD_AM_MAIN_PATH']+'/../'+'/dmdd/eta1_a2.dat')
+#cdef np.float_t[:,:] eta1_b2_tabbed = np.loadtxt(os.environ['DMDD_AM_MAIN_PATH']+'/../'+'/dmdd/eta1_b2.dat')
  
 
 cdef extern from "math.h":
