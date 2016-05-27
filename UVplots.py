@@ -367,21 +367,22 @@ def line_plots_1vsall(nsim=100, startsim=1, masses=[50.],
         experiment_labels.append(Experiment_LaTeX[exn])
         
     if time_info == 'Both':
-        indexchange = 0.
+        indexchange = 0
         for x in range(0, len(experiment_labels)):     
-            experiment_labels = np.append(experiment_labels,experiment_labels[x+indexchange]+'\n No Time')
+            experiment_labels = np.append(experiment_labels,experiment_labels[x]+'\n No Time')
             indexchange += 1
+            
     elif time_info == 'False':
         for x in range(0, len(experiment_labels)):
             experiment_labels[x] = experiment_labels[x] + '\n No Time'
          
     holdarray = copy.copy(experiment_labels)
-    for x in range(0,experiment_labels.size / 2 - 1):
+    for x in range(0,experiment_labels.size / 2):
         holdarray[2*x]=experiment_labels[x]
         holdarray[2*x+1] = experiment_labels[x+experiment_labels.size/2]
         
     experiment_labels=holdarray
-        
+    
     for mass in masses:
         print '{}GeV:'.format(mass)
 
