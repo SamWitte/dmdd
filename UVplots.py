@@ -11,8 +11,9 @@ import re
 from scipy.integrate import quad
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import matplotlib as mpl
-from scipy.stats import gaussian_kde
+from scipy.stats import gaussian_kde, norm
 import copy
+
 
 import matplotlib.patheffects as PathEffects
 import matplotlib.gridspec as gridspec
@@ -332,7 +333,7 @@ def f_sigma_lims(modelname, mass):
 ################################################################################################
 
 def line_plots_1vsall(nsim=100, startsim=1, masses=[50.],
-                      experiment_names=['Xe','Xe+','Ge+Xe','XeG3'],#['I','Ilo'], ['Xe','Xelo','Xehi','Xewide']
+                      experiment_names=['Xe'],#['I','Ilo'], ['Xe','Xelo','Xehi','Xewide']
                       simmodels=[SI_Higgs], models=[SI_Higgs, anapole], time_info='True', GF=False, 
                       filelabel='No_Time', allverbose=True, verbose=True,
                       results_root='/Users/SamWitte/Desktop/dmdd/Storage/results_uv/',
@@ -517,6 +518,368 @@ def line_plots_1vsall(nsim=100, startsim=1, masses=[50.],
             pl.ylabel('Probability of true model', fontsize=fs)
 
             figname = results_root + 'lineplot_{:.0f}GeV_{}_{}sims{}.pdf'.format(mass, m.name, nsim, filelabel)
+            if saveplots:
+                pl.savefig(figname)
+                
+
+
+#########################################
+def OneDhistogram(nsim=50, startsim=1, masses=[50.],
+                  experiment_names=['Xe'],#['I','Ilo'], ['Xe','Xelo','Xehi','Xewide']
+                  simmodels=[SI_Higgs], models=[SI_Higgs, anapole], time_info='Both', GF=True, 
+                  hspace = (1.06 * 50. ** (-1. / 5.)), filelabel='', allverbose=True, verbose=True,
+                  results_root=os.environ['DMDD_AM_MAIN_PATH']+'/results_uv/',
+                  saveplots=True, alpha=0.3, xoffset=0.1, fs=20, fs2=18, sigma_lim_file=None, 
+                  colors_list=['Aqua','Red','Black','Green','Magenta','Orange']):
+
+    xlinspace = np.linspace(0,1,100)
+    
+    
+    if colors_list == None:
+        for i,experiment in enumerate(experiments):
+            colors_list = Colors[experiment_names[i]]
+    
+    if time_info == 'Both':
+        time_list = ['T', 'F']
+    elif time_info == 'True':
+        time_list = ['T']
+    elif time_info == 'False':
+        time_list =['F']
+    else:
+        print 'ERROR'
+
+    if len(filelabel)>0:
+        filelabel = '_' + filelabel
+    if sigma_lim_file is None:
+        sigma_limvals = {}
+        sigma_lux = {}
+        sigma_supercdms = {}
+        sigma_cdmslite = {}
+    else:
+        sigma_limvals = pickle.load(open(sigma_lim_file,'rb'))
+    experiment_labels = []#experiment_names
+    experiments = []
+    for i,exn in enumerate(experiment_names):
+        experiments.append(ALL_EXPERIMENTS[exn])
+        experiment_labels.append(Experiment_LaTeX[exn])
+        
+    if time_info == 'Both':
+        indexchange = 0
+        for x in range(0, len(experiment_labels)):     
+            experiment_labels = np.append(experiment_labels,experiment_labels[x]+'\n No Time')
+            indexchange += 1
+            
+    elif time_info == 'False':
+        for x in range(0, len(experiment_labels)):
+            experiment_labels[x] = experiment_labels[x] + '\n No Time'
+         
+    holdarray = copy.copy(experiment_labels)
+    for x in range(0,experiment_labels.size / 2):
+        holdarray[2*x]=experiment_labels[x]
+        holdarray[2*x+1] = experiment_labels[x+experiment_labels.size/2]
+        
+    experiment_labels=holdarray
+    
+    for mass in masses:
+        print '{}GeV:'.format(mass)
+
+        if sigma_lim_file is None:
+            sigma_limvals[mass] = {}
+            sigma_lux[mass] = {}
+            sigma_cdmslite[mass] = {}
+            sigma_supercdms[mass] = {}
+            for m in models:
+                sigma_lux[mass][m.name] = lux.sigma_limit(mass=mass, sigma_name=sigma_names[m.name],
+                                                          fnfp_name=fnfp_names[m.name], fnfp_val=fnfp_vals[m.name])
+                sigma_cdmslite[mass][m.name] = cdmslite.sigma_limit(mass=mass, sigma_name=sigma_names[m.name],
+                                                                    fnfp_name=fnfp_names[m.name], fnfp_val=fnfp_vals[m.name])
+                sigma_supercdms[mass][m.name] = supercdms.sigma_limit(mass=mass, sigma_name=sigma_names[m.name],
+                                                                      fnfp_name=fnfp_names[m.name], fnfp_val=fnfp_vals[m.name])
+                sigma_limvals[mass][m.name]=min(sigma_supercdms[mass][m.name],
+                                                sigma_cdmslite[mass][m.name],
+                                                sigma_lux[mass][m.name])
+                #   sigma_limvals[mass][m.name] = f_sigma_lims(m.name,mass)
+
+
+
+            
+        for m in simmodels:
+            print ''
+            print ''
+            print m.name
+            plt.figure()
+            ax=plt.gca()
+            for tval in time_list:
+                
+                for i,experiment in enumerate(experiments):
+                    try:
+                        if len(experiment) > 1:
+                            experimentlist = experiment
+                    except:
+                        experimentlist = [experiment]
+                    ys = np.zeros(nsim)
+                    
+                    
+                    for ni,n in enumerate(np.arange(startsim, nsim + startsim)):
+                        renorm = -np.inf
+                        ev_sum = 0.
+                        ln_ev = np.zeros(len(models))
+                        prob = np.zeros(len(models))
+                        
+                        for j,fitm in enumerate(models):
+                            pardic = {'mass': mass, sigma_names[m.name]: sigma_limvals[mass][m.name]}
+                            
+                            mnrun = MultinestRun('sim{}'.format(n), experimentlist, m, pardic, 
+                                                    fitm, prior_ranges=prior_ranges,
+                                                    force_sim=False,n_live_points=n_live_points,silent=True,
+                                                    time_info=tval, GF=GF)
+                            if allverbose:
+                                print ''
+                                print mnrun.foldername
+                            if verbose and not allverbose and fitm.name == m.name:
+                                print ''
+                                print '({})'.format(mnrun.foldername)
+                                
+                            ln_ev[j] = mnrun.get_evidence()
+                            renorm = np.amax(np.array([renorm,ln_ev[j]]))
+                    
+                        for j,fitm in enumerate(models):
+                            ev_sum += np.exp(-renorm + ln_ev[j])
+                        
+                        for j,fitm in enumerate(models):
+                            prob[j] = np.exp(-renorm + ln_ev[j]) / ev_sum
+                            if fitm.name != m.name:
+                                if verbose or allverbose:
+                                    print '{} {}'.format(fitm.name, prob[j])
+                            else:
+                                ys[ni] = prob[j]
+                                if verbose or allverbose:
+                                    print '{} {} <--sim'.format(fitm.name, prob[j])
+                                if verbose and prob[j]<0.1:
+                                    print 'FLAG! truth unlikely?   <-----------|'
+                                    print ''
+                                    
+    
+                        if verbose:
+                            print ''
+                            
+                        if ev_sum == np.inf:
+                            print 'yikes. evidence is infinity.'
+                    
+                    if tval == 'F':
+                        ii = 2*i + 1
+                    else:
+                        ii=2*i
+                        
+                    for y in ys:
+                        plt.plot([y,y], [ 0., 10. ], lw=1,
+                                 alpha=alpha, color=colors_list[ii])
+                                      
+                    probdistr = np.zeros(xlinspace.size)
+                    
+                    for x in range(0, xlinspace.size):
+                        probdistr[x] = (1. / (nsim * hspace)) * norm.pdf((xlinspace[x] - ys) / hspace).sum()     
+                    
+                    label = experiment_labels[ii]
+                    plt.plot(xlinspace, probdistr, linewidth=1, color=colors_list[ii], label=label)    
+                    
+                    
+#                    bins = np.linspace(0.0,1.,10)
+#                    plt.hist(ys, bins, alpha=0.3, facecolor=colors_list[ii],normed=True)  
+                
+                
+                    maxval = round(np.max(probdistr) + .5)
+                    if i == 0:
+                        maxylim = maxval
+                    else:
+                        if maxval > maxylim:
+                            maxylim = maxval
+                    
+            ax.set_title('True model: {} (mass: {:.0f} GeV)'.format(MODELNAME_TEX[m.name], mass), fontsize=fs)
+            pl.xlim([0.,1.])  
+            pl.ylim([0.,maxylim])
+          
+            pl.legend(loc=2, fontsize='small' )
+            pl.ylabel('Density', fontsize=fs)
+            pl.xlabel('Probability of true model', fontsize=fs)
+
+            figname = results_root + 'PDF_{:.0f}GeV_{}_{}sims{}.pdf'.format(mass, m.name, nsim, filelabel)
+            if saveplots:
+                pl.savefig(figname)
+                
+
+
+
+#########################################
+def OneDhistogram_timeDiff(nsim=50, startsim=1, masses=[50.],
+                  experiment_names=['Xe'],#['I','Ilo'], ['Xe','Xelo','Xehi','Xewide']
+                  simmodels=[SI_Higgs], models=[SI_Higgs, anapole], GF=True,
+                  hspace = (1.06 * 50. ** (-1. / 5.)), filelabel='', allverbose=True, verbose=True,
+                  results_root=os.environ['DMDD_AM_MAIN_PATH']+'/results_uv/',
+                  saveplots=True, alpha=0.3, xoffset=0.1, fs=20, fs2=18, sigma_lim_file=None, 
+                  colors_list=['Aqua','Red','Black','Green','Magenta','Orange']):
+
+    xlinspace = np.linspace(-.5,.5,300)
+    
+    
+    if colors_list == None:
+        for i,experiment in enumerate(experiments):
+            colors_list = Colors[experiment_names[i]]
+
+
+    if len(filelabel)>0:
+        filelabel = '_' + filelabel
+    if sigma_lim_file is None:
+        sigma_limvals = {}
+        sigma_lux = {}
+        sigma_supercdms = {}
+        sigma_cdmslite = {}
+    else:
+        sigma_limvals = pickle.load(open(sigma_lim_file,'rb'))
+    experiment_labels = []#experiment_names
+    experiments = []
+    for i,exn in enumerate(experiment_names):
+        experiments.append(ALL_EXPERIMENTS[exn])
+        experiment_labels.append(Experiment_LaTeX[exn])
+        
+    
+    for mass in masses:
+        print '{}GeV:'.format(mass)
+
+        if sigma_lim_file is None:
+            sigma_limvals[mass] = {}
+            sigma_lux[mass] = {}
+            sigma_cdmslite[mass] = {}
+            sigma_supercdms[mass] = {}
+            for m in models:
+                sigma_lux[mass][m.name] = lux.sigma_limit(mass=mass, sigma_name=sigma_names[m.name],
+                                                          fnfp_name=fnfp_names[m.name], fnfp_val=fnfp_vals[m.name])
+                sigma_cdmslite[mass][m.name] = cdmslite.sigma_limit(mass=mass, sigma_name=sigma_names[m.name],
+                                                                    fnfp_name=fnfp_names[m.name], fnfp_val=fnfp_vals[m.name])
+                sigma_supercdms[mass][m.name] = supercdms.sigma_limit(mass=mass, sigma_name=sigma_names[m.name],
+                                                                      fnfp_name=fnfp_names[m.name], fnfp_val=fnfp_vals[m.name])
+                sigma_limvals[mass][m.name]=min(sigma_supercdms[mass][m.name],
+                                                sigma_cdmslite[mass][m.name],
+                                                sigma_lux[mass][m.name])
+                #   sigma_limvals[mass][m.name] = f_sigma_lims(m.name,mass)
+
+
+
+            
+        for m in simmodels:
+            print ''
+            print ''
+            print m.name
+            plt.figure()
+            ax=plt.gca()
+            
+            for i,experiment in enumerate(experiments):
+                try:
+                    if len(experiment) > 1:
+                        experimentlist = experiment
+                except:
+                    experimentlist = [experiment]
+                ys = np.zeros(nsim)
+                ys_nt = np.zeros(nsim)
+                                    
+                for ni,n in enumerate(np.arange(startsim, nsim + startsim)):
+                    renorm = -np.inf
+                    ev_sum = 0.
+                    ln_ev = np.zeros(len(models))
+                    prob = np.zeros(len(models))
+                    
+                    renorm_nt = -np.inf
+                    ev_sum_nt = 0.
+                    ln_ev_nt = np.zeros(len(models))
+                    prob_nt = np.zeros(len(models))
+                    
+                    for j,fitm in enumerate(models):
+                        pardic = {'mass': mass, sigma_names[m.name]: sigma_limvals[mass][m.name]}
+                        
+                        mnrun = MultinestRun('sim{}'.format(n), experimentlist, m, pardic, 
+                                                fitm, prior_ranges=prior_ranges,
+                                                force_sim=False,n_live_points=n_live_points,silent=True,
+                                                time_info='T', GF=GF)
+                                                
+                        mnrun_nt = MultinestRun('sim{}'.format(n), experimentlist, m, pardic, 
+                                                fitm, prior_ranges=prior_ranges,
+                                                force_sim=False,n_live_points=n_live_points,silent=True,
+                                                time_info='F', GF=GF)
+                                                
+                        if allverbose:
+                            print ''
+                            print mnrun.foldername
+                        if verbose and not allverbose and fitm.name == m.name:
+                            print ''
+                            print '({})'.format(mnrun.foldername)
+                            
+                        ln_ev[j] = mnrun.get_evidence()
+                        renorm = np.amax(np.array([renorm,ln_ev[j]]))
+                        
+                        ln_ev_nt[j] = mnrun_nt.get_evidence()
+                        renorm_nt = np.amax(np.array([renorm_nt,ln_ev_nt[j]]))
+                
+                    for j,fitm in enumerate(models):
+                        ev_sum += np.exp(-renorm + ln_ev[j])
+                        ev_sum_nt += np.exp(-renorm_nt + ln_ev_nt[j])
+                    
+                    for j,fitm in enumerate(models):
+                        prob[j] = np.exp(-renorm + ln_ev[j]) / ev_sum
+                        prob_nt[j] = np.exp(-renorm_nt + ln_ev_nt[j]) / ev_sum_nt
+                        if fitm.name != m.name:
+                            if verbose or allverbose:
+                                print 'Time ', '{} {}'.format(fitm.name, prob[j])
+                                print 'No Time ', '{} {}'.format(fitm.name, prob_nt[j])
+                        else:
+                            ys[ni] = prob[j]
+                            ys_nt[ni] = prob_nt[j]
+                            if verbose or allverbose:
+                                print 'Time ','{} {} <--sim'.format(fitm.name, prob[j])
+                                print 'No Time ','{} {} <--sim'.format(fitm.name, prob_nt[j])
+                            if verbose and prob[j]<0.1:
+                                print 'FLAG! truth unlikely?   <-----------|'
+                                print ''
+                                
+
+                    if verbose:
+                        print ''
+                        
+                    if ev_sum == np.inf:
+                        print 'yikes. evidence is infinity.'
+                
+                ys = ys - ys_nt
+
+                for y in ys:
+                    plt.plot([y,y], [ 0., 100. ], lw=1,
+                             alpha=alpha, color=colors_list[i])
+                                  
+                probdistr = np.zeros(xlinspace.size)
+                
+                for x in range(0, xlinspace.size):
+                    probdistr[x] = (1. / (nsim * hspace)) * norm.pdf((xlinspace[x] - ys) / hspace).sum()     
+                
+                label = experiment_labels[i]
+                plt.plot(xlinspace, probdistr, linewidth=1, color=colors_list[i], label=label)    
+                    
+#                bins = np.linspace(-.09,.09,15)
+#                plt.hist(ys, bins, alpha=0.3, facecolor='r')                    
+                    
+                maxval = np.max(probdistr) + 1
+                if i == 0:
+                    maxylim = np.max(probdistr) + 1
+                else:
+                    if maxval > maxylim:
+                        maxylim = maxval
+                    
+            ax.set_title('True model: {} (mass: {:.0f} GeV)'.format(MODELNAME_TEX[m.name], mass), fontsize=fs)
+            pl.xlim([-.15,.15])            
+            pl.ylim([0.,maxylim])
+          
+            pl.legend()
+            pl.ylabel('Density', fontsize=fs)
+            pl.xlabel('$\Delta$ Probability', fontsize=fs)
+
+            figname = results_root + 'PDF_{:.0f}GeV_{}_{}sims{}.pdf'.format(mass, m.name, nsim, filelabel)
             if saveplots:
                 pl.savefig(figname)
                 

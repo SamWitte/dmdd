@@ -795,7 +795,7 @@ class Simulation(object):
             else:
                 self.N = len(self.Q)
 
-        if force_sim or (not os.path.exists(self.plotfile)):
+        if force_sim:
             self.plot_data(plot_nbins=plot_nbins, plot_theory=plot_theory, save_plot=True)
         else:
             if not self.silent:
