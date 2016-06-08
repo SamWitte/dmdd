@@ -1238,10 +1238,10 @@ def loglikelihood_time(np.ndarray[DTYPE_t] Q, np.ndarray[DTYPE_t] tim, object ef
         tot -= Nevents * log(Rate)
         for i in range(0, Nevents):
             if not GF:
-                v_lag_instant = v_rms + v_erth_proj * np.cos(two_pi * (tim[i] - mod_phase))
+                v_lag = v_rms + v_erth_proj * np.cos(two_pi * (tim[i] - mod_phase))
     
             event_inf = dRdQ(np.array([Q[i]]), np.array([tim[i]]), mass=mass,
-                                            v_lag=v_lag_instant, v_rms=v_rms, v_esc=v_esc, rho_x=rho_x, element=element,
+                                            v_lag=v_lag, v_rms=v_rms, v_esc=v_esc, rho_x=rho_x, element=element,
                                             fnfp_si=fnfp_si, fnfp_sd=fnfp_sd,
                                               fnfp_anapole=fnfp_anapole, fnfp_magdip=fnfp_magdip, fnfp_elecdip=fnfp_elecdip,
                                               fnfp_LS=fnfp_LS, fnfp_f1=fnfp_f1, fnfp_f2=fnfp_f2, fnfp_f3=fnfp_f3,
