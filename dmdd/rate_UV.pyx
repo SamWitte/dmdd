@@ -1262,3 +1262,101 @@ def loglikelihood_time(np.ndarray[DTYPE_t] Q, np.ndarray[DTYPE_t] tim, object ef
                    
     return tot
 
+def loglikelihood_timeONLY(np.ndarray[DTYPE_t] tim, object efficiency_fn,
+         DTYPE_t mass=50.,
+         DTYPE_t sigma_si=0.,DTYPE_t sigma_sd=0.,
+         DTYPE_t sigma_anapole=0.,DTYPE_t sigma_magdip=0., DTYPE_t sigma_elecdip=0.,
+         DTYPE_t sigma_LS=0., DTYPE_t sigma_f1=0., DTYPE_t sigma_f2=0., DTYPE_t sigma_f3=0.,
+         DTYPE_t sigma_si_massless=0.,DTYPE_t sigma_sd_massless=0.,
+         DTYPE_t sigma_anapole_massless=0.,DTYPE_t sigma_magdip_massless=0., DTYPE_t sigma_elecdip_massless=0.,
+         DTYPE_t sigma_LS_massless=0., DTYPE_t sigma_f1_massless=0., DTYPE_t sigma_f2_massless=0., DTYPE_t sigma_f3_massless=0.,
+         DTYPE_t fnfp_si=1., DTYPE_t fnfp_sd=1.,
+         DTYPE_t fnfp_anapole=1., DTYPE_t fnfp_magdip=1., DTYPE_t fnfp_elecdip=1.,
+         DTYPE_t fnfp_LS=1., DTYPE_t fnfp_f1=1., DTYPE_t fnfp_f2=1., DTYPE_t fnfp_f3=1.,
+         DTYPE_t fnfp_si_massless=1., DTYPE_t fnfp_sd_massless=1.,
+         DTYPE_t fnfp_anapole_massless=1., DTYPE_t fnfp_magdip_massless=1., DTYPE_t fnfp_elecdip_massless=1.,
+         DTYPE_t fnfp_LS_massless=1., DTYPE_t fnfp_f1_massless=1., DTYPE_t fnfp_f2_massless=1., DTYPE_t fnfp_f3_massless=1.,
+         DTYPE_t v_lag=220., DTYPE_t v_rms=220., DTYPE_t v_esc=544., DTYPE_t rho_x=0.3,
+         str element='xenon', DTYPE_t Qmin=2., DTYPE_t Qmax=30., DTYPE_t exposure=1., energy_resolution=True, bool GF=False, bool time_info=False):
+    """
+    This is the main log(likelihood) for any combination of UV models.
+    
+    For reference on free parameters, see :func:`dRdQ` and :func:`R`.
+      
+
+    :return:
+      log(likelihood) for an arbitrary rate to produce an observed array of recoil events
+    """
+    cdef unsigned int i
+    cdef long Nevents = len(tim)
+    cdef np.ndarray[DTYPE_t] out
+    cdef DTYPE_t Nexp
+    cdef DTYPE_t v_erth_proj = 29.8 * 0.49
+    cdef DTYPE_t mod_phase = 0.42
+    
+
+    cdef np.ndarray[DTYPE_t] event_inf
+    cdef DTYPE_t tot = 0.
+    cdef DTYPE_t Tobs = exposure * 24. * 3600. * 365.
+    cdef DTYPE_t two_pi = 2.0 * 3.1415
+
+    cdef unsigned int npoints = 100 
+    cdef DTYPE_t result
+    cdef DTYPE_t expQmin = log10(Qmin)
+    cdef DTYPE_t expQmax = log10(Qmax)
+    cdef DTYPE_t expQstep = (expQmax - expQmin)/(npoints - 1)
+    cdef np.ndarray[DTYPE_t] Qs = np.empty(npoints,dtype=float)
+
+    for i in xrange(npoints):
+        expQ = expQmin + i*expQstep
+        Qs[i] = 10**expQ
+
+
+    cdef DTYPE_t Rate = R(efficiency_fn, mass=mass,
+                                         v_rms=v_rms, v_lag=v_lag, v_esc=v_esc, rho_x=rho_x,
+                                          fnfp_si=fnfp_si, fnfp_sd=fnfp_sd,
+                                          fnfp_anapole=fnfp_anapole, fnfp_magdip=fnfp_magdip, fnfp_elecdip=fnfp_elecdip,
+                                          fnfp_LS=fnfp_LS, fnfp_f1=fnfp_f1, fnfp_f2=fnfp_f2, fnfp_f3=fnfp_f3,
+                                          sigma_si= sigma_si, sigma_sd=sigma_sd,
+                                          sigma_anapole=sigma_anapole, sigma_magdip=sigma_magdip, sigma_elecdip=sigma_elecdip,
+                                          sigma_LS=sigma_LS, sigma_f1=sigma_f1, sigma_f2=sigma_f2, sigma_f3=sigma_f3,
+                                          fnfp_si_massless=fnfp_si_massless, fnfp_sd_massless=fnfp_sd_massless,
+                                          fnfp_anapole_massless=fnfp_anapole_massless, fnfp_magdip_massless=fnfp_magdip_massless, fnfp_elecdip_massless=fnfp_elecdip_massless,
+                                          fnfp_LS_massless=fnfp_LS_massless, fnfp_f1_massless=fnfp_f1_massless, fnfp_f2_massless=fnfp_f2_massless, fnfp_f3_massless=fnfp_f3_massless,
+                                          sigma_si_massless = sigma_si_massless, sigma_sd_massless=sigma_sd_massless,
+                                          sigma_anapole_massless=sigma_anapole_massless, sigma_magdip_massless=sigma_magdip_massless, sigma_elecdip_massless=sigma_elecdip_massless,
+                                          sigma_LS_massless=sigma_LS_massless, sigma_f1_massless=sigma_f1_massless, sigma_f2_massless=sigma_f2_massless, sigma_f3_massless=sigma_f3_massless,
+                                          GF=GF, Qmin=Qmin, Qmax=Qmax, element=element, time_info=False)
+
+    Nexp = Rate * Tobs
+    if Nevents==0 and Nexp==0.:
+        return 0.
+    tot += Nevents * log(Nexp) - Nexp 
+    if energy_resolution:
+        tot -= Nevents * log(Rate)
+        for i in range(0, Nevents):
+            if not GF:
+                v_lag = v_rms + v_erth_proj * np.cos(two_pi * (tim[i] - mod_phase))
+    
+            event_inf = dRdQ(Qs, np.array([tim[i]]), mass=mass,
+                                            v_lag=v_lag, v_rms=v_rms, v_esc=v_esc, rho_x=rho_x, element=element,
+                                            fnfp_si=fnfp_si, fnfp_sd=fnfp_sd,
+                                              fnfp_anapole=fnfp_anapole, fnfp_magdip=fnfp_magdip, fnfp_elecdip=fnfp_elecdip,
+                                              fnfp_LS=fnfp_LS, fnfp_f1=fnfp_f1, fnfp_f2=fnfp_f2, fnfp_f3=fnfp_f3,
+                                              sigma_si= sigma_si, sigma_sd=sigma_sd,
+                                              sigma_anapole=sigma_anapole, sigma_magdip=sigma_magdip, sigma_elecdip=sigma_elecdip,
+                                              sigma_LS=sigma_LS, sigma_f1=sigma_f1, sigma_f2=sigma_f2, sigma_f3=sigma_f3,
+                                              fnfp_si_massless=fnfp_si_massless, fnfp_sd_massless=fnfp_sd_massless,
+                                              fnfp_anapole_massless=fnfp_anapole_massless, fnfp_magdip_massless=fnfp_magdip_massless, fnfp_elecdip_massless=fnfp_elecdip_massless,
+                                              fnfp_LS_massless=fnfp_LS_massless, fnfp_f1_massless=fnfp_f1_massless, fnfp_f2_massless=fnfp_f2_massless, fnfp_f3_massless=fnfp_f3_massless,
+                                              sigma_si_massless = sigma_si_massless, sigma_sd_massless=sigma_sd_massless,
+                                              sigma_anapole_massless=sigma_anapole_massless, sigma_magdip_massless=sigma_magdip_massless, sigma_elecdip_massless=sigma_elecdip_massless,
+                                              sigma_LS_massless=sigma_LS_massless, sigma_f1_massless=sigma_f1_massless, sigma_f2_massless=sigma_f2_massless, sigma_f3_massless=sigma_f3_massless,
+                                              GF=GF, time_info=True) * efficiency_fn(Qs)
+            result = trapz(event_inf,Qs)
+            
+            if result==0.:
+                return -1.*INFINITY #if an event is seen where the model expects zero events (behind the V_lag), this model is excluded, and loglikelihood=-Infinity.
+            tot += log(result)
+                   
+    return tot
