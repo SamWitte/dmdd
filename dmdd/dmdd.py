@@ -14,6 +14,7 @@ from math import cos, pi
 
 on_rtd = False
 
+TIMEONLY=True
 
 try:
     import numpy.random as random
@@ -299,7 +300,10 @@ class MultinestRun(object):
             if not self.time_info:
                 res += self.fit_model.loglikelihood(sim.Q, sim.experiment.efficiency, **kwargs)
             else:
-                res += self.fit_model.loglikelihood(sim.Q[:,0], sim.Q[:,1], sim.experiment.efficiency, **kwargs)
+                if TIMEONLY:
+                    res += self.fit_model.loglikelihood(sim.Q[:,1], sim.experiment.efficiency, **kwargs)
+                else:
+                    res += self.fit_model.loglikelihood(sim.Q[:,0], sim.Q[:,1], sim.experiment.efficiency, **kwargs)
         return res
 
   
@@ -1116,8 +1120,14 @@ class UV_Model(Model):
                        default_rate_parameters,
                        **kwargs)
         else:
-            
-            Model.__init__(self,name,param_names,
+            if TIMEONLY:
+                Model.__init__(self,name,param_names,
+                       rate_UV.dRdQ,
+                       rate_UV.loglikelihood_timeONLY,
+                       default_rate_parameters,
+                       **kwargs)
+            else:
+                Model.__init__(self,name,param_names,
                        rate_UV.dRdQ,
                        rate_UV.loglikelihood_time,
                        default_rate_parameters,
