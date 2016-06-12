@@ -142,7 +142,7 @@ iodp = dmdd.Experiment(experiment,Target[experiment],
                      Exposure[experiment], dmdd.eff.efficiency_Xe, 0., 1.,
                      energy_resolution=False)
 
-experiment = 'Xe+'
+experiment = 'XeDouble'
 xeplus = dmdd.Experiment(experiment,Target[experiment],
                        Qmin[experiment], Qmax[experiment],
                        Exposure[experiment], dmdd.eff.efficiency_Xe, 0., 1.)
@@ -171,7 +171,7 @@ ALL_EXPERIMENTS['XeG3+I++F+'] = [xeG3, iodp, flup]
 ALL_EXPERIMENTS['F+'] = flup
 ALL_EXPERIMENTS['I+'] = iodp
 ALL_EXPERIMENTS['F+Xe'] = [flu, xe]
-ALL_EXPERIMENTS['Xe+'] = xeplus
+ALL_EXPERIMENTS['XeDouble'] = xeplus
 
 lux = dmdd.Experiment('LUX','xenon', 5, 23, 30.7, dmdd.eff.efficiency_Xe, 0., 1.,energy_resolution=True)
 cdmslite=dmdd.Experiment('CDMSlite','germanium', 0.840, 6, 0.0164, dmdd.eff.efficiency_Xe,
@@ -376,13 +376,13 @@ def line_plots_1vsall(nsim=100, startsim=1, masses=[50.],
     elif time_info == 'False':
         for x in range(0, len(experiment_labels)):
             experiment_labels[x] = experiment_labels[x] + '\n No Time'
-         
-    holdarray = copy.copy(experiment_labels)
-    for x in range(0,experiment_labels.size / 2):
-        holdarray[2*x]=experiment_labels[x]
-        holdarray[2*x+1] = experiment_labels[x+experiment_labels.size/2]
+    if time_info == 'Both':
+        holdarray = copy.copy(experiment_labels)
+        for x in range(0,experiment_labels.size / 2):
+            holdarray[2*x]=experiment_labels[x]
+            holdarray[2*x+1] = experiment_labels[x+experiment_labels.size/2]
         
-    experiment_labels=holdarray
+            experiment_labels=holdarray
     
     for mass in masses:
         print '{}GeV:'.format(mass)
