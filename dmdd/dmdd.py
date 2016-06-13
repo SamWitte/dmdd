@@ -14,7 +14,7 @@ from math import cos, pi
 
 on_rtd = False
 
-TIMEONLY=True
+TIMEONLY=False
 
 try:
     import numpy.random as random
@@ -43,9 +43,17 @@ except KeyError:
     logging.warning('DMDD_MAIN_PATH environment variable not defined, defaulting to:   ~/.dmdd')
     MAIN_PATH = os.path.expanduser('~/.dmdd') #os.getcwd()
 
-SIM_PATH = MAIN_PATH + '/simulations_uv/'
-CHAINS_PATH = MAIN_PATH + '/chains_uv/'
-RESULTS_PATH = MAIN_PATH + '/results_uv'
+#SIM_PATH = MAIN_PATH + '/simulations_uv/'
+#CHAINS_PATH = MAIN_PATH + '/chains_uv/'
+#RESULTS_PATH = MAIN_PATH + '/results_uv/'
+
+#SIM_PATH = MAIN_PATH + '/simulations_uv_noGF/'
+#CHAINS_PATH = MAIN_PATH + '/chains_uv_noGF/'
+#RESULTS_PATH = MAIN_PATH + '/results_uv_noGF/'
+
+SIM_PATH = MAIN_PATH + '/simulations_uv_time/'
+CHAINS_PATH = MAIN_PATH + '/chains_uv_time/'
+RESULTS_PATH = MAIN_PATH + '/results_uv_time'
 
 if not os.path.exists(SIM_PATH):
     os.makedirs(SIM_PATH)
