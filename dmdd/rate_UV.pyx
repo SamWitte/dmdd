@@ -1300,7 +1300,7 @@ def loglikelihood_timeONLY(np.ndarray[DTYPE_t] tim, object efficiency_fn,
     cdef DTYPE_t Tobs = exposure * 24. * 3600. * 365.
     cdef DTYPE_t two_pi = 2.0 * 3.1415
 
-    cdef unsigned int npoints = 100 
+    cdef unsigned int npoints = 50 
     cdef DTYPE_t result
     cdef DTYPE_t expQmin = log10(Qmin)
     cdef DTYPE_t expQmax = log10(Qmax)
@@ -1352,7 +1352,7 @@ def loglikelihood_timeONLY(np.ndarray[DTYPE_t] tim, object efficiency_fn,
                                               sigma_si_massless = sigma_si_massless, sigma_sd_massless=sigma_sd_massless,
                                               sigma_anapole_massless=sigma_anapole_massless, sigma_magdip_massless=sigma_magdip_massless, sigma_elecdip_massless=sigma_elecdip_massless,
                                               sigma_LS_massless=sigma_LS_massless, sigma_f1_massless=sigma_f1_massless, sigma_f2_massless=sigma_f2_massless, sigma_f3_massless=sigma_f3_massless,
-                                              GF=GF, time_info=True) * efficiency_fn(Qs)
+                                              GF=GF, time_info=True)
             result = trapz(event_inf,Qs)
             
             if result==0.:
