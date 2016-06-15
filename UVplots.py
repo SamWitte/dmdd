@@ -147,6 +147,16 @@ xeplus = dmdd.Experiment(experiment,Target[experiment],
                        Qmin[experiment], Qmax[experiment],
                        Exposure[experiment], dmdd.eff.efficiency_Xe, 0., 1.)
 
+experiment = 'XeTriple'
+xetrips = dmdd.Experiment(experiment,Target[experiment],
+                       Qmin[experiment], Qmax[experiment],
+                       Exposure[experiment], dmdd.eff.efficiency_Xe, 0., 1.)
+
+experiment = 'Xe10x'
+xe10x = dmdd.Experiment(experiment,Target[experiment],
+                       Qmin[experiment], Qmax[experiment],
+                       Exposure[experiment], dmdd.eff.efficiency_Xe, 0., 1.)
+
 
 ALL_EXPERIMENTS = {}
 ALL_EXPERIMENTS['Xe'] = xe
@@ -172,6 +182,9 @@ ALL_EXPERIMENTS['F+'] = flup
 ALL_EXPERIMENTS['I+'] = iodp
 ALL_EXPERIMENTS['F+Xe'] = [flu, xe]
 ALL_EXPERIMENTS['XeDouble'] = xeplus
+ALL_EXPERIMENTS['XeTriple'] = xetrips
+ALL_EXPERIMENTS['Xe10x'] = xe10x
+
 
 lux = dmdd.Experiment('LUX','xenon', 5, 23, 30.7, dmdd.eff.efficiency_Xe, 0., 1.,energy_resolution=True)
 cdmslite=dmdd.Experiment('CDMSlite','germanium', 0.840, 6, 0.0164, dmdd.eff.efficiency_Xe,
