@@ -15,18 +15,18 @@ parser.add_argument('--dosim', action='store_true')
 parser.add_argument('--dumplims', action='store_true')
 parser.add_argument('--limfile',default=None)
 parser.add_argument('--tag',default='')
-parser.add_argument('--masses',nargs='+',default=[50],type=float)
+parser.add_argument('--masses',nargs='+',default=[500],type=float)
 parser.add_argument('--ngroups', type=int, default=512)
 parser.add_argument('--nsimgroups', type=int, default=512)
-parser.add_argument('--nsim', type=int, default=1)
+parser.add_argument('--nsim', type=int, default=50)
 parser.add_argument('--startsim', type=int, default=1)
-parser.add_argument('--nfit', type=int, default=1)
+parser.add_argument('--nfit', type=int, default=50)
 parser.add_argument('--startfit', type=int, default=1)
 parser.add_argument('--prior',default='logflat')
-parser.add_argument('--experiments',nargs='+',default=['Xe'])#['F','Ge', 'Xe','Ge Xe','I','Ge Xe I','Ge Xe F'],['Ilo','Xelo', 'Xehi','Xewide'],['Ar','Ge Xe Ar'],['He', 'Na', 'Ge','Ge He','Ge Na']
+parser.add_argument('--experiments',nargs='+',default=['XeG3'])#['F','Ge', 'Xe','Ge Xe','I','Ge Xe I','Ge Xe F'],['Ilo','Xelo', 'Xehi','Xewide'],['Ar','Ge Xe Ar'],['He', 'Na', 'Ge','Ge He','Ge Na']
 parser.add_argument('--path',default=os.environ['DMDD_AM_MAIN_PATH']+'/../')
-parser.add_argument('--time',default='F')
-parser.add_argument('--GF', default='T')
+parser.add_argument('--time',default='T')
+parser.add_argument('--GF', default='F')
 #'/Users/verag/Research/Repositories/dmdd_2014/scripts/' #macbook
 
 
