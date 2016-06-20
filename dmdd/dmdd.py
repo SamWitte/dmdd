@@ -492,7 +492,7 @@ class MultinestRun(object):
             filename = self.chainspath + '/{}_theoryfitdata_{}.pdf'.format(self.sim_name, sim.experiment.name)
             if self.time_info:
                 Qbins, Qhist, xerr, yerr, Qbins_theory, Qhist_theory, binsize, time_bins, Thist, txerr, tyerr, \
-                Tbins_theory, Thist_theory, t_binsize = sim.plot_data(make_plot=False, return_plot_items=True)
+                Tbins_theory, Thist_theory, t_binsize, tbinsizetheory = sim.plot_data(make_plot=False, return_plot_items=True)
             else:
                 Qbins, Qhist, xerr, yerr, Qbins_theory, Qhist_theory, binsize = sim.plot_data(make_plot=False, return_plot_items=True)
             
@@ -525,7 +525,7 @@ class MultinestRun(object):
                 fitmodel_dRdQ = sim.model.dRdQ(Qbins_theory,0.,**fitmodel_dRdQ_params)
                 filename = self.chainspath + '/{}_theoryfitdata_TIME_{}.pdf'.format(self.sim_name, sim.experiment.name)
                 Qbins, Qhist, xerr, yerr, Qbins_theory, Qhist_theory, binsize, time_bins, Thist, txerr, tyerr, \
-                Tbins_theory, Thist_theory, t_binsize = sim.plot_data(make_plot=False, return_plot_items=True)
+                Tbins_theory, Thist_theory, t_binsize, tbinsizetheory = sim.plot_data(make_plot=False, return_plot_items=True)
                 Thist_fit = np.zeros(len(Tbins_theory))
                 if self.fit_model.modelname_tex is None:
                     if self.fit_model.name in MODELNAME_TEX:
@@ -541,11 +541,11 @@ class MultinestRun(object):
                     if not self.GF:
                         Thist_fit[i] = ((np.trapz(sim.experiment.efficiency(sim.model_Qgrid) * dRdQ_time(sim.model.dRdQ, 
                                         fitmodel_dRdQ_params, sim.model_Qgrid, Tbins_theory[i]), sim.model_Qgrid)) *
-                                        t_binsize*sim.experiment.exposure*YEAR_IN_S)
+                                        tbinsizetheory*sim.experiment.exposure*YEAR_IN_S)
                     else:
 
                         Thist_fit[i] = (np.trapz(sim.experiment.efficiency(sim.model_Qgrid) * sim.model.dRdQ(sim.model_Qgrid, Tbins_theory[i], **fitmodel_dRdQ_params),
-                                              sim.model_Qgrid) * t_binsize*sim.experiment.exposure*YEAR_IN_S )
+                                              sim.model_Qgrid) * tbinsizetheory * sim.experiment.exposure*YEAR_IN_S )
                                               
                 dp.plot_theoryfitdata_time(time_bins, Thist, txerr, tyerr, Tbins_theory, Thist_theory, Thist_fit,
                                         filename=filename, save_file=True, Ntot=Ntot, 
@@ -977,17 +977,18 @@ class Simulation(object):
 
             Tbins_theory = np.linspace(0.,1.,100)
             Thist_theory = np.zeros(100)
+            tbinsizetheory = Tbins_theory[1] - Tbins_theory[0]
             
             for i in range(0, len(Tbins_theory)):
               
                 if self.GF:
                     Thist_theory[i] = ((np.trapz(self.experiment.efficiency(self.model_Qgrid) * self.model.dRdQ(self.model_Qgrid, Tbins_theory[i],
                                         **self.dRdQ_params), self.model_Qgrid)) *
-                                        t_binsize*self.experiment.exposure*YEAR_IN_S)
+                                        tbinsizetheory*self.experiment.exposure*YEAR_IN_S)
                 else:
                     Thist_theory[i] = ((np.trapz(self.experiment.efficiency(self.model_Qgrid) * dRdQ_time(self.model.dRdQ, self.dRdQ_params,
                                         self.model_Qgrid, Tbins_theory[i]), self.model_Qgrid)) *
-                                        t_binsize*self.experiment.exposure*YEAR_IN_S)
+                                        tbinsizetheory*self.experiment.exposure*YEAR_IN_S)
                     
             if make_plot:
                 plt.figure()
@@ -1012,7 +1013,7 @@ class Simulation(object):
 
 
         if return_plot_items and self.time_info:
-            return Qbins, Qhist, xerr, yerr, Qbins_theory, Qhist_theory, binsize, time_bins, Thist, txerr, tyerr, Tbins_theory, Thist_theory, t_binsize
+            return Qbins, Qhist, xerr, yerr, Qbins_theory, Qhist_theory, binsize, time_bins, Thist, txerr, tyerr, Tbins_theory, Thist_theory, t_binsize, tbinsizetheory
         else:
             return Qbins, Qhist, xerr, yerr, Qbins_theory, Qhist_theory, binsize
 
