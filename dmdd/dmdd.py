@@ -14,7 +14,7 @@ from math import cos, pi
 
 on_rtd = False
 
-TIMEONLY=False
+TIMEONLY=True
 
 try:
     import numpy.random as random
