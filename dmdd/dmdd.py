@@ -541,11 +541,11 @@ class MultinestRun(object):
                     if not self.GF:
                         Thist_fit[i] = ((np.trapz(sim.experiment.efficiency(sim.model_Qgrid) * dRdQ_time(sim.model.dRdQ, 
                                         fitmodel_dRdQ_params, sim.model_Qgrid, Tbins_theory[i]), sim.model_Qgrid)) *
-                                        tbinsizetheory*sim.experiment.exposure*YEAR_IN_S)
+                                        sim.experiment.exposure*YEAR_IN_S * t_binsize)
                     else:
 
                         Thist_fit[i] = (np.trapz(sim.experiment.efficiency(sim.model_Qgrid) * sim.model.dRdQ(sim.model_Qgrid, Tbins_theory[i], **fitmodel_dRdQ_params),
-                                              sim.model_Qgrid) * tbinsizetheory * sim.experiment.exposure*YEAR_IN_S )
+                                              sim.model_Qgrid) * sim.experiment.exposure*YEAR_IN_S * t_binsize )
                                               
                 dp.plot_theoryfitdata_time(time_bins, Thist, txerr, tyerr, Tbins_theory, Thist_theory, Thist_fit,
                                         filename=filename, save_file=True, Ntot=Ntot, 
@@ -984,11 +984,11 @@ class Simulation(object):
                 if self.GF:
                     Thist_theory[i] = ((np.trapz(self.experiment.efficiency(self.model_Qgrid) * self.model.dRdQ(self.model_Qgrid, Tbins_theory[i],
                                         **self.dRdQ_params), self.model_Qgrid)) *
-                                        tbinsizetheory*self.experiment.exposure*YEAR_IN_S)
+                                        t_binsize*self.experiment.exposure*YEAR_IN_S)
                 else:
                     Thist_theory[i] = ((np.trapz(self.experiment.efficiency(self.model_Qgrid) * dRdQ_time(self.model.dRdQ, self.dRdQ_params,
                                         self.model_Qgrid, Tbins_theory[i]), self.model_Qgrid)) *
-                                        tbinsizetheory*self.experiment.exposure*YEAR_IN_S)
+                                        t_binsize*self.experiment.exposure*YEAR_IN_S)
                     
             if make_plot:
                 plt.figure()
