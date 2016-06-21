@@ -20,9 +20,9 @@ parser.add_argument('--masses',nargs='+',default=[500],type=float)
 parser.add_argument('--ngroups', type=int, default=512)
 parser.add_argument('--nsimgroups', type=int, default=512)
 parser.add_argument('--nsim', type=int, default=50)
-parser.add_argument('--startsim', type=int, default=1)
+parser.add_argument('--startsim', type=int, default=101)
 parser.add_argument('--nfit', type=int, default=50)
-parser.add_argument('--startfit', type=int, default=1)
+parser.add_argument('--startfit', type=int, default=101)
 parser.add_argument('--prior',default='logflat')
 parser.add_argument('--experiments',nargs='+',default=['Xe'])
 parser.add_argument('--path',default='/home/verag/Projects/Repositories/dmdd-AM/scripts/')
@@ -71,7 +71,8 @@ FITMODELS = [SI_Higgs, anapole]
 
 
 ##get upper limits for a given mass:
-lux=dmdd.Experiment('LUX','xenon', 5, 23, 27.612, eff.efficiency_Xe)
+#lux=dmdd.Experiment('LUX','xenon', 5, 23, 27.612, eff.efficiency_Xe)
+lux=dmdd.Experiment('LUX','xenon', 5, 23, 30.7, eff.efficiency_Xe)
 cdmslite=dmdd.Experiment('CDMSlite','germanium', 0.840, 6, 0.0164, eff.efficiency_Xe)
 supercdms=dmdd.Experiment('SuperCDMS','germanium', 1.6, 12, 1.581, eff.efficiency_Xe)
 sigma_vals = {}

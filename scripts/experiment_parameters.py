@@ -25,7 +25,7 @@ Exposure = {
     'Si': 20.,
     'He': 300.,
     'F': 606.,#note: 400kg-yr is ~62.5 liters of C3F8, for 1 year
-    'LUX2013': 27.612,
+    'LUX2013': 30.7,#old: 27.612,
     'Xelo':2000.,
     'Xehi':2000.,
     'Xewide':2000.,
