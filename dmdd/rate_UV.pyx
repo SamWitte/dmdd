@@ -1300,7 +1300,7 @@ def loglikelihood_timeONLY(np.ndarray[DTYPE_t] tim, object efficiency_fn,
     cdef DTYPE_t Tobs = exposure * 24. * 3600. * 365.
     cdef DTYPE_t two_pi = 2.0 * 3.1415
 
-    cdef unsigned int npoints = 50 
+    cdef unsigned int npoints = 35 
     cdef DTYPE_t result
     cdef DTYPE_t expQmin = log10(Qmin)
     cdef DTYPE_t expQmax = log10(Qmax)
