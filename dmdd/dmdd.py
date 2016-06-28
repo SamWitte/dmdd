@@ -1493,7 +1493,9 @@ class DictDiffer(object):
 
 ##########
 ##########
-def Plot_Modulation(experiment, models, parvals_list, time_info='T', GF=False, color_list=['blue','red','black','aqua','green']):
+def Plot_Modulation(experiment, models, parvals_list, time_info='T',
+                    GF=False, color_list=['blue','red','black','aqua','green'],
+                    label_params=False):
     """
     NOTE: This is only set up for models in rate_UV.
     """
@@ -1564,8 +1566,10 @@ def Plot_Modulation(experiment, models, parvals_list, time_info='T', GF=False, c
                         
     
         
-    
-        label=model.name
+        if label_params:
+            label = '{} ({:.0f} GeV, sigma={:.0f})'.format(model.name,parvals[model.param_names[0]],parvals[model.param_names[1]])
+        else:
+            label = model.name
 
         plt.plot(Tbins_theory, Thist_theory,lw=3,
                  color=color_list[index],
