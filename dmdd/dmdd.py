@@ -1457,14 +1457,8 @@ def Nexpected(element, Qmin, Qmax, exposure, efficiency, start_t, end_t,
     if (fnfp_val is not None) and  (fnfp_name is not None):
         kwargs[fnfp_name] = fnfp_val
 
-#   FOR SOME REASON THIS FUNCTION ISN'T RECOGNIZED?
-#    res = rate_UV.R_time(efficiency, start_t, end_t, **kwargs) * YEAR_IN_S * exposure
-
     res = rate_UV.R(efficiency, **kwargs) * YEAR_IN_S * exposure
     return res
-
-
-
 
 
 ############################################
@@ -1475,8 +1469,7 @@ def dRdQ_time(dRdQ_func, dRdQ_param, Q_vals, t):
     """
     
     kwags = dRdQ_param
-    kwags['v_lag'] = 220.0 + 29.8 * 0.49 * cos(2.0 * pi
-                        * (t - 0.42))
+    kwags['v_lag'] = 220.0 + 29.8 * 0.49 * cos(2.0 * np.pi * (t - 0.42))
     
     result = dRdQ_func(Q_vals,0.,**kwags)
     kwags['v_lag'] = 220.0
@@ -1506,3 +1499,91 @@ class DictDiffer(object):
         return set(o for o in self.intersect if self.past_dict[o] == self.current_dict[o])
 
 
+##########
+##########
+def Plot_Modulation(experiment, models, parvals_list, time_info='T',
+                    GF=False, color_list=['blue','red','black','aqua','green'],
+                    label_params=False):
+    """
+    NOTE: This is only set up for models in rate_UV.
+    """
+              
+    import matplotlib.pyplot as plt
+    
+    plt.figure()
+#        plt.title('%s R(t)' % (experiment.element), fontsize=18)
+    xlabel = 'Time [years]'
+    ylabel = 'dR/dt'
+    ax = plt.gca()
+    fig = plt.gcf()
+    xlabel = ax.set_xlabel(xlabel,fontsize=18)
+    ylabel = ax.set_ylabel(ylabel,fontsize=18)
+    plt.title(experiment.name, fontsize=18)
+        
+    for index in range(len(models)):
+        model = models[index]
+        parvals = parvals_list[index]
+        if not set(parvals.keys())==set(model.param_names):
+            raise ValueError('Must pass parameter value dictionary corresponding exactly to model.param_names')
+        
+        
+        
+        #build param_values from parvals
+        param_values = [parvals[par] for par in model.param_names]
+        param_names = list(model.param_names)
+        for k,v in model.fixed_params.items():
+            param_values.append(v)
+            param_names.append(k)
+        
+        inds = np.argsort(param_names)
+        sorted_parnames = np.array(param_names)[inds]
+        sorted_parvals = np.array(param_values)[inds]
+       
+        #calculate total expected rate
+        dRdQ_params = model.default_rate_parameters.copy()
+        
+        for i,par in enumerate(model.param_names): #model parameters
+            dRdQ_params[par] = param_values[i]
+            
+    
+        dRdQ_params['element'] = experiment.element
+       
+       
+        if time_info == 'T':
+            dRdQ_params['time_info'] = True
+        elif time_info == 'F':
+            dRdQ_params['time_info'] = False
+               
+        dRdQ_params['GF'] = GF
+                                        
+        model_Qgrid = np.linspace(experiment.Qmin, experiment.Qmax, 1000)
+        
+        Tbins_theory = np.linspace(0.,1.,100)
+        Thist_theory = np.zeros(100)
+        tbinsizetheory = Tbins_theory[1] - Tbins_theory[0]
+                
+        for i in range(0, len(Tbins_theory)):
+            if GF:
+                Thist_theory[i] = ((np.trapz(model.dRdQ(model_Qgrid, Tbins_theory[i],
+                                            **dRdQ_params), model_Qgrid)) *
+                                             experiment.exposure * YEAR_IN_S)
+            else:
+                Thist_theory[i] = ((np.trapz(dRdQ_time(model.dRdQ, dRdQ_params,
+                                            model_Qgrid, Tbins_theory[i]), model_Qgrid)) *
+                                            experiment.exposure * YEAR_IN_S)
+                        
+    
+        
+        if label_params:
+            label = '{} ({:.0f} GeV, sigma={:.0f})'.format(model.name,parvals[model.param_names[0]],parvals[model.param_names[1]])
+        else:
+            label = model.name
+
+        plt.plot(Tbins_theory, Thist_theory,lw=3,
+                 color=color_list[index],
+                 label=label)
+    
+    
+        plt.legend(prop={'size':16},numpoints=1)
+
+    return 
