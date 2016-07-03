@@ -535,7 +535,7 @@ class MultinestRun(object):
                                         fitmodel_dRdQ_params, sim.model_Qgrid, Tbins_theory[i]), sim.model_Qgrid)) *
                                         sim.experiment.exposure*YEAR_IN_S * t_binsize)
                     else:
-
+                        fitmodel_dRdQ_params['time_info']=True
                         Thist_fit[i] = (np.trapz(sim.experiment.efficiency(sim.model_Qgrid) * sim.model.dRdQ(sim.model_Qgrid, Tbins_theory[i], **fitmodel_dRdQ_params),
                                               sim.model_Qgrid) * sim.experiment.exposure*YEAR_IN_S * t_binsize )
                                               
@@ -725,6 +725,7 @@ class Simulation(object):
             R_integrand =  self.model_dRdQ * efficiencies
             self.model_R = np.trapz(R_integrand,self.model_Qgrid)
             dRdQ_params['time_info'] = self.time_info
+            
         else:
             self.model_dRdQ = self.model.dRdQ(self.model_Qgrid,0.,**dRdQ_params)
             R_integrand =  self.model_dRdQ * efficiencies
