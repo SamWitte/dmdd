@@ -21,7 +21,7 @@ Target = {
     'XeDouble': 'xenon',
     'XeTriple': 'xenon',
     'Xe10x': 'xenon',
-}#[target element name]
+}
 Exposure = {
     'I': 424./2.,
     'Na':76./2.,
@@ -93,7 +93,7 @@ End = {
     'XeDouble':1.,
     'XeTriple':1.,
     'Xe10x':1.,
-    }
+}
 Qmin = { 
     'I': 22.2,
     'Na':6.7,
@@ -143,6 +143,8 @@ Qmax = {
     'Xe10x':40.,
     }#[keV]
 
+
+>>>>>>> New experimental params
 Colors = {
     'Xe': 'Maroon',
     'Ge':'DarkBlue',
@@ -214,7 +216,7 @@ EnergyResolution = {
     'XeDouble':True,
     'XeTriple':True,
     'Xe10x':True,
-    }
+}
 Experiment_LaTeX = {
     'Xe': 'Xe',
     'Ge':'Ge',
