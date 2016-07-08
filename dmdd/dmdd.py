@@ -43,9 +43,17 @@ except KeyError:
     logging.warning('DMDD_MAIN_PATH environment variable not defined, defaulting to:   ~/.dmdd')
     MAIN_PATH = os.path.expanduser('~/.dmdd') #os.getcwd()
 
-SIM_PATH = MAIN_PATH + '/simulations_uv/'
-CHAINS_PATH = MAIN_PATH + '/chains_uv/'
-RESULTS_PATH = MAIN_PATH + '/results_uv'
+#SIM_PATH = MAIN_PATH + '/simulations_uv/'
+#CHAINS_PATH = MAIN_PATH + '/chains_uv/'
+#RESULTS_PATH = MAIN_PATH + '/results_uv/'
+
+#SIM_PATH = MAIN_PATH + '/simulations_uv_noGF/'
+#CHAINS_PATH = MAIN_PATH + '/chains_uv_noGF/'
+#RESULTS_PATH = MAIN_PATH + '/results_uv_noGF/'
+
+SIM_PATH = MAIN_PATH + '/simulations_uv_time/'
+CHAINS_PATH = MAIN_PATH + '/chains_uv_time/'
+RESULTS_PATH = MAIN_PATH + '/results_uv_time'
 
 if not os.path.exists(SIM_PATH):
     os.makedirs(SIM_PATH)
@@ -1494,7 +1502,9 @@ class DictDiffer(object):
 
 ##########
 ##########
-def Plot_Modulation(experiment, models, parvals_list, time_info='T', GF=False, color_list=['blue','red','black','aqua','green']):
+def Plot_Modulation(experiment, models, parvals_list, time_info='T',
+                    GF=False, color_list=['blue','red','black','aqua','green'],
+                    label_params=False):
     """
     NOTE: This is only set up for models in rate_UV.
     """
@@ -1565,8 +1575,10 @@ def Plot_Modulation(experiment, models, parvals_list, time_info='T', GF=False, c
                         
     
         
-    
-        label=model.name
+        if label_params:
+            label = '{} ({:.0f} GeV, sigma={:.0f})'.format(model.name,parvals[model.param_names[0]],parvals[model.param_names[1]])
+        else:
+            label = model.name
 
         plt.plot(Tbins_theory, Thist_theory,lw=3,
                  color=color_list[index],
