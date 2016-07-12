@@ -3,7 +3,7 @@ import os
 cimport numpy as np
 cimport cython
 from cpython cimport bool
-from scipy.interpolate import griddata,interp1d,interp2d
+#from scipy.interpolate import griddata,interp1d,interp2d
 
 
 DTYPE = np.float
@@ -55,6 +55,25 @@ def trapz(np.ndarray[DTYPE_t] y, np.ndarray[DTYPE_t] x):
         tot += 0.5*(y[i]+y[i+1])*(x[i+1]-x[i])
     return tot
 
+
+
+def interp1d(np.ndarray[DTYPE_t] x, np.ndarray[DTYPE_t] y, DTYPE_t x0):
+    cdef int i = 0
+    cdef DTYPE_t res
+
+    while x[i] < x0:
+        i = i + 1
+        
+    if x[i] == x0:
+        return y[i]
+
+    res = y[i] + (y[i+1] - y[i]) * (x0 - x[i]) / (x[i+1] - x[i])
+    return res
+        
+
+    
+
+
 def log_fact(DTYPE_t xx):
     """
     Approximate formula for ln(x!).
@@ -99,6 +118,9 @@ def eta(DTYPE_t v_min, DTYPE_t v_esc, DTYPE_t v_rms, DTYPE_t v_lag):
     
     return res
 
+def testf(DTYPE_t v_min):
+    return interp1d(eta0_a1_tabbed[:,0], eta0_a1_tabbed[:,1], v_min)
+
 
 def eta_GF(DTYPE_t v_min, DTYPE_t time, bool time_info):
     """
@@ -111,14 +133,14 @@ def eta_GF(DTYPE_t v_min, DTYPE_t time, bool time_info):
 
     if v_min <= vmin_max:
         if time_info:
-            res = 3. * 10.**5. * (interp1d(eta0_a0_tabbed[:,0], eta0_a0_tabbed[:,1])(v_min) + 
-                  interp1d(eta0_a1_tabbed[:,0], eta0_a1_tabbed[:,1])(v_min) * np.cos(2. * np.pi * (time - 0.4178)) +
-                  interp1d(eta0_b1_tabbed[:,0], eta0_b1_tabbed[:,1])(v_min) * np.sin(2. * np.pi * (time - 0.4178))) #+
+            res = 3. * 10.**5. * (interp1d(eta0_a0_tabbed[:,0], eta0_a0_tabbed[:,1], v_min) + 
+                  interp1d(eta0_a1_tabbed[:,0], eta0_a1_tabbed[:,1], v_min) * cos(2. * pi * (time - 0.4178)) +
+                  interp1d(eta0_b1_tabbed[:,0], eta0_b1_tabbed[:,1], v_min) * sin(2. * pi * (time - 0.4178))) #+
 #            interp1d(eta0_a2_tabbed[:,0], eta0_a2_tabbed[:,1])(v_min) * cos(4. * np.pi * (time - 0.4178)) +
 #            interp1d(eta0_b2_tabbed[:,0], eta0_b2_tabbed[:,1])(v_min) * sin(4. * np.pi * (time - 0.4178)))
 #        res = 3. * 10.**5. * griddata(eta0_tabbed[:,0:2],eta0_tabbed[:,2],(v_min,time))
         else:   
-            res = 3. * 10.**5. * (interp1d(eta0_a0_tabbed[:,0], eta0_a0_tabbed[:,1])(v_min))
+            res = 3. * 10.**5. * (interp1d(eta0_a0_tabbed[:,0], eta0_a0_tabbed[:,1], v_min))
     else:
         res = eta(v_min, 533., 220., 220.)
     
@@ -136,13 +158,13 @@ def zeta_GF(DTYPE_t v_min, DTYPE_t time, bool time_info):
 
     if v_min <= vmin_max:
         if time_info:
-            res = (interp1d(eta1_a0_tabbed[:,0], eta1_a0_tabbed[:,1])(v_min) + 
-                   interp1d(eta1_a1_tabbed[:,0], eta1_a1_tabbed[:,1])(v_min) * np.cos(2. * np.pi * (time - 0.4178)) +
-                   interp1d(eta1_b1_tabbed[:,0], eta1_b1_tabbed[:,1])(v_min) * np.sin(2. * np.pi * (time - 0.4178)))  / (3.*10**5.) #+
+            res = (interp1d(eta1_a0_tabbed[:,0], eta1_a0_tabbed[:,1], v_min) + 
+                   interp1d(eta1_a1_tabbed[:,0], eta1_a1_tabbed[:,1], v_min) * cos(2. * pi * (time - 0.4178)) +
+                   interp1d(eta1_b1_tabbed[:,0], eta1_b1_tabbed[:,1], v_min) * sin(2. * pi * (time - 0.4178)))  / (3.*10**5.) #+
 #            interp1d(eta1_a2_tabbed[:,0], eta1_a2_tabbed[:,1])(v_min) * cos(4. * np.pi * (time - 0.4178)) +
 #            interp1d(eta1_b2_tabbed[:,0], eta1_b2_tabbed[:,1])(v_min) * sin(4. * np.pi * (time - 0.4178))) / (3.*10**5.) 
         else:
-            res = interp1d(eta1_a0_tabbed[:,0], eta1_a0_tabbed[:,1])(v_min) / (3.*10**5.) 
+            res = interp1d(eta1_a0_tabbed[:,0], eta1_a0_tabbed[:,1], v_min) / (3.*10**5.) 
     else:
         res = zeta(v_min, 533., 220., 220.)
 
