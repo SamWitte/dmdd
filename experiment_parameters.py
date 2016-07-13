@@ -144,7 +144,6 @@ Qmax = {
     }#[keV]
 
 
->>>>>>> New experimental params
 Colors = {
     'Xe': 'Maroon',
     'Ge':'DarkBlue',
