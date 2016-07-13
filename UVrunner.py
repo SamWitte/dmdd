@@ -90,7 +90,7 @@ Haxton_run = dmdd.MultinestRun(args.simname, experiments, simmodel, param_values
                                 asimov=args.asimov, nbins_asimov=args.nasbin,
                                 n_live_points=args.nlive, evidence_tolerance=args.evtol,
                                 sampling_efficiency=args.seff, resume=args.resume, basename=args.base,
-                                time_info=args.time, GF=GF)
+                                time_info=args.time, GF=GF, TIMEONLY=False)
 if args.fit:
     Haxton_run.fit()
 if args.vis:

@@ -14,8 +14,6 @@ from math import cos, pi
 
 on_rtd = False
 
-TIMEONLY=False
-
 try:
     import numpy.random as random
     import numpy as np
@@ -179,7 +177,8 @@ class MultinestRun(object):
                  asimov=False, nbins_asimov=20,
                  n_live_points=2000, evidence_tolerance=0.1,
                  sampling_efficiency=0.3, resume=False, basename='1-',
-                 silent=False, empty_run=False, time_info='T', GF=False):
+                 silent=False, empty_run=False, time_info='T', GF=False,
+                 TIMEONLY=False):
        
         if type(experiments) == Experiment:
             experiments = [experiments]
@@ -191,6 +190,8 @@ class MultinestRun(object):
             self.time_info = False
         
         self.GF = GF
+        self.TIMEONLY = TIMEONLY
+        
         self.sim_name = sim_name
         self.experiments = experiments
         self.sim_model = sim_model
@@ -305,13 +306,10 @@ class MultinestRun(object):
             for kw,val in sim.experiment.parameters.iteritems():
                 kwargs[kw] = val
             kwargs['energy_resolution'] = sim.experiment.energy_resolution
-            if not self.time_info:
-                res += self.fit_model.loglikelihood(sim.Q, sim.experiment.efficiency, **kwargs)
-            else:
-                if TIMEONLY:
-                    res += self.fit_model.loglikelihood(sim.Q[:,1], sim.experiment.efficiency, **kwargs)
-                else:
-                    res += self.fit_model.loglikelihood(sim.Q[:,0], sim.Q[:,1], sim.experiment.efficiency, **kwargs)
+            kwargs['TIMEONLY'] = self.TIMEONLY
+
+            res += self.fit_model.loglikelihood(sim.Q[:,0], sim.Q[:,1], sim.experiment.efficiency, **kwargs)
+            
         return res
 
   
@@ -791,10 +789,7 @@ class Simulation(object):
             if asimov:
                 raise ValueError('Asimov simulations not yet implemented!')
             else: 
-                if self.time_info:
-                    Q = np.loadtxt(self.datafile)
-                else:                    
-                    Q = np.loadtxt(self.datafile)[:, 0]
+                Q = np.loadtxt(self.datafile)
                 self.Q = np.atleast_1d(Q)
                 self.N = len(self.Q)
                 
@@ -803,10 +798,7 @@ class Simulation(object):
         if asimov:
             raise ValueError('Asimov not yet implemented!')
         else:
-            if self.time_info:
-                self.N = len(self.Q)
-            else:
-                self.N = len(self.Q)
+            self.N = len(self.Q)
 
         if force_sim:
             self.plot_data(plot_nbins=plot_nbins, plot_theory=plot_theory, save_plot=True)
@@ -924,10 +916,9 @@ class Simulation(object):
             If ``True``, then function will return lots of things.
             
         """
-        if self.time_info:
-            Qhist,bins = np.histogram(self.Q[:,0],plot_nbins)
-        else:
-            Qhist,bins = np.histogram(self.Q,plot_nbins)
+
+        Qhist,bins = np.histogram(self.Q[:,0],plot_nbins)
+
         
         Qbins = (bins[1:]+bins[:-1])/2. 
         binsize = Qbins[1]-Qbins[0] #valid only for uniform gridding.
@@ -963,12 +954,7 @@ class Simulation(object):
                 plt.savefig(self.plotfile, bbox_extra_artists=[xlabel, ylabel], bbox_inches='tight')
 
         if self.time_info:
- #           arrangetime = np.zeros(len(self.Q[:,1]))
- #           for i in range(0, len(self.Q[:,1])):
- #               if self.Q[i,1] < 0.17:                
- #                   arrangetime[i] = self.Q[i,1]+1.
- #               else:
- #                   arrangetime[i] = self.Q[i,1]
+
             Thist,tbins = np.histogram(self.Q[:,1], bins=[0.,.1,.2,.3,.4,.5,.6,.7,.8,.9,1.])
             time_bins = (tbins[1:]+tbins[:-1])/2.
             t_binsize = time_bins[1]-time_bins[0] #valid only for uniform gridding.
@@ -1123,27 +1109,14 @@ class UV_Model(Model):
         default_rate_parameters['GF'] = GF
         default_rate_parameters['time_info'] = self.time_info
         
-        if not self.time_info:
-            Model.__init__(self,name,param_names,
+
+        Model.__init__(self,name,param_names,
                        rate_UV.dRdQ,
                        rate_UV.loglikelihood,
                        default_rate_parameters,
                        **kwargs)
-        else:
-            if TIMEONLY:
-                Model.__init__(self,name,param_names,
-                       rate_UV.dRdQ,
-                       rate_UV.loglikelihood_timeONLY,
-                       default_rate_parameters,
-                       **kwargs)
-            else:
-                Model.__init__(self,name,param_names,
-                       rate_UV.dRdQ,
-                       rate_UV.loglikelihood_time,
-                       default_rate_parameters,
-                       **kwargs)
 
-        
+
 class Experiment(object):
     """
     An object representing a dark-matter direct-detection experiment.
