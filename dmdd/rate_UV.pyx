@@ -1238,7 +1238,7 @@ def loglikelihood_time(np.ndarray[DTYPE_t] Q, np.ndarray[DTYPE_t] tim, object ef
         tot -= Nevents * log(Rate)
         for i in range(0, Nevents):
             if not GF:
-                v_lag = v_rms + v_erth_proj * np.cos(two_pi * (tim[i] - mod_phase))
+                v_lag = v_rms + v_erth_proj * cos(two_pi * (tim[i] - mod_phase))
     
             event_inf = dRdQ(np.array([Q[i]]), np.array([tim[i]]), mass=mass,
                                             v_lag=v_lag, v_rms=v_rms, v_esc=v_esc, rho_x=rho_x, element=element,
@@ -1336,7 +1336,7 @@ def loglikelihood_timeONLY(np.ndarray[DTYPE_t] tim, object efficiency_fn,
         tot -= Nevents * log(Rate)
         for i in range(0, Nevents):
             if not GF:
-                v_lag = v_rms + v_erth_proj * np.cos(two_pi * (tim[i] - mod_phase))
+                v_lag = v_rms + v_erth_proj * cos(two_pi * (tim[i] - mod_phase))
     
             event_inf = dRdQ(Qs, np.array([tim[i]]), mass=mass,
                                             v_lag=v_lag, v_rms=v_rms, v_esc=v_esc, rho_x=rho_x, element=element,
