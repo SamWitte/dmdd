@@ -3,6 +3,7 @@ try:
     import rate_genNR  
     import rate_UV 
     import dmdd_efficiencies as eff
+    import helpers
 except ImportError:
     pass
     

@@ -3,24 +3,25 @@ import os
 cimport numpy as np
 cimport cython
 from cpython cimport bool
-from scipy.interpolate import griddata,interp1d,interp2d
+#from scipy.interpolate import griddata,interp1d,interp2d
 
 
 DTYPE = np.float
 ctypedef np.float_t DTYPE_t
 cdef DTYPE_t pi = np.pi #3.14159265359
-#cdef np.float_t[:,:] eta0_tabbed = np.loadtxt(os.environ['DMDD_AM_MAIN_PATH']+'/..'+'/dmdd/Eta0_GF.dat')
-#cdef np.float_t[:,:] eta1_tabbed = np.loadtxt(os.environ['DMDD_AM_MAIN_PATH']+'/..'+'/dmdd/Eta1_GF.dat')
-cdef np.float_t[:,:] eta0_a0_tabbed = np.loadtxt(os.environ['DMDD_AM_MAIN_PATH']+'/..'+'/dmdd/eta0_a0.dat')
-cdef np.float_t[:,:] eta0_a1_tabbed = np.loadtxt(os.environ['DMDD_AM_MAIN_PATH']+'/..'+'/dmdd/eta0_a1.dat')
-cdef np.float_t[:,:] eta0_b1_tabbed = np.loadtxt(os.environ['DMDD_AM_MAIN_PATH']+'/..'+'/dmdd/eta0_b1.dat')
-#cdef np.float_t[:,:] eta0_a2_tabbed = np.loadtxt(os.environ['DMDD_AM_MAIN_PATH']+'/..'+'/dmdd/eta0_a2.dat')
-#cdef np.float_t[:,:] eta0_b2_tabbed = np.loadtxt(os.environ['DMDD_AM_MAIN_PATH']+'/..'+'/dmdd/eta0_b2.dat')
-cdef np.float_t[:,:] eta1_a0_tabbed = np.loadtxt(os.environ['DMDD_AM_MAIN_PATH']+'/../'+'/dmdd/eta1_a0.dat')
-cdef np.float_t[:,:] eta1_a1_tabbed = np.loadtxt(os.environ['DMDD_AM_MAIN_PATH']+'/../'+'/dmdd/eta1_a1.dat')
-cdef np.float_t[:,:] eta1_b1_tabbed = np.loadtxt(os.environ['DMDD_AM_MAIN_PATH']+'/../'+'/dmdd/eta1_b1.dat')
-#cdef np.float_t[:,:] eta1_a2_tabbed = np.loadtxt(os.environ['DMDD_AM_MAIN_PATH']+'/../'+'/dmdd/eta1_a2.dat')
-#cdef np.float_t[:,:] eta1_b2_tabbed = np.loadtxt(os.environ['DMDD_AM_MAIN_PATH']+'/../'+'/dmdd/eta1_b2.dat')
+
+eta0_a0_tabbed = np.loadtxt(os.environ['DMDD_AM_MAIN_PATH']+'/..'+'/dmdd/eta0_a0.dat')
+#cdef np.float_t[:,:] eta0_a0_tabbed = np.loadtxt(os.environ['DMDD_AM_MAIN_PATH']+'/..'+'/dmdd/eta0_a0.dat')
+eta0_a1_tabbed = np.loadtxt(os.environ['DMDD_AM_MAIN_PATH']+'/..'+'/dmdd/eta0_a1.dat')
+#cdef np.float_t[:,:] eta0_a1_tabbed = np.loadtxt(os.environ['DMDD_AM_MAIN_PATH']+'/..'+'/dmdd/eta0_a1.dat')
+eta0_b1_tabbed = np.loadtxt(os.environ['DMDD_AM_MAIN_PATH']+'/..'+'/dmdd/eta0_b1.dat')
+#cdef np.float_t[:,:] eta0_b1_tabbed = np.loadtxt(os.environ['DMDD_AM_MAIN_PATH']+'/..'+'/dmdd/eta0_b1.dat')
+eta1_a0_tabbed = np.loadtxt(os.environ['DMDD_AM_MAIN_PATH']+'/../'+'/dmdd/eta1_a0.dat')
+#cdef np.float_t[:,:] eta1_a0_tabbed = np.loadtxt(os.environ['DMDD_AM_MAIN_PATH']+'/../'+'/dmdd/eta1_a0.dat')
+eta1_a1_tabbed = np.loadtxt(os.environ['DMDD_AM_MAIN_PATH']+'/../'+'/dmdd/eta1_a1.dat')
+#cdef np.float_t[:,:] eta1_a1_tabbed = np.loadtxt(os.environ['DMDD_AM_MAIN_PATH']+'/../'+'/dmdd/eta1_a1.dat')
+eta1_b1_tabbed = np.loadtxt(os.environ['DMDD_AM_MAIN_PATH']+'/../'+'/dmdd/eta1_b1.dat')
+#cdef np.float_t[:,:] eta1_b1_tabbed = np.loadtxt(os.environ['DMDD_AM_MAIN_PATH']+'/../'+'/dmdd/eta1_b1.dat')
  
 
 cdef extern from "math.h":
@@ -53,6 +54,25 @@ def trapz(np.ndarray[DTYPE_t] y, np.ndarray[DTYPE_t] x):
     for i in range(npts-1):
         tot += 0.5*(y[i]+y[i+1])*(x[i+1]-x[i])
     return tot
+
+
+
+def interp1d(np.ndarray[DTYPE_t] x, np.ndarray[DTYPE_t] y, DTYPE_t x0):
+    cdef int i = 0
+    cdef DTYPE_t res
+
+    while x[i] < x0:
+        i = i + 1
+        
+    if x[i] == x0:
+        return y[i]
+
+    res = y[i] + (y[i+1] - y[i]) * (x0 - x[i]) / (x[i+1] - x[i])
+    return res
+        
+
+    
+
 
 def log_fact(DTYPE_t xx):
     """
@@ -108,17 +128,25 @@ def eta_GF(DTYPE_t v_min, DTYPE_t time, bool time_info):
     cdef DTYPE_t res
     cdef DTYPE_t vmin_max=700.
 
+    global eta0_a0_tabbed
+    global eta0_a1_tabbed
+    global eta0_b1_tabbed
+    
+    cdef np.ndarray[DTYPE_t] a0_x = eta0_a0_tabbed[:,0]
+    cdef np.ndarray[DTYPE_t] a0_y = eta0_a0_tabbed[:,1]
+    cdef np.ndarray[DTYPE_t] a1_x = eta0_a1_tabbed[:,0]
+    cdef np.ndarray[DTYPE_t] a1_y = eta0_a1_tabbed[:,1]
+    cdef np.ndarray[DTYPE_t] b1_x = eta0_b1_tabbed[:,0]
+    cdef np.ndarray[DTYPE_t] b1_y = eta0_b1_tabbed[:,1]
+    
+
     if v_min <= vmin_max:
         if time_info:
-            res = 3. * 10.**5. * (interp1d(eta0_a0_tabbed[:,0], eta0_a0_tabbed[:,1])(v_min) + 
-                  interp1d(eta0_a1_tabbed[:,0], eta0_a1_tabbed[:,1])(v_min) * cos(2. * pi * (time - 0.4178)) +
-                  interp1d(eta0_b1_tabbed[:,0], eta0_b1_tabbed[:,1])(v_min) * sin(2. * pi * (time - 0.4178))) #+
-#            interp1d(eta0_a2_tabbed[:,0], eta0_a2_tabbed[:,1])(v_min) * cos(4. * pi * (time - 0.4178)) +
-#            interp1d(eta0_b2_tabbed[:,0], eta0_b2_tabbed[:,1])(v_min) * sin(4. * pi * (time - 0.4178)))
-
-#        res = 3. * 10.**5. * griddata(eta0_tabbed[:,0:2],eta0_tabbed[:,2],(v_min,time))
+            res = 3. * 10.**5. * (interp1d(a0_x, a0_y, v_min) + 
+                  interp1d(a1_x, a1_y, v_min) * cos(2. * pi * (time - 0.4178)) +
+                  interp1d(b1_x, b1_y, v_min) * sin(2. * pi * (time - 0.4178))) 
         else:   
-            res = 3. * 10.**5. * (interp1d(eta0_a0_tabbed[:,0], eta0_a0_tabbed[:,1])(v_min))
+            res = 3. * 10.**5. * (interp1d(a0_x, a0_y, v_min))
     else:
         res = eta(v_min, 533., 220., 220.)
     
@@ -134,16 +162,25 @@ def zeta_GF(DTYPE_t v_min, DTYPE_t time, bool time_info):
     cdef DTYPE_t res
     cdef DTYPE_t vmin_max=700.
 
+    global eta1_a0_tabbed
+    global eta1_a1_tabbed
+    global eta1_b1_tabbed
+    
+    cdef np.ndarray[DTYPE_t] a0_x = eta1_a0_tabbed[:,0]
+    cdef np.ndarray[DTYPE_t] a0_y = eta1_a0_tabbed[:,1]
+    cdef np.ndarray[DTYPE_t] a1_x = eta1_a1_tabbed[:,0]
+    cdef np.ndarray[DTYPE_t] a1_y = eta1_a1_tabbed[:,1]
+    cdef np.ndarray[DTYPE_t] b1_x = eta1_b1_tabbed[:,0]
+    cdef np.ndarray[DTYPE_t] b1_y = eta1_b1_tabbed[:,1]
+    
+
     if v_min <= vmin_max:
         if time_info:
-            res = (interp1d(eta1_a0_tabbed[:,0], eta1_a0_tabbed[:,1])(v_min) + 
-                   interp1d(eta1_a1_tabbed[:,0], eta1_a1_tabbed[:,1])(v_min) * cos(2. * pi * (time - 0.4178)) +
-                   interp1d(eta1_b1_tabbed[:,0], eta1_b1_tabbed[:,1])(v_min) * sin(2. * pi * (time - 0.4178)))  / (3.*10**5.) #+
-#            interp1d(eta1_a2_tabbed[:,0], eta1_a2_tabbed[:,1])(v_min) * cos(4. * pi * (time - 0.4178)) +
-#            interp1d(eta1_b2_tabbed[:,0], eta1_b2_tabbed[:,1])(v_min) * sin(4. * pi * (time - 0.4178))) / (3.*10**5.) 
-
+            res = (interp1d(a0_x, a0_y, v_min) + 
+                   interp1d(a1_x, a1_y, v_min) * cos(2. * pi * (time - 0.4178)) +
+                   interp1d(b1_x, b1_y, v_min) * sin(2. * pi * (time - 0.4178)))  / (3.*10**5.) #+
         else:
-            res = interp1d(eta1_a0_tabbed[:,0], eta1_a0_tabbed[:,1])(v_min) / (3.*10**5.) 
+            res = interp1d(a0_x, a0_y, v_min) / (3.*10**5.) 
     else:
         res = zeta(v_min, 533., 220., 220.)
 
