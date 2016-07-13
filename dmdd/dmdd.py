@@ -1561,7 +1561,7 @@ def Plot_Modulation(experiment, models, parvals_list, time_info='T',
         else:
             label = model.name
 
-<<<<<<< HEAD
+
 class DictDiffer(object):
     """
         Calculate the difference between two dictionaries as:
