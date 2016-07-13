@@ -22,6 +22,7 @@ Target = {
     'XeTriple': 'xenon',
     'Xe10x': 'xenon',
 }
+
 Exposure = {
     'I': 424./2.,
     'Na':76./2.,
@@ -46,6 +47,7 @@ Exposure = {
     'XeTriple':6000.,
     'Xe10x':20000.,
     }#[kg-yr]
+
 Start = {
     'I': 0.,
     'Na':0.,
@@ -93,7 +95,8 @@ End = {
     'XeDouble':1.,
     'XeTriple':1.,
     'Xe10x':1.,
-}
+    }
+    
 Qmin = { 
     'I': 22.2,
     'Na':6.7,
@@ -118,6 +121,7 @@ Qmin = {
     'XeTriple':5.,
     'Xe10x':5.,
     }#[keV]
+
 Qmax = {
     'I': 600.,
     'Na':200.,
@@ -216,6 +220,7 @@ EnergyResolution = {
     'XeTriple':True,
     'Xe10x':True,
 }
+
 Experiment_LaTeX = {
     'Xe': 'Xe',
     'Ge':'Ge',
@@ -262,5 +267,4 @@ Experiment_LaTeX = {
     'F+Xe':'F+Xe',
     'Xe+I':'Xe+I',
     'F+Ge':'F+Ge',
-
 }  
