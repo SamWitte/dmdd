@@ -37,8 +37,6 @@ cdef extern from "math.h":
     double exp(double)
     double erf(double)
     double log10(double)
-    
-
 
 def trapz(np.ndarray[DTYPE_t] y, np.ndarray[DTYPE_t] x):
     """
@@ -112,10 +110,10 @@ def eta_GF(DTYPE_t v_min, DTYPE_t time, bool time_info):
     if v_min <= vmin_max:
         if time_info:
             res = 3. * 10.**5. * (interp1d(eta0_a0_tabbed[:,0], eta0_a0_tabbed[:,1])(v_min) + 
-                  interp1d(eta0_a1_tabbed[:,0], eta0_a1_tabbed[:,1])(v_min) * np.cos(2. * np.pi * (time - 0.4178)) +
-                  interp1d(eta0_b1_tabbed[:,0], eta0_b1_tabbed[:,1])(v_min) * np.sin(2. * np.pi * (time - 0.4178))) #+
-#            interp1d(eta0_a2_tabbed[:,0], eta0_a2_tabbed[:,1])(v_min) * cos(4. * np.pi * (time - 0.4178)) +
-#            interp1d(eta0_b2_tabbed[:,0], eta0_b2_tabbed[:,1])(v_min) * sin(4. * np.pi * (time - 0.4178)))
+                  interp1d(eta0_a1_tabbed[:,0], eta0_a1_tabbed[:,1])(v_min) * cos(2. * pi * (time - 0.4178)) +
+                  interp1d(eta0_b1_tabbed[:,0], eta0_b1_tabbed[:,1])(v_min) * sin(2. * pi * (time - 0.4178))) #+
+#            interp1d(eta0_a2_tabbed[:,0], eta0_a2_tabbed[:,1])(v_min) * cos(4. * pi * (time - 0.4178)) +
+#            interp1d(eta0_b2_tabbed[:,0], eta0_b2_tabbed[:,1])(v_min) * sin(4. * pi * (time - 0.4178)))
 #        res = 3. * 10.**5. * griddata(eta0_tabbed[:,0:2],eta0_tabbed[:,2],(v_min,time))
         else:   
             res = 3. * 10.**5. * (interp1d(eta0_a0_tabbed[:,0], eta0_a0_tabbed[:,1])(v_min))
@@ -137,10 +135,10 @@ def zeta_GF(DTYPE_t v_min, DTYPE_t time, bool time_info):
     if v_min <= vmin_max:
         if time_info:
             res = (interp1d(eta1_a0_tabbed[:,0], eta1_a0_tabbed[:,1])(v_min) + 
-                   interp1d(eta1_a1_tabbed[:,0], eta1_a1_tabbed[:,1])(v_min) * np.cos(2. * np.pi * (time - 0.4178)) +
-                   interp1d(eta1_b1_tabbed[:,0], eta1_b1_tabbed[:,1])(v_min) * np.sin(2. * np.pi * (time - 0.4178)))  / (3.*10**5.) #+
-#            interp1d(eta1_a2_tabbed[:,0], eta1_a2_tabbed[:,1])(v_min) * cos(4. * np.pi * (time - 0.4178)) +
-#            interp1d(eta1_b2_tabbed[:,0], eta1_b2_tabbed[:,1])(v_min) * sin(4. * np.pi * (time - 0.4178))) / (3.*10**5.) 
+                   interp1d(eta1_a1_tabbed[:,0], eta1_a1_tabbed[:,1])(v_min) * cos(2. * pi * (time - 0.4178)) +
+                   interp1d(eta1_b1_tabbed[:,0], eta1_b1_tabbed[:,1])(v_min) * sin(2. * pi * (time - 0.4178)))  / (3.*10**5.) #+
+#            interp1d(eta1_a2_tabbed[:,0], eta1_a2_tabbed[:,1])(v_min) * cos(4. * pi * (time - 0.4178)) +
+#            interp1d(eta1_b2_tabbed[:,0], eta1_b2_tabbed[:,1])(v_min) * sin(4. * pi * (time - 0.4178))) / (3.*10**5.) 
         else:
             res = interp1d(eta1_a0_tabbed[:,0], eta1_a0_tabbed[:,1])(v_min) / (3.*10**5.) 
     else:

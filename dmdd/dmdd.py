@@ -14,7 +14,7 @@ from math import cos, pi
 
 on_rtd = False
 
-TIMEONLY=True
+TIMEONLY=False
 
 try:
     import numpy.random as random
@@ -47,13 +47,13 @@ except KeyError:
 #CHAINS_PATH = MAIN_PATH + '/chains_uv/'
 #RESULTS_PATH = MAIN_PATH + '/results_uv/'
 
-#SIM_PATH = MAIN_PATH + '/simulations_uv_noGF/'
-#CHAINS_PATH = MAIN_PATH + '/chains_uv_noGF/'
-#RESULTS_PATH = MAIN_PATH + '/results_uv_noGF/'
+SIM_PATH = MAIN_PATH + '/simulations_uv_noGF/'
+CHAINS_PATH = MAIN_PATH + '/chains_uv_noGF/'
+RESULTS_PATH = MAIN_PATH + '/results_uv_noGF/'
 
-SIM_PATH = MAIN_PATH + '/simulations_uv_time/'
-CHAINS_PATH = MAIN_PATH + '/chains_uv_time/'
-RESULTS_PATH = MAIN_PATH + '/results_uv_time'
+#SIM_PATH = MAIN_PATH + '/simulations_uv_time/'
+#CHAINS_PATH = MAIN_PATH + '/chains_uv_time/'
+#RESULTS_PATH = MAIN_PATH + '/results_uv_time'
 
 if not os.path.exists(SIM_PATH):
     os.makedirs(SIM_PATH)
@@ -1111,17 +1111,17 @@ class UV_Model(Model):
                                     fnfp_si_massless=1.,  fnfp_sd_massless=1.,
                                     fnfp_anapole_massless=1.,  fnfp_magdip_massless=1.,  fnfp_elecdip_massless=1.,
                                     fnfp_LS_massless=1.,  fnfp_f1_massless=1.,  fnfp_f2_massless=1.,  fnfp_f3_massless=1.,
-                                    v_lag=220.,  v_rms=220.,  v_esc=544.,  rho_x=0.3, GF=False)
+                                    v_lag=220.,  v_rms=220.,  v_esc=544.,  rho_x=0.3, GF=False, time_info=False)
         
         if time_info == 'T':
             self.time_info=True
+            time_tag = 'With_Time'
         else:
             self.time_info = False
-        if self.time_info:
-            time_tag = 'With_Time'
-        elif not self.time_info:
             time_tag = 'No_Time'
+        
         default_rate_parameters['GF'] = GF
+        default_rate_parameters['time_info'] = self.time_info
         
         if not self.time_info:
             Model.__init__(self,name,param_names,
