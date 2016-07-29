@@ -12,6 +12,7 @@ import pickle
 import logging
 import time
 from math import cos, pi
+import copy
 
 on_rtd = False
 
@@ -196,7 +197,7 @@ class MultinestRun(object):
         
         self.GF = GF
         self.TIMEONLY = TIMEONLY
-        
+
         self.sim_name = sim_name
         self.experiments = experiments
         self.sim_model = sim_model
@@ -427,7 +428,7 @@ class MultinestRun(object):
             pickle_old = pickle.load(fin)
             fin.close()
             try:
-                if not compare_dictionaries(pickle_old, pickle_content):
+                if not compare_dictionaries(pickle_content, pickle_old):
                     force_run = True
                     print 'Run pickle file not a match. Forcing run.\n\n'
             except:
@@ -768,8 +769,12 @@ class Simulation(object):
             fin = open(self.picklefile,'rb')
             allpars_old = pickle.load(fin)
             fin.close()
-
-            dictComp = DictDiffer(self.allpars,allpars_old)
+            
+            ahold1 = copy.copy(self.allpars)
+            ahold2 = copy.copy(allpars_old)
+            del ahold1['time_info']
+            del ahold2['time_info']
+            dictComp = DictDiffer(ahold1, ahold2)
 
             if bool(dictComp.changed()):
                 print('Existing simulation does not match current parameters.  Forcing simulation.\n\n')
