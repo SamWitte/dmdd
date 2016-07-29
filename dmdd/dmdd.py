@@ -772,8 +772,11 @@ class Simulation(object):
             
             ahold1 = copy.copy(self.allpars)
             ahold2 = copy.copy(allpars_old)
-            del ahold1['time_info']
-            del ahold2['time_info']
+            try:
+                del ahold1['time_info']
+                del ahold2['time_info']
+            except:
+                pass
             dictComp = DictDiffer(ahold1, ahold2)
 
             if bool(dictComp.changed()):
