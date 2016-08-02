@@ -44,18 +44,9 @@ except KeyError:
     logging.warning('DMDD_MAIN_PATH environment variable not defined, defaulting to:   ~/.dmdd')
     MAIN_PATH = os.path.expanduser('~/.dmdd') #os.getcwd()
 
-#SIM_PATH = MAIN_PATH + '/simulations_uv/'
-#CHAINS_PATH = MAIN_PATH + '/chains_uv/'
-#RESULTS_PATH = MAIN_PATH + '/results_uv/'
-
-
-SIM_PATH = MAIN_PATH + '/simulations_uv_noGF/'
-CHAINS_PATH = MAIN_PATH + '/chains_uv_noGF/'
-RESULTS_PATH = MAIN_PATH + '/results_uv_noGF/'
-
-#SIM_PATH = MAIN_PATH + '/simulations_uv_time/'
-#CHAINS_PATH = MAIN_PATH + '/chains_uv_time/'
-#RESULTS_PATH = MAIN_PATH + '/results_uv_time'
+SIM_PATH = MAIN_PATH + '/simulations_uv'
+CHAINS_PATH = MAIN_PATH + '/chains_uv'
+RESULTS_PATH = MAIN_PATH + '/results_uv/'
 
 
 if not os.path.exists(SIM_PATH):
@@ -185,6 +176,15 @@ class MultinestRun(object):
                  silent=False, empty_run=False, time_info='T', GF=False,
                  TIMEONLY=False):
 
+        if GF:
+            sim_root += '/'
+            chains_root += '/'
+        elif not GF and TIMEONLY:
+            sim_root += '_noGF/'
+            chains_root += '_time'
+        else:
+            sim_root += '_noGF/'
+            chains_root += '_noGF'
        
         if type(experiments) == Experiment:
             experiments = [experiments]
@@ -672,6 +672,9 @@ class Simulation(object):
                  asimov=False, nbins_asimov=20,
                  plot_nbins=20, plot_theory=True, 
                  silent=False, time_info='T', GF=False):
+        
+        if path == '/simulations_uv' and not GF:
+            path += '_noGF/'
         
         self.GF=GF
         self.silent = silent

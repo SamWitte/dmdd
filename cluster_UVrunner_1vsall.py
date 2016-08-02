@@ -23,10 +23,11 @@ parser.add_argument('--startsim', type=int, default=1)
 parser.add_argument('--nfit', type=int, default=50)
 parser.add_argument('--startfit', type=int, default=1)
 parser.add_argument('--prior',default='logflat')
-parser.add_argument('--experiments',nargs='+',default=['XeG3'])#['F','Ge', 'Xe','Ge Xe','I','Ge Xe I','Ge Xe F'],['Ilo','Xelo', 'Xehi','Xewide'],['Ar','Ge Xe Ar'],['He', 'Na', 'Ge','Ge He','Ge Na']
+parser.add_argument('--experiments',nargs='+',default=['Xe'])#['F','Ge', 'Xe','Ge Xe','I','Ge Xe I','Ge Xe F'],['Ilo','Xelo', 'Xehi','Xewide'],['Ar','Ge Xe Ar'],['He', 'Na', 'Ge','Ge He','Ge Na']
 parser.add_argument('--path',default=os.environ['DMDD_AM_MAIN_PATH']+'/../')
 parser.add_argument('--time',default='T')
-parser.add_argument('--GF', default='F')
+parser.add_argument('--GF', default='T')
+parser.add_argument('--timeonly', default='F')
 #'/Users/verag/Research/Repositories/dmdd_2014/scripts/' #macbook
 
 
@@ -135,9 +136,11 @@ if DO_SIM:
                 sigma_name = simmod.param_names[1]
                 for i in range(STARTSIM,NSIM+STARTSIM):
                     simname='sim%d' % i
-                    cmd = 'cd '+ SCRIPTS_PATH + '\n' + 'python UVrunner.py --simname {} --simpars mass {} --parvals {} {:.16f} -e {} --GF {}'.format(simname, sigma_name, mass, 
-                                                                                                                                                       sigma_vals[mass][simmod.name],
-                                                                                                                                                       experiment, args.GF)
+                    cmd = 'cd '+ SCRIPTS_PATH + '\n' + 'python UVrunner.py ' +\
+                          '--simname {} --simpars mass {} '.format(simname, sigma_name) +\
+                          ' --parvals {} {:.16f} '.format(mass,sigma_vals[mass][simmod.name]) +\
+                          '-e {} --GF {} --timeonly {}'.format(experiment, args.GF, args.timeonly)
+                          
                     if len(simmod.fixed_params) > 0:
                         cmd += ' --fixedsimnames {} --fixedsimvals {}'.format(simmod.fixed_params.keys()[0], simmod.fixed_params.values()[0])
 
@@ -179,10 +182,10 @@ if DO_FIT:
                 for i in range(STARTFIT,NFIT+STARTFIT):
                     simname='sim%d' % i
                     cmd = 'cd ' + SCRIPTS_PATH + '\n' +\
-                            'python UVrunner.py --fit --vis --simmodelname {} --simname {} --simpars mass {} --parvals {} {:.16f} -e {} --time {} --GF {}'.format(simmod.name, simname, 
-                                                                                                    sigma_name, mass, 
-                                                                                                    sigma_vals[mass][simmod.name], 
-                                                                                                    experiment, args.time, args.GF)
+                            'python UVrunner.py --fit --vis --simmodelname {} '.format(simmod.name) +\
+                            '--simname {} --simpars mass {} '.format(simname,sigma_name) +\
+                            '--parvals {} {:.16f} '.format(mass, sigma_vals[mass][simmod.name]) +\
+                            '-e {} --time {} --GF {} --timeonly {}'.format(experiment, args.time, args.GF, args.timeonly)
                     if len(simmod.fixed_params) > 0:
                         cmd += ' --fixedsimnames {} --fixedsimvals {}'.format(simmod.fixed_params.keys()[0], simmod.fixed_params.values()[0])
                         

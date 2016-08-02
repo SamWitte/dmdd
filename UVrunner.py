@@ -51,9 +51,14 @@ parser.add_argument('--resume', action='store_true')
 parser.add_argument('--base', default=basename)
 parser.add_argument('--time', default='T')
 parser.add_argument('--GF', default='F')
+parser.add_argument('--timeonly', default='F')
 
 args = parser.parse_args()
 
+if args.timeonly == 'T':
+    timeonly = True
+elif args.timeonly == 'F':
+    timeonly = False
 if args.GF == 'T':
     GF = True
 elif args.GF == 'F':
@@ -66,8 +71,6 @@ for i,experiment in enumerate(args.exps):
                                      Qmin[experiment], Qmax[experiment],
                                      Exposure[experiment], efficiency, 0., 1.,
                                      energy_resolution=EnergyResolution[experiment]))
-
-
 
 fixedsim_params = {}
 for i,par in enumerate(args.fixedsimnames):
@@ -90,7 +93,7 @@ Haxton_run = dmdd.MultinestRun(args.simname, experiments, simmodel, param_values
                                 asimov=args.asimov, nbins_asimov=args.nasbin,
                                 n_live_points=args.nlive, evidence_tolerance=args.evtol,
                                 sampling_efficiency=args.seff, resume=args.resume, basename=args.base,
-                                time_info=args.time, GF=GF, TIMEONLY=False)
+                                time_info=args.time, GF=GF, TIMEONLY=timeonly)
 
 if args.fit:
     Haxton_run.fit()
