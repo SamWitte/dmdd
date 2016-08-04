@@ -350,7 +350,8 @@ def line_plots_1vsall(nsim=100, startsim=1, masses=[50.],
                       simmodels=[SI_Higgs], models=[SI_Higgs, anapole], time_info='True', GF=False, 
                       filelabel='No_Time', allverbose=True, verbose=True,
                       results_root='/Users/SamWitte/Desktop/dmdd/Storage/results_uv/',
-                      saveplots=True, alpha=0.3, xoffset=0.1, fs=20, fs2=18, sigma_lim_file=None, colors_list=None):
+                      saveplots=True, alpha=0.3, xoffset=0.1, fs=20, fs2=18, sigma_lim_file=None, colors_list=None,
+                      timeonly=False):
     
     if colors_list == None:
         for i,experiment in enumerate(experiments):
@@ -453,7 +454,7 @@ def line_plots_1vsall(nsim=100, startsim=1, masses=[50.],
                             mnrun = MultinestRun('sim{}'.format(n), experimentlist, m, pardic, 
                                                     fitm, prior_ranges=prior_ranges,
                                                     force_sim=False,n_live_points=n_live_points,silent=True,
-                                                    time_info=tval, GF=GF)
+                                                    time_info=tval, GF=GF, TIMEONLY=timeonly)
                             if allverbose:
                                 print ''
                                 print mnrun.foldername
@@ -541,7 +542,7 @@ def OneDhistogram(nsim=50, startsim=1, masses=[50.],
                   experiment_names=['Xe'],#['I','Ilo'], ['Xe','Xelo','Xehi','Xewide']
                   simmodels=[SI_Higgs], models=[SI_Higgs, anapole], time_info='Both', GF=True, 
                   hspace = (1.06 * 50. ** (-1. / 5.)), filelabel='', allverbose=True, verbose=True,
-                  results_root=os.environ['DMDD_AM_MAIN_PATH']+'/results_uv/',
+                  results_root=os.environ['DMDD_AM_MAIN_PATH']+'/results_uv/', timeonly=False,
                   saveplots=True, alpha=0.3, xoffset=0.1, fs=20, fs2=18, sigma_lim_file=None, 
                   colors_list=['Aqua','Red','Black','Green','Magenta','Orange']):
 
@@ -645,7 +646,7 @@ def OneDhistogram(nsim=50, startsim=1, masses=[50.],
                             mnrun = MultinestRun('sim{}'.format(n), experimentlist, m, pardic, 
                                                     fitm, prior_ranges=prior_ranges,
                                                     force_sim=False,n_live_points=n_live_points,silent=True,
-                                                    time_info=tval, GF=GF)
+                                                    time_info=tval, GF=GF, TIMEONLY=timeonly)
                             if allverbose:
                                 print ''
                                 print mnrun.foldername
@@ -728,7 +729,7 @@ def OneDhistogram_timeDiff(nsim=50, startsim=1, masses=[50.],
                   experiment_names=['Xe'],#['I','Ilo'], ['Xe','Xelo','Xehi','Xewide']
                   simmodels=[SI_Higgs], models=[SI_Higgs, anapole], GF=True,
                   hspace = (1.06 * 50. ** (-1. / 5.)), filelabel='', allverbose=True, verbose=True,
-                  results_root=os.environ['DMDD_AM_MAIN_PATH']+'/results_uv/',
+                  results_root=os.environ['DMDD_AM_MAIN_PATH']+'/results_uv/', timeonly=False
                   saveplots=True, alpha=0.3, xoffset=0.1, fs=20, fs2=18, sigma_lim_file=None, 
                   colors_list=['Aqua','Red','Black','Green','Magenta','Orange']):
 
@@ -812,12 +813,12 @@ def OneDhistogram_timeDiff(nsim=50, startsim=1, masses=[50.],
                         mnrun = MultinestRun('sim{}'.format(n), experimentlist, m, pardic, 
                                                 fitm, prior_ranges=prior_ranges,
                                                 force_sim=False,n_live_points=n_live_points,silent=True,
-                                                time_info='T', GF=GF)
+                                                time_info='T', GF=GF, TIMEONLY=timeonly)
                                                 
                         mnrun_nt = MultinestRun('sim{}'.format(n), experimentlist, m, pardic, 
                                                 fitm, prior_ranges=prior_ranges,
                                                 force_sim=False,n_live_points=n_live_points,silent=True,
-                                                time_info='F', GF=GF)
+                                                time_info='F', GF=GF, TIMEONLY=timeonly)
                                                 
                         if allverbose:
                             print ''
