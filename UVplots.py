@@ -83,79 +83,101 @@ MODEL_CLASSES_NAMES = [[SI_Higgs.name, SD_flavoruniversal.name, anapole.name], [
 experiment = 'Xe'
 xe = dmdd.Experiment(experiment,Target[experiment],
                      Qmin[experiment], Qmax[experiment],
-                     Exposure[experiment], dmdd.eff.efficiency_Xe, 0., 1.)
+                     Exposure[experiment], dmdd.eff.efficiency_Xe,
+                     Start[experiment], End[experiment])
 experiment = 'Xelo'
 xelo = dmdd.Experiment(experiment,Target[experiment],
                      Qmin[experiment], Qmax[experiment],
-                     Exposure[experiment], dmdd.eff.efficiency_Xe, 0., 1.)
+                     Exposure[experiment], dmdd.eff.efficiency_Xe,
+                       Start[experiment], End[experiment])
 experiment = 'Xehi'
 xehi = dmdd.Experiment(experiment,Target[experiment],
                      Qmin[experiment], Qmax[experiment],
-                     Exposure[experiment], dmdd.eff.efficiency_Xe, 0., 1.)
+                     Exposure[experiment], dmdd.eff.efficiency_Xe,
+                       Start[experiment], End[experiment])
 experiment = 'Xewide'
 xewide = dmdd.Experiment(experiment,Target[experiment],
                      Qmin[experiment], Qmax[experiment],
-                     Exposure[experiment], dmdd.eff.efficiency_Xe, 0., 1.)
+                     Exposure[experiment], dmdd.eff.efficiency_Xe,
+                         Start[experiment], End[experiment])
 experiment = 'XeG3'
 xeG3 = dmdd.Experiment(experiment,Target[experiment],
                      Qmin[experiment], Qmax[experiment],
-                     Exposure[experiment], dmdd.eff.efficiency_Xe, 0., 1.)
+                     Exposure[experiment], dmdd.eff.efficiency_Xe,
+                       Start[experiment], End[experiment])
 experiment = 'Ilo'
 iodlo = dmdd.Experiment(experiment,Target[experiment],
                      Qmin[experiment], Qmax[experiment],
-                     Exposure[experiment], dmdd.eff.efficiency_Xe, 0., 1.)
+                     Exposure[experiment], dmdd.eff.efficiency_Xe,
+                        Start[experiment], End[experiment])
 experiment = 'Ge'
 ge = dmdd.Experiment(experiment,Target[experiment],
                      Qmin[experiment], Qmax[experiment],
-                     Exposure[experiment], dmdd.eff.efficiency_Xe, 0., 1.)
+                     Exposure[experiment], dmdd.eff.efficiency_Xe,
+                     Start[experiment], End[experiment])
 
 experiment = 'F'
 flu = dmdd.Experiment(experiment,Target[experiment],
                      Qmin[experiment], Qmax[experiment],
-                     Exposure[experiment], dmdd.eff.efficiency_Xe, 0., 1.,
+                     Exposure[experiment], dmdd.eff.efficiency_Xe,
+                      Start[experiment], End[experiment],
                       energy_resolution=False)
 
 experiment = 'Na'
 na = dmdd.Experiment(experiment,Target[experiment],
                      Qmin[experiment], Qmax[experiment],
-                     Exposure[experiment], dmdd.eff.efficiency_Xe, 0., 1.)
+                     Exposure[experiment], dmdd.eff.efficiency_Xe,
+                     Start[experiment], End[experiment])
 
 experiment = 'I'
 iod = dmdd.Experiment(experiment,Target[experiment],
                      Qmin[experiment], Qmax[experiment],
-                     Exposure[experiment], dmdd.eff.efficiency_Xe, 0., 1.)
+                     Exposure[experiment], dmdd.eff.efficiency_Xe,
+                      Start[experiment], End[experiment])
 
 experiment = 'Ar'
 ar = dmdd.Experiment(experiment,Target[experiment],
                      Qmin[experiment], Qmax[experiment],
-                     Exposure[experiment], dmdd.eff.efficiency_Xe, 0., 1.)
+                     Exposure[experiment], dmdd.eff.efficiency_Xe,
+                     Start[experiment], End[experiment])
 
 experiment = 'F+'
 flup = dmdd.Experiment(experiment,Target[experiment],
                      Qmin[experiment], Qmax[experiment],
-                     Exposure[experiment], dmdd.eff.efficiency_Xe, 0., 1.
-                     ,energy_resolution=False)
+                     Exposure[experiment], dmdd.eff.efficiency_Xe,
+                     Start[experiment], End[experiment],
+                     energy_resolution=False)
 
 experiment = 'I+'
 iodp = dmdd.Experiment(experiment,Target[experiment],
                      Qmin[experiment], Qmax[experiment],
-                     Exposure[experiment], dmdd.eff.efficiency_Xe, 0., 1.,
+                     Exposure[experiment], dmdd.eff.efficiency_Xe,
+                     Start[experiment], End[experiment],
                      energy_resolution=False)
 
 experiment = 'XeDouble'
 xeplus = dmdd.Experiment(experiment,Target[experiment],
                        Qmin[experiment], Qmax[experiment],
-                       Exposure[experiment], dmdd.eff.efficiency_Xe, 0., 1.)
+                       Exposure[experiment], dmdd.eff.efficiency_Xe,
+                         Start[experiment], End[experiment])
 
 experiment = 'XeTriple'
 xetrips = dmdd.Experiment(experiment,Target[experiment],
                        Qmin[experiment], Qmax[experiment],
-                       Exposure[experiment], dmdd.eff.efficiency_Xe, 0., 1.)
+                       Exposure[experiment], dmdd.eff.efficiency_Xe,
+                          Start[experiment], End[experiment])
 
 experiment = 'Xe10x'
 xe10x = dmdd.Experiment(experiment,Target[experiment],
                        Qmin[experiment], Qmax[experiment],
-                       Exposure[experiment], dmdd.eff.efficiency_Xe, 0., 1.)
+                       Exposure[experiment], dmdd.eff.efficiency_Xe,
+                       Start[experiment], End[experiment])
+
+experiment = 'XeT'
+xeT = dmdd.Experiment(experiment,Target[experiment],
+                      Qmin[experiment], Qmax[experiment],
+                      Exposure[experiment], dmdd.eff.efficiency_Xe,
+                      Start[experiment], End[experiment])
 
 
 ALL_EXPERIMENTS = {}
@@ -184,11 +206,12 @@ ALL_EXPERIMENTS['F+Xe'] = [flu, xe]
 ALL_EXPERIMENTS['XeDouble'] = xeplus
 ALL_EXPERIMENTS['XeTriple'] = xetrips
 ALL_EXPERIMENTS['Xe10x'] = xe10x
+ALL_EXPERIMENTS['XeT'] = xeT
 
 
 pandax=dmdd.Experiment('PandaX','xenon', 4., 30., 188., dmdd.eff.efficiency_Xe, 0., 1., energy_resolution=True)
 lux=dmdd.Experiment('LUX','xenon', 4., 30., 30.7, dmdd.eff.efficiency_Xe, 0., 1., energy_resolution=True)
-cdmslite=dmdd.Experiment('CDMSlite','germanium', 0.840, 6, 0.0164, dmdd.eff.efficiency_Xe,
+cdmslite=dmdd.Experiment('CDMSlite', 'germanium', 0.840, 6, 0.0164, dmdd.eff.efficiency_Xe,
                          0.,1.,energy_resolution=True)
 supercdms=dmdd.Experiment('SuperCDMS','germanium', 1.6, 12, 1.581, dmdd.eff.efficiency_Xe,
                           0.,1.,energy_resolution=True)
