@@ -69,7 +69,8 @@ for i,experiment in enumerate(args.exps):
     efficiency = dmdd.eff.efficiency_Xe
     experiments.append(dmdd.Experiment(experiment,Target[experiment],
                                      Qmin[experiment], Qmax[experiment],
-                                     Exposure[experiment], efficiency, 0., 1.,
+                                     Exposure[experiment], efficiency,
+                                     Start[experiment], End[experiment],
                                      energy_resolution=EnergyResolution[experiment]))
 
 fixedsim_params = {}
