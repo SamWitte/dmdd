@@ -186,7 +186,8 @@ ALL_EXPERIMENTS['XeTriple'] = xetrips
 ALL_EXPERIMENTS['Xe10x'] = xe10x
 
 
-lux = dmdd.Experiment('LUX','xenon', 5, 23, 30.7, dmdd.eff.efficiency_Xe, 0., 1.,energy_resolution=True)
+pandax=dmdd.Experiment('PandaX','xenon', 4., 30., 188., dmdd.eff.efficiency_Xe, 0., 1., energy_resolution=True)
+lux=dmdd.Experiment('LUX','xenon', 4., 30., 30.7, dmdd.eff.efficiency_Xe, 0., 1., energy_resolution=True)
 cdmslite=dmdd.Experiment('CDMSlite','germanium', 0.840, 6, 0.0164, dmdd.eff.efficiency_Xe,
                          0.,1.,energy_resolution=True)
 supercdms=dmdd.Experiment('SuperCDMS','germanium', 1.6, 12, 1.581, dmdd.eff.efficiency_Xe,
@@ -219,7 +220,8 @@ for m in MODELS_UV1 + MODELS_UV2:
 
 
 Nbg = {
-    lux.name: 4,
+    lux.name: 3.6,
+    pandax.name: 13.95,
     supercdms.name: 4,
     cdmslite.name: 4,
     kimsiod.name: 1,
@@ -232,6 +234,7 @@ Nbg = {
 }
 
 mx_guess = {
+    pandax.name: 1.,
     lux.name: 5.,
     supercdms.name: 5.,
     cdmslite.name: 1.,
@@ -249,6 +252,7 @@ for m in MODELS_UV1 + MODELS_UV2:
     sigma_guess[m.name] = 1e10
 
 sigma_lims = {}
+sigma_pandax={}
 sigma_lux={}
 sigma_cdmslite={}
 sigma_supercdms={}
@@ -262,6 +266,7 @@ sigma_picoD={}
 mmin = 1
 mmax = 1000
 
+
 MASSES=np.logspace(np.log10(mmin),np.log10(mmax),100)
 
 for m in MODELS_UV1 + MODELS_UV2:
@@ -269,6 +274,7 @@ for m in MODELS_UV1 + MODELS_UV2:
 for i,mass in enumerate(MASSES):
   
     sigma_lux[mass]={}
+    sigma_pandax[mass] = {}
     sigma_cdmslite[mass]={}
     sigma_supercdms[mass]={}
     sigma_kimsiodLO[mass]={}
@@ -277,13 +283,18 @@ for i,mass in enumerate(MASSES):
     sigma_picoB[mass]={}
     sigma_picoC[mass]={}
     sigma_picoD[mass]={}
-    
+
     for m in MODELS_UV1 + MODELS_UV2:
         sigma_lux[mass][m.name] = lux.sigma_limit(mass=mass, sigma_guess=sigma_guess[m.name],
                                                     sigma_name=sigma_names[m.name],
                                                     fnfp_name=fnfp_names[m.name],
                                                     fnfp_val=fnfp_vals[m.name],
                                                     Nbackground=Nbg[lux.name])
+        sigma_pandax[mass][m.name] = lux.sigma_limit(mass=mass, sigma_guess=sigma_guess[m.name],
+                                                  sigma_name=sigma_names[m.name],
+                                                  fnfp_name=fnfp_names[m.name],
+                                                  fnfp_val=fnfp_vals[m.name],
+                                                  Nbackground=Nbg[pandax.name])
         sigma_cdmslite[mass][m.name] = cdmslite.sigma_limit(mass=mass, sigma_guess=sigma_guess[m.name],
                                                     sigma_name=sigma_names[m.name],
                                                     fnfp_name=fnfp_names[m.name],
@@ -327,6 +338,7 @@ for i,mass in enumerate(MASSES):
         sigma_lims[m.name][i] = min(x for x in [sigma_supercdms[mass][m.name],
                                      sigma_cdmslite[mass][m.name],
                                      sigma_lux[mass][m.name],
+                                     sigma_pandax[mass][m.name],
                                      sigma_kimsiodLO[mass][m.name],
                                      sigma_kimsiodHI[mass][m.name],
                                      sigma_picoA[mass][m.name],
@@ -369,6 +381,7 @@ def line_plots_1vsall(nsim=100, startsim=1, masses=[50.],
     if len(filelabel)>0:
         filelabel = '_' + filelabel
     if sigma_lim_file is None:
+        sigma_pandax = {}
         sigma_limvals = {}
         sigma_lux = {}
         sigma_supercdms = {}
@@ -384,7 +397,7 @@ def line_plots_1vsall(nsim=100, startsim=1, masses=[50.],
     if time_info == 'Both':
         indexchange = 0
         for x in range(0, len(experiment_labels)):     
-            experiment_labels = np.append(experiment_labels,experiment_labels[x]+'\n No Time')
+            experiment_labels = np.append(experiment_labels,experiment_labels[x] + '\n No Time')
             indexchange += 1
             
     elif time_info == 'False':
@@ -404,18 +417,26 @@ def line_plots_1vsall(nsim=100, startsim=1, masses=[50.],
         if sigma_lim_file is None:
             sigma_limvals[mass] = {}
             sigma_lux[mass] = {}
+            sigma_pandax[mass] = {}
             sigma_cdmslite[mass] = {}
             sigma_supercdms[mass] = {}
             for m in models:
                 sigma_lux[mass][m.name] = lux.sigma_limit(mass=mass, sigma_name=sigma_names[m.name],
-                                                          fnfp_name=fnfp_names[m.name], fnfp_val=fnfp_vals[m.name])
+                                                          fnfp_name=fnfp_names[m.name], fnfp_val=fnfp_vals[m.name],
+                                                          Nbackground=Nbg[lux.name])
+                sigma_pandax[mass][m.name] = pandax.sigma_limit(mass=mass, sigma_name=sigma_names[m.name],
+                                                          fnfp_name=fnfp_names[m.name], fnfp_val=fnfp_vals[m.name],
+                                                          Nbackground=Nbg[pandax.name])
                 sigma_cdmslite[mass][m.name] = cdmslite.sigma_limit(mass=mass, sigma_name=sigma_names[m.name],
-                                                                    fnfp_name=fnfp_names[m.name], fnfp_val=fnfp_vals[m.name])
+                                                                    fnfp_name=fnfp_names[m.name], fnfp_val=fnfp_vals[m.name],
+                                                                    Nbackground=Nbg[cdmslite.name])
                 sigma_supercdms[mass][m.name] = supercdms.sigma_limit(mass=mass, sigma_name=sigma_names[m.name],
-                                                                      fnfp_name=fnfp_names[m.name], fnfp_val=fnfp_vals[m.name])
+                                                                      fnfp_name=fnfp_names[m.name], fnfp_val=fnfp_vals[m.name],
+                                                                      Nbackground=Nbg[supercdms.name])
                 sigma_limvals[mass][m.name]=min(sigma_supercdms[mass][m.name],
                                                 sigma_cdmslite[mass][m.name],
-                                                sigma_lux[mass][m.name])
+                                                sigma_lux[mass][m.name],
+                                                sigma_pandax[mass][m.name])
                 #   sigma_limvals[mass][m.name] = f_sigma_lims(m.name,mass)
 
 
@@ -604,14 +625,21 @@ def OneDhistogram(nsim=50, startsim=1, masses=[50.],
             sigma_supercdms[mass] = {}
             for m in models:
                 sigma_lux[mass][m.name] = lux.sigma_limit(mass=mass, sigma_name=sigma_names[m.name],
-                                                          fnfp_name=fnfp_names[m.name], fnfp_val=fnfp_vals[m.name])
+                                                          fnfp_name=fnfp_names[m.name], fnfp_val=fnfp_vals[m.name],
+                                                          Nbackground=Nbg[lux.name])
+                sigma_pandax[mass][m.name] = lux.sigma_limit(mass=mass, sigma_name=sigma_names[m.name],
+                                                          fnfp_name=fnfp_names[m.name], fnfp_val=fnfp_vals[m.name],
+                                                             Nbackground=Nbg[pandax.name])
                 sigma_cdmslite[mass][m.name] = cdmslite.sigma_limit(mass=mass, sigma_name=sigma_names[m.name],
-                                                                    fnfp_name=fnfp_names[m.name], fnfp_val=fnfp_vals[m.name])
+                                                                    fnfp_name=fnfp_names[m.name], fnfp_val=fnfp_vals[m.name],
+                                                                    Nbackground=Nbg[cdmslite.name])
                 sigma_supercdms[mass][m.name] = supercdms.sigma_limit(mass=mass, sigma_name=sigma_names[m.name],
-                                                                      fnfp_name=fnfp_names[m.name], fnfp_val=fnfp_vals[m.name])
+                                                                      fnfp_name=fnfp_names[m.name], fnfp_val=fnfp_vals[m.name],
+                                                                      Nbackground=Nbg[supercdms.name])
                 sigma_limvals[mass][m.name]=min(sigma_supercdms[mass][m.name],
                                                 sigma_cdmslite[mass][m.name],
-                                                sigma_lux[mass][m.name])
+                                                sigma_lux[mass][m.name],
+                                                sigma_pandax[mass][m.name])
                 #   sigma_limvals[mass][m.name] = f_sigma_lims(m.name,mass)
 
 
@@ -767,14 +795,21 @@ def OneDhistogram_timeDiff(nsim=50, startsim=1, masses=[50.],
             sigma_supercdms[mass] = {}
             for m in models:
                 sigma_lux[mass][m.name] = lux.sigma_limit(mass=mass, sigma_name=sigma_names[m.name],
-                                                          fnfp_name=fnfp_names[m.name], fnfp_val=fnfp_vals[m.name])
+                                                          fnfp_name=fnfp_names[m.name], fnfp_val=fnfp_vals[m.name],
+                                                          Nbackground=Nbg[lux.name])
+                sigma_pandax[mass][m.name] = lux.sigma_limit(mass=mass, sigma_name=sigma_names[m.name],
+                                                          fnfp_name=fnfp_names[m.name], fnfp_val=fnfp_vals[m.name],
+                                                             Nbackground=Nbg[pandax.name])
                 sigma_cdmslite[mass][m.name] = cdmslite.sigma_limit(mass=mass, sigma_name=sigma_names[m.name],
-                                                                    fnfp_name=fnfp_names[m.name], fnfp_val=fnfp_vals[m.name])
+                                                                    fnfp_name=fnfp_names[m.name], fnfp_val=fnfp_vals[m.name],
+                                                                    Nbackground=Nbg[cdmslite.name])
                 sigma_supercdms[mass][m.name] = supercdms.sigma_limit(mass=mass, sigma_name=sigma_names[m.name],
-                                                                      fnfp_name=fnfp_names[m.name], fnfp_val=fnfp_vals[m.name])
+                                                                      fnfp_name=fnfp_names[m.name], fnfp_val=fnfp_vals[m.name],
+                                                                      Nbackground=Nbg[supercdms.name])
                 sigma_limvals[mass][m.name]=min(sigma_supercdms[mass][m.name],
                                                 sigma_cdmslite[mass][m.name],
-                                                sigma_lux[mass][m.name])
+                                                sigma_lux[mass][m.name],
+                                                sigma_pandax[mass][m.name])
                 #   sigma_limvals[mass][m.name] = f_sigma_lims(m.name,mass)
 
 
@@ -925,9 +960,10 @@ def compare_UV_models(masses=[50.], experiment_name='Xe',
    
         for j,m in enumerate(models):
             if m.name not in sigma_limvals.keys():
-                sigma_limvals[m.name] = lux.sigma_limit(mass=mass, sigma_name=sigma_names[m.name], 
+                sigma_limvals[m.name] = pandax.sigma_limit(mass=mass, sigma_name=sigma_names[m.name],
                                                 fnfp_name=fnfp_names[m.name], 
-                                                fnfp_val=fnfp_vals[m.name])
+                                                fnfp_val=fnfp_vals[m.name],
+                                                           Nbackground=Nbg[pandax.name])
 
             kwargs = {
                 'mass': mass,
@@ -1015,14 +1051,21 @@ def line_plots_classes(nsim=50, startsim=1, masses=[50.], experiment_names=['Xe'
         sigma_supercdms[mass] = {}
         for m in allmodels:
             sigma_lux[mass][m.name] = lux.sigma_limit(mass=mass, sigma_name=sigma_names[m.name],
-                                                      fnfp_name=fnfp_names[m.name], fnfp_val=fnfp_vals[m.name])
+                                                      fnfp_name=fnfp_names[m.name], fnfp_val=fnfp_vals[m.name],
+                                                      Nbackground=Nbg[lux.name])
+            sigma_pandax[mass][m.name] = lux.sigma_limit(mass=mass, sigma_name=sigma_names[m.name],
+                                                        fnfp_name=fnfp_names[m.name], fnfp_val=fnfp_vals[m.name],
+                                                         Nbackground=Nbg[pandax.name])
             sigma_cdmslite[mass][m.name] = cdmslite.sigma_limit(mass=mass, sigma_name=sigma_names[m.name],
-                                                                fnfp_name=fnfp_names[m.name], fnfp_val=fnfp_vals[m.name])
+                                                                fnfp_name=fnfp_names[m.name], fnfp_val=fnfp_vals[m.name],
+                                                                Nbackground=Nbg[cdmslite.name])
             sigma_supercdms[mass][m.name] = supercdms.sigma_limit(mass=mass, sigma_name=sigma_names[m.name],
-                                                                  fnfp_name=fnfp_names[m.name], fnfp_val=fnfp_vals[m.name])
+                                                                  fnfp_name=fnfp_names[m.name], fnfp_val=fnfp_vals[m.name],
+                                                                  Nbackground=Nbg[supercdms.name])
             sigma_limvals[mass][m.name]=min(sigma_supercdms[mass][m.name],
                                             sigma_cdmslite[mass][m.name],
-                                            sigma_lux[mass][m.name])
+                                            sigma_lux[mass][m.name],
+                                            sigma_pandax[mass][m.name])
 
 
 
@@ -1131,9 +1174,10 @@ def line_plots_all(nsim=1, startsim=1, masses=[50.], experiment_names=['Xe'],
     for mass in masses:
         sigma_limvals[mass] = {}
         for m in allmodels:
-            sigma_limvals[mass][m.name] = lux.sigma_limit(mass=mass, sigma_name=sigma_names[m.name], 
+            sigma_limvals[mass][m.name] = pandax.sigma_limit(mass=mass, sigma_name=sigma_names[m.name],
                                                             fnfp_name=fnfp_names[m.name], 
-                                                            fnfp_val=fnfp_vals[m.name])
+                                                            fnfp_val=fnfp_vals[m.name],
+                                                             Nbackground=Nbg[pandax.name])
 
         for m in allmodels:
             print 'truth: ', m.name

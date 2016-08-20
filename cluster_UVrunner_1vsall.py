@@ -15,18 +15,18 @@ parser.add_argument('--dosim', action='store_true')
 parser.add_argument('--dumplims', action='store_true')
 parser.add_argument('--limfile',default=None)
 parser.add_argument('--tag',default='')
-parser.add_argument('--masses',nargs='+',default=[500],type=float)
+parser.add_argument('--masses',nargs='+',default=[50],type=float)
 parser.add_argument('--ngroups', type=int, default=512)
 parser.add_argument('--nsimgroups', type=int, default=512)
-parser.add_argument('--nsim', type=int, default=50)
+parser.add_argument('--nsim', type=int, default=1)
 parser.add_argument('--startsim', type=int, default=1)
-parser.add_argument('--nfit', type=int, default=50)
+parser.add_argument('--nfit', type=int, default=1)
 parser.add_argument('--startfit', type=int, default=1)
 parser.add_argument('--prior',default='logflat')
 parser.add_argument('--experiments',nargs='+',default=['Xe'])#['F','Ge', 'Xe','Ge Xe','I','Ge Xe I','Ge Xe F'],['Ilo','Xelo', 'Xehi','Xewide'],['Ar','Ge Xe Ar'],['He', 'Na', 'Ge','Ge He','Ge Na']
 parser.add_argument('--path',default=os.environ['DMDD_AM_MAIN_PATH']+'/../')
 parser.add_argument('--time',default='T')
-parser.add_argument('--GF', default='T')
+parser.add_argument('--GF', default='F')
 parser.add_argument('--timeonly', default='F')
 #'/Users/verag/Research/Repositories/dmdd_2014/scripts/' #macbook
 
@@ -88,7 +88,8 @@ FITMODELS = MODELS1
 
 
 ##get upper limits for a given mass:
-lux=dmdd.Experiment('LUX','xenon', 5, 23, 30.7, dmdd.eff.efficiency_Xe, 0., 1., energy_resolution=True)
+pandax=dmdd.Experiment('PandaX','xenon', 4., 30., 188., dmdd.eff.efficiency_Xe, 0., 1., energy_resolution=True)
+lux=dmdd.Experiment('LUX','xenon', 4., 30., 30.7, dmdd.eff.efficiency_Xe, 0., 1., energy_resolution=True)
 cdmslite=dmdd.Experiment('CDMSlite','germanium', 0.840, 6, 0.0164, dmdd.eff.efficiency_Xe, 0., 1., energy_resolution=True)
 supercdms=dmdd.Experiment('SuperCDMS','germanium', 1.6, 12, 1.581, dmdd.eff.efficiency_Xe, 0., 1., energy_resolution=True)
 sigma_vals = {}
@@ -104,18 +105,25 @@ for mass in MASSES:
         if len(m.fixed_params) > 0:
             sigma_lux[mass][m.name] = lux.sigma_limit(mass=mass, sigma_name=m.param_names[1],
                                                        fnfp_name=m.fixed_params.keys()[0],
-                                                       fnfp_val=m.fixed_params.values()[0])
+                                                       fnfp_val=m.fixed_params.values()[0],
+                                                       Nbackground=3.6)
             sigma_cdmslite[mass][m.name] = cdmslite.sigma_limit(mass=mass, sigma_name=m.param_names[1],
                                                        fnfp_name=m.fixed_params.keys()[0],
                                                        fnfp_val=m.fixed_params.values()[0])
             sigma_supercdms[mass][m.name] = supercdms.sigma_limit(mass=mass, sigma_name=m.param_names[1],
                                                        fnfp_name=m.fixed_params.keys()[0],
                                                        fnfp_val=m.fixed_params.values()[0])
+            sigma_pandax[mass][m.name] = pandax.sigma_limit(mass=mass, sigma_name=m.param_names[1],
+                                                            fnfp_name=m.fixed_params.keys()[0],
+                                                            fnfp_val=m.fixed_params.values()[0],
+                                                            Nbackground=13.95)
 
         else:
-            sigma_lux[mass][m.name] = lux.sigma_limit(mass=mass, sigma_name=m.param_names[1])
+            sigma_lux[mass][m.name] = lux.sigma_limit(mass=mass, sigma_name=m.param_names[1], Nbackground=3.6)
             sigma_cdmslite[mass][m.name] = cdmslite.sigma_limit(mass=mass, sigma_name=m.param_names[1])
             sigma_supercdms[mass][m.name] = supercdms.sigma_limit(mass=mass, sigma_name=m.param_names[1])
+            sigma_pandax[mass][m.name] = pandax.sigma_limit(mass=mass, sigma_name=m.param_names[1],
+                                                            Nbackground=13.95)
         sigma_vals[mass][m.name]=min(sigma_supercdms[mass][m.name],
                                      sigma_cdmslite[mass][m.name],
                                      sigma_lux[mass][m.name])

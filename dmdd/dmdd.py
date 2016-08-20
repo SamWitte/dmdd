@@ -4,6 +4,7 @@ try:
     import rate_UV 
     import dmdd_efficiencies as eff
     import helpers
+    import emcee
 except ImportError:
     pass
     
@@ -292,7 +293,7 @@ class MultinestRun(object):
         max_index = posterior.argmax()
         return samples[max_index,:-1]
     
-    def loglikelihood_total(self,cube,ndim,nparams):
+    def loglikelihood_total(self, cube, ndim, nparams):
         """
         Log-likelihood function used by MultiNest.
     
@@ -318,8 +319,6 @@ class MultinestRun(object):
 
         return res
 
-  
-  
     def logflat_prior(self, cube, ndim, nparams):
         """
         Logflat prior, passed to MultiNest.
@@ -340,7 +339,6 @@ class MultinestRun(object):
                 cube_min,cube_max = self.prior_ranges[params[i]]
                 pow = (np.log10(cube_max) - np.log10(cube_min))*cube[i] + np.log10(cube_min)
                 cube[i] = 10**pow
-  
  
     def flat_prior(self, cube, ndim, nparams):
         """
@@ -453,7 +451,7 @@ class MultinestRun(object):
             nparams = len(self.fit_model.param_names)
             
             pymultinest.run(self.loglikelihood_total, prior_function, nparams, **self.mn_params)
-    
+
             #create pickle file with all info defining this run.
             fout = open(pickle_file,'wb')
             pickle.dump(pickle_content, fout)
@@ -1492,8 +1490,10 @@ class DictDiffer(object):
         return set(o for o in self.intersect if self.past_dict[o] == self.current_dict[o])
 
 
+
 ##########
 ##########
+
 def Plot_Modulation(experiment, models, parvals_list, time_info='T',
                     GF=False, color_list=['blue','red','black','aqua','green'],
                     label_params=False):
@@ -1564,111 +1564,7 @@ def Plot_Modulation(experiment, models, parvals_list, time_info='T',
                 Thist_theory[i] = ((np.trapz(dRdQ_time(model.dRdQ, dRdQ_params,
                                             model_Qgrid, Tbins_theory[i]), model_Qgrid)) *
                                             experiment.exposure * YEAR_IN_S)
-                        
-    
-        
-        if label_params:
-            label = '{} ({:.0f} GeV, sigma={:.0f})'.format(model.name,parvals[model.param_names[0]],parvals[model.param_names[1]])
-        else:
-            label = model.name
 
-
-class DictDiffer(object):
-    """
-        Calculate the difference between two dictionaries as:
-        (1) items added
-        (2) items removed
-        (3) keys same in both but changed values
-        (4) keys same in both and unchanged values
-        """
-    def __init__(self, current_dict, past_dict):
-        self.current_dict, self.past_dict = current_dict, past_dict
-        self.set_current, self.set_past = set(current_dict.keys()), set(past_dict.keys())
-        self.intersect = self.set_current.intersection(self.set_past)
-    def added(self):
-        return self.set_current - self.intersect
-    def removed(self):
-        return self.set_past - self.intersect
-    def changed(self):
-        return set(o for o in self.intersect if self.past_dict[o] != self.current_dict[o])
-    def unchanged(self):
-        return set(o for o in self.intersect if self.past_dict[o] == self.current_dict[o])
-
-
-##########
-##########
-def Plot_Modulation(experiment, models, parvals_list, time_info='T',
-                    GF=False, color_list=['blue','red','black','aqua','green'],
-                    label_params=False):
-    """
-    NOTE: This is only set up for models in rate_UV.
-    """
-              
-    import matplotlib.pyplot as plt
-    
-    plt.figure()
-#        plt.title('%s R(t)' % (experiment.element), fontsize=18)
-    xlabel = 'Time [years]'
-    ylabel = 'dR/dt'
-    ax = plt.gca()
-    fig = plt.gcf()
-    xlabel = ax.set_xlabel(xlabel,fontsize=18)
-    ylabel = ax.set_ylabel(ylabel,fontsize=18)
-    plt.title(experiment.name, fontsize=18)
-        
-    for index in range(len(models)):
-        model = models[index]
-        parvals = parvals_list[index]
-        if not set(parvals.keys())==set(model.param_names):
-            raise ValueError('Must pass parameter value dictionary corresponding exactly to model.param_names')
-        
-        
-        
-        #build param_values from parvals
-        param_values = [parvals[par] for par in model.param_names]
-        param_names = list(model.param_names)
-        for k,v in model.fixed_params.items():
-            param_values.append(v)
-            param_names.append(k)
-        
-        inds = np.argsort(param_names)
-        sorted_parnames = np.array(param_names)[inds]
-        sorted_parvals = np.array(param_values)[inds]
-       
-        #calculate total expected rate
-        dRdQ_params = model.default_rate_parameters.copy()
-        
-        for i,par in enumerate(model.param_names): #model parameters
-            dRdQ_params[par] = param_values[i]
-            
-    
-        dRdQ_params['element'] = experiment.element
-       
-       
-        if time_info == 'T':
-            dRdQ_params['time_info'] = True
-        elif time_info == 'F':
-            dRdQ_params['time_info'] = False
-               
-        dRdQ_params['GF'] = GF
-                                        
-        model_Qgrid = np.linspace(experiment.Qmin, experiment.Qmax, 1000)
-        
-        Tbins_theory = np.linspace(0.,1.,100)
-        Thist_theory = np.zeros(100)
-        tbinsizetheory = Tbins_theory[1] - Tbins_theory[0]
-                
-        for i in range(0, len(Tbins_theory)):
-            if GF:
-                Thist_theory[i] = ((np.trapz(model.dRdQ(model_Qgrid, Tbins_theory[i],
-                                            **dRdQ_params), model_Qgrid)) *
-                                             experiment.exposure * YEAR_IN_S)
-            else:
-                Thist_theory[i] = ((np.trapz(dRdQ_time(model.dRdQ, dRdQ_params,
-                                            model_Qgrid, Tbins_theory[i]), model_Qgrid)) *
-                                            experiment.exposure * YEAR_IN_S)
-                        
-    
         
         if label_params:
             label = '{} ({:.0f} GeV, sigma={:.0f})'.format(model.name,parvals[model.param_names[0]],parvals[model.param_names[1]])
@@ -1681,6 +1577,4 @@ def Plot_Modulation(experiment, models, parvals_list, time_info='T',
     
     
         plt.legend(prop={'size':16},numpoints=1)
-
-
     return 
