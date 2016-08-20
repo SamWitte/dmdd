@@ -4,6 +4,10 @@ try:
     import rate_UV 
     import dmdd_efficiencies as eff
     import helpers
+except ImportError:
+    pass
+
+try:
     import emcee
 except ImportError:
     pass
