@@ -693,10 +693,8 @@ class Simulation(object):
         self.path = path
         self.asimov = asimov
         self.nbins_asimov = nbins_asimov
-    
-       
-        self.file_basename = '{}_{}'.format(name,experiment.name)
 
+        self.file_basename = '{}_{}'.format(name,experiment.name)
         
         inds = np.argsort(self.param_names)
         sorted_parnames = np.array(self.param_names)[inds]
@@ -734,17 +732,16 @@ class Simulation(object):
 
         if self.GF:
             dRdQ_params['time_info'] = False
-            self.model_dRdQ = self.model.dRdQ(self.model_Qgrid,0.,**dRdQ_params)
-            R_integrand =  self.model_dRdQ * efficiencies
+            self.model_dRdQ = self.model.dRdQ(self.model_Qgrid, 0., **dRdQ_params)
+            R_integrand = self.model_dRdQ * efficiencies
             self.model_R = np.trapz(R_integrand,self.model_Qgrid)
             dRdQ_params['time_info'] = self.time_info
             
         else:
-            self.model_dRdQ = self.model.dRdQ(self.model_Qgrid,0.,**dRdQ_params)
-            R_integrand =  self.model_dRdQ * efficiencies
+            self.model_dRdQ = self.model.dRdQ(self.model_Qgrid, 0., **dRdQ_params)
+            R_integrand = self.model_dRdQ * efficiencies
             self.model_R = np.trapz(R_integrand,self.model_Qgrid)
-            
-                
+
         self.model_N = self.model_R * experiment.exposure * YEAR_IN_S
 
         print 'Expected Number of Events: ', self.model_N

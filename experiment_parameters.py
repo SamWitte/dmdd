@@ -21,6 +21,7 @@ Target = {
     'XeDouble': 'xenon',
     'XeTriple': 'xenon',
     'Xe10x': 'xenon',
+    'XeT': 'xenon',
 }
 
 Exposure = {
@@ -46,6 +47,7 @@ Exposure = {
     'XeDouble':4000.,
     'XeTriple':6000.,
     'Xe10x':20000.,
+    'XeT': 1000.,
     }#[kg-yr]
 
 Start = {
@@ -71,6 +73,7 @@ Start = {
     'XeDouble':0.,
     'XeTriple':0.,
     'Xe10x':0.,
+    'XeT': 0.,
      }
 End = {
     'I': 1.,
@@ -95,6 +98,7 @@ End = {
     'XeDouble':1.,
     'XeTriple':1.,
     'Xe10x':1.,
+    'XeT': 2.,
     }
     
 Qmin = { 
@@ -120,6 +124,7 @@ Qmin = {
     'XeDouble':5.,
     'XeTriple':5.,
     'Xe10x':5.,
+    'XeT': 5.,
     }#[keV]
 
 Qmax = {
@@ -145,6 +150,7 @@ Qmax = {
     'XeDouble':40.,
     'XeTriple':40.,
     'Xe10x':40.,
+    'XeT': 40.,
     }#[keV]
 
 
@@ -194,6 +200,7 @@ Colors = {
     'F+Xe':'Green',
     'Xe+I':'Green',
     'F+Ge':'Green',
+    'XeT': 'Maroon',
 }
 
 EnergyResolution = {
@@ -219,6 +226,7 @@ EnergyResolution = {
     'XeDouble':True,
     'XeTriple':True,
     'Xe10x':True,
+    'XeT': True,
 }
 
 Experiment_LaTeX = {
@@ -267,4 +275,5 @@ Experiment_LaTeX = {
     'F+Xe':'F+Xe',
     'Xe+I':'Xe+I',
     'F+Ge':'F+Ge',
+    'XeT': 'Xe(T)',
 }  
