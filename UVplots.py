@@ -933,10 +933,10 @@ def OneDhistogram_timeDiff(nsim=50, startsim=1, masses=[50.],
 
                 probdistr /= np.max(probdistr)
                 avg = np.mean(ys)
-                label = experiment_labels[ii]
-                plt.plot(xlinspace, probdistr, linewidth=1, color=colors_list[ii], label=label)
+                label = experiment_labels[i]
+                plt.plot(xlinspace, probdistr, linewidth=1, color=colors_list[i], label=label)
                 plt.text(0.1, leg_top, experiment_labels[ii] + r'  [<\Delta> = {:.2f}]'.format(avg),
-                         color=colors_list[ii], fontsize=10)
+                         color=colors_list[i], fontsize=10)
                 leg_top -= leg_down
 #                bins = np.linspace(-.09,.09,15)
 #                plt.hist(ys, bins, alpha=0.3, facecolor='r')                    
