@@ -591,8 +591,7 @@ def OneDhistogram(nsim=50, startsim=1, masses=[50.],
                   colors_list=['Aqua','Red','Black','Green','Magenta','Orange']):
 
     xlinspace = np.linspace(0,1,100)
-    
-    
+
     if colors_list == None:
         for i,experiment in enumerate(experiments):
             colors_list = Colors[experiment_names[i]]
@@ -613,6 +612,7 @@ def OneDhistogram(nsim=50, startsim=1, masses=[50.],
         sigma_lux = {}
         sigma_supercdms = {}
         sigma_cdmslite = {}
+        sigma_pandax = {}
     else:
         sigma_limvals = pickle.load(open(sigma_lim_file,'rb'))
     experiment_labels = []#experiment_names
@@ -620,24 +620,24 @@ def OneDhistogram(nsim=50, startsim=1, masses=[50.],
     for i,exn in enumerate(experiment_names):
         experiments.append(ALL_EXPERIMENTS[exn])
         experiment_labels.append(Experiment_LaTeX[exn])
-        
+
     if time_info == 'Both':
         indexchange = 0
-        for x in range(0, len(experiment_labels)):     
-            experiment_labels = np.append(experiment_labels,experiment_labels[x]+'\n No Time')
+        for x in range(0, len(experiment_labels)):
+            experiment_labels = np.append(experiment_labels, experiment_labels[x] + '\n No Time')
             indexchange += 1
-            
+
     elif time_info == 'False':
         for x in range(0, len(experiment_labels)):
             experiment_labels[x] = experiment_labels[x] + '\n No Time'
-         
-    holdarray = copy.copy(experiment_labels)
-    for x in range(0,experiment_labels.size / 2):
-        holdarray[2*x]=experiment_labels[x]
-        holdarray[2*x+1] = experiment_labels[x+experiment_labels.size/2]
-        
-    experiment_labels=holdarray
-    
+    if time_info == 'Both':
+        holdarray = copy.copy(experiment_labels)
+        for x in range(0, len(experiment_labels) / 2):
+            holdarray[2 * x] = experiment_labels[x]
+            holdarray[2 * x + 1] = experiment_labels[x + experiment_labels.size / 2]
+
+        experiment_labels = holdarray
+
     for mass in masses:
         print '{}GeV:'.format(mass)
 
@@ -646,11 +646,12 @@ def OneDhistogram(nsim=50, startsim=1, masses=[50.],
             sigma_lux[mass] = {}
             sigma_cdmslite[mass] = {}
             sigma_supercdms[mass] = {}
+            sigma_pandax[mass] = {}
             for m in models:
                 sigma_lux[mass][m.name] = lux.sigma_limit(mass=mass, sigma_name=sigma_names[m.name],
                                                           fnfp_name=fnfp_names[m.name], fnfp_val=fnfp_vals[m.name],
                                                           Nbackground=Nbg[lux.name])
-                sigma_pandax[mass][m.name] = lux.sigma_limit(mass=mass, sigma_name=sigma_names[m.name],
+                sigma_pandax[mass][m.name] = pandax.sigma_limit(mass=mass, sigma_name=sigma_names[m.name],
                                                           fnfp_name=fnfp_names[m.name], fnfp_val=fnfp_vals[m.name],
                                                              Nbackground=Nbg[pandax.name])
                 sigma_cdmslite[mass][m.name] = cdmslite.sigma_limit(mass=mass, sigma_name=sigma_names[m.name],
@@ -799,6 +800,7 @@ def OneDhistogram_timeDiff(nsim=50, startsim=1, masses=[50.],
         sigma_lux = {}
         sigma_supercdms = {}
         sigma_cdmslite = {}
+        sigma_pandax = {}
     else:
         sigma_limvals = pickle.load(open(sigma_lim_file,'rb'))
     experiment_labels = []#experiment_names
@@ -816,13 +818,14 @@ def OneDhistogram_timeDiff(nsim=50, startsim=1, masses=[50.],
             sigma_lux[mass] = {}
             sigma_cdmslite[mass] = {}
             sigma_supercdms[mass] = {}
+            sigma_pandax[mass] = {}
             for m in models:
                 sigma_lux[mass][m.name] = lux.sigma_limit(mass=mass, sigma_name=sigma_names[m.name],
                                                           fnfp_name=fnfp_names[m.name], fnfp_val=fnfp_vals[m.name],
                                                           Nbackground=Nbg[lux.name])
-                sigma_pandax[mass][m.name] = lux.sigma_limit(mass=mass, sigma_name=sigma_names[m.name],
-                                                          fnfp_name=fnfp_names[m.name], fnfp_val=fnfp_vals[m.name],
-                                                             Nbackground=Nbg[pandax.name])
+                sigma_pandax[mass][m.name] = pandax.sigma_limit(mass=mass, sigma_name=sigma_names[m.name],
+                                                                fnfp_name=fnfp_names[m.name], fnfp_val=fnfp_vals[m.name],
+                                                                Nbackground=Nbg[pandax.name])
                 sigma_cdmslite[mass][m.name] = cdmslite.sigma_limit(mass=mass, sigma_name=sigma_names[m.name],
                                                                     fnfp_name=fnfp_names[m.name], fnfp_val=fnfp_vals[m.name],
                                                                     Nbackground=Nbg[cdmslite.name])
