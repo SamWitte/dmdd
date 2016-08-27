@@ -737,7 +737,7 @@ def OneDhistogram(nsim=50, startsim=1, masses=[50.],
                     #             alpha=alpha, color=colors_list[ii])
                     probdistr = np.zeros(xlinspace.size)
                     std_dev = np.std(ys)
-                    hspace = 1.06 * std_dev * nsim ** (-1. / 5.)
+                    hspace = 1.2 * std_dev * nsim ** (-1. / 5.)
                     for x in range(0, xlinspace.size):
                         probdistr[x] = (1. / (nsim * hspace)) * norm.pdf((xlinspace[x] - ys) / hspace).sum()     
                     
@@ -779,7 +779,7 @@ def OneDhistogram_timeDiff(nsim=50, startsim=1, masses=[50.],
                   colors_list=['Aqua','Red','Black','Green','Magenta','Orange']):
 
     xlinspace = np.linspace(-.5,.5,300)
-    
+
     if colors_list == None:
         for i,experiment in enumerate(experiments):
             colors_list = Colors[experiment_names[i]]
@@ -922,7 +922,7 @@ def OneDhistogram_timeDiff(nsim=50, startsim=1, masses=[50.],
                                   
                 probdistr = np.zeros(xlinspace.size)
                 std_dev = np.std(ys)
-                hspace = 1.06 * std_dev * nsim ** (-1. / 5.)
+                hspace = 1.2 * std_dev * nsim ** (-1. / 5.)
                 for x in range(0, xlinspace.size):
                     probdistr[x] = (1. / (nsim * hspace)) * norm.pdf((xlinspace[x] - ys) / hspace).sum()     
                 
@@ -940,8 +940,8 @@ def OneDhistogram_timeDiff(nsim=50, startsim=1, masses=[50.],
                         maxylim = maxval
                     
             ax.set_title('True model: {} (mass: {:.0f} GeV)'.format(MODELNAME_TEX[m.name], mass), fontsize=fs)
-            pl.xlim([-.5,.5])
-            pl.ylim([0.,maxylim])
+            pl.xlim([-.5, .5])
+            pl.ylim([0., maxylim])
             ax.axes.get_yaxis().set_ticks([])
             pl.legend()
             pl.ylabel('Density', fontsize=fs)
