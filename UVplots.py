@@ -765,7 +765,7 @@ def OneDhistogram(nsim=50, startsim=1, masses=[50.],
             ax.axes.get_yaxis().set_ticks([])
             pl.ylabel('Density', fontsize=fs)
             pl.xlabel('Probability of true model', fontsize=fs)
-            ax.set_frame_on(false)
+            
             figname = results_root + 'PDF_{:.0f}GeV_{}_{}sims{}.pdf'.format(mass, m.name, nsim, filelabel)
             if saveplots:
                 pl.savefig(figname)
