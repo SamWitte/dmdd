@@ -933,9 +933,10 @@ def OneDhistogram_timeDiff(nsim=50, startsim=1, masses=[50.],
 
                 probdistr /= np.max(probdistr)
                 avg = np.mean(ys)
+                med = np.median(ys)
                 label = experiment_labels[i]
                 plt.plot(xlinspace, probdistr, linewidth=1, color=colors_list[i], label=label)
-                plt.text(0.1, leg_top, experiment_labels[i] + r'  [$<\Delta>$ = {:.2f}]'.format(avg),
+                plt.text(-0.4, leg_top, experiment_labels[i] + r'  [$\bar{{\Delta>}}$ = {:.2f}, $\tilde{{\Delta>}}$ = {:.2f}]'.format(avg, med),
                          color=colors_list[i], fontsize=10)
                 leg_top -= leg_down
 #                bins = np.linspace(-.09,.09,15)
@@ -950,7 +951,7 @@ def OneDhistogram_timeDiff(nsim=50, startsim=1, masses=[50.],
                     
             ax.set_title('True model: {} (mass: {:.0f} GeV)'.format(MODELNAME_TEX[m.name], mass), fontsize=fs)
             pl.xlim([-.5, .5])
-            pl.ylim([0., maxylim])
+            pl.ylim([0., 1.])
             ax.axes.get_yaxis().set_ticks([])
             pl.legend()
             pl.ylabel('Density', fontsize=fs)
