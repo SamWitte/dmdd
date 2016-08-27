@@ -587,7 +587,7 @@ def OneDhistogram(nsim=50, startsim=1, masses=[50.],
                   simmodels=[SI_Higgs], models=[SI_Higgs, anapole], time_info='Both', GF=True, 
                   hspace = (1.06 * 50. ** (-1. / 5.)), filelabel='', allverbose=True, verbose=True,
                   results_root=os.environ['DMDD_AM_MAIN_PATH']+'/results_uv/', timeonly=False,
-                  saveplots=True, alpha=0.3, xoffset=0.1, fs=20, fs2=18, sigma_lim_file=None, 
+                  saveplots=True, alpha=0.3, xoffset=0.1, fs=16, fs2=18, sigma_lim_file=None,
                   colors_list=['Aqua','Red','Black','Green','Magenta','Orange']):
 
     xlinspace = np.linspace(0,1,100)
@@ -667,8 +667,6 @@ def OneDhistogram(nsim=50, startsim=1, masses=[50.],
                 #   sigma_limvals[mass][m.name] = f_sigma_lims(m.name,mass)
 
 
-
-            
         for m in simmodels:
             print ''
             print ''
@@ -676,7 +674,6 @@ def OneDhistogram(nsim=50, startsim=1, masses=[50.],
             plt.figure()
             ax=plt.gca()
             for tval in time_list:
-                
                 for i,experiment in enumerate(experiments):
                     try:
                         if len(experiment) > 1:
@@ -724,7 +721,6 @@ def OneDhistogram(nsim=50, startsim=1, masses=[50.],
                                 if verbose and prob[j]<0.1:
                                     print 'FLAG! truth unlikely?   <-----------|'
                                     print ''
-                                    
     
                         if verbose:
                             print ''
@@ -736,24 +732,19 @@ def OneDhistogram(nsim=50, startsim=1, masses=[50.],
                         ii = 2*i + 1
                     else:
                         ii=2*i
-                        
-                    for y in ys:
-                        plt.plot([y,y], [ 0., 10. ], lw=1,
-                                 alpha=alpha, color=colors_list[ii])
-                                      
+                    #for y in ys:
+                    #    plt.plot([y,y], [ 0., 10. ], lw=1,
+                    #             alpha=alpha, color=colors_list[ii])
                     probdistr = np.zeros(xlinspace.size)
                     
                     for x in range(0, xlinspace.size):
                         probdistr[x] = (1. / (nsim * hspace)) * norm.pdf((xlinspace[x] - ys) / hspace).sum()     
                     
                     label = experiment_labels[ii]
-                    plt.plot(xlinspace, probdistr, linewidth=1, color=colors_list[ii], label=label)    
-                    
-                    
+                    plt.plot(xlinspace, probdistr, linewidth=1, color=colors_list[ii], label=label)
+
 #                    bins = np.linspace(0.0,1.,10)
-#                    plt.hist(ys, bins, alpha=0.3, facecolor=colors_list[ii],normed=True)  
-                
-                
+#                    plt.hist(ys, bins, alpha=0.3, facecolor=colors_list[ii],normed=True)
                     maxval = round(np.max(probdistr) + .5)
                     if i == 0:
                         maxylim = maxval
@@ -766,7 +757,8 @@ def OneDhistogram(nsim=50, startsim=1, masses=[50.],
             pl.ylim([0.,maxylim])
           
             pl.legend(loc=2, fontsize='small' )
-            pl.ylabel('Density', fontsize=fs)
+            ax.axes.get_yaxis().set_ticks([])
+            pl.ylabel('Density   [Arb. Units]', fontsize=fs)
             pl.xlabel('Probability of true model', fontsize=fs)
 
             figname = results_root + 'PDF_{:.0f}GeV_{}_{}sims{}.pdf'.format(mass, m.name, nsim, filelabel)
@@ -782,7 +774,7 @@ def OneDhistogram_timeDiff(nsim=50, startsim=1, masses=[50.],
                   simmodels=[SI_Higgs], models=[SI_Higgs, anapole], GF=True,
                   hspace = (1.06 * 50. ** (-1. / 5.)), filelabel='', allverbose=True, verbose=True,
                   results_root=os.environ['DMDD_AM_MAIN_PATH']+'/results_uv/', timeonly=False,
-                  saveplots=True, alpha=0.3, xoffset=0.1, fs=20, fs2=18, sigma_lim_file=None, 
+                  saveplots=True, alpha=0.3, xoffset=0.1, fs=16, fs2=18, sigma_lim_file=None,
                   colors_list=['Aqua','Red','Black','Green','Magenta','Orange']):
 
     xlinspace = np.linspace(-.5,.5,300)
@@ -924,9 +916,9 @@ def OneDhistogram_timeDiff(nsim=50, startsim=1, masses=[50.],
                 
                 ys = ys - ys_nt
 
-                for y in ys:
-                    plt.plot([y,y], [ 0., 100. ], lw=1,
-                             alpha=alpha, color=colors_list[i])
+                #for y in ys:
+                #    plt.plot([y,y], [ 0., 100. ], lw=1,
+                #             alpha=alpha, color=colors_list[i])
                                   
                 probdistr = np.zeros(xlinspace.size)
                 
@@ -949,9 +941,9 @@ def OneDhistogram_timeDiff(nsim=50, startsim=1, masses=[50.],
             ax.set_title('True model: {} (mass: {:.0f} GeV)'.format(MODELNAME_TEX[m.name], mass), fontsize=fs)
             pl.xlim([-.15,.15])            
             pl.ylim([0.,maxylim])
-          
+            ax.axes.get_yaxis().set_ticks([])
             pl.legend()
-            pl.ylabel('Density', fontsize=fs)
+            pl.ylabel('Density   [Arb. Units]', fontsize=fs)
             pl.xlabel('$\Delta$ Probability', fontsize=fs)
 
             figname = results_root + 'PDF_{:.0f}GeV_{}_{}sims{}.pdf'.format(mass, m.name, nsim, filelabel)
