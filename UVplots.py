@@ -585,7 +585,7 @@ def line_plots_1vsall(nsim=100, startsim=1, masses=[50.],
 def OneDhistogram(nsim=50, startsim=1, masses=[50.],
                   experiment_names=['Xe'],#['I','Ilo'], ['Xe','Xelo','Xehi','Xewide']
                   simmodels=[SI_Higgs], models=[SI_Higgs, anapole], time_info='Both', GF=True, 
-                  hspace=(1.06 * 50. ** (-1. / 5.)), filelabel='', allverbose=True, verbose=True,
+                  hspace = (1.06 * 50. ** (-1. / 5.)), filelabel='', allverbose=True, verbose=True,
                   results_root=os.environ['DMDD_AM_MAIN_PATH']+'/results_uv/', timeonly=False,
                   saveplots=True, alpha=0.3, xoffset=0.1, fs=16, fs2=18, sigma_lim_file=None,
                   colors_list=['Aqua','Red','Black','Green','Magenta','Orange']):
@@ -737,8 +737,12 @@ def OneDhistogram(nsim=50, startsim=1, masses=[50.],
                     #    plt.plot([y,y], [ 0., 10. ], lw=1,
                     #             alpha=alpha, color=colors_list[ii])
                     probdistr = np.zeros(xlinspace.size)
+<<<<<<< HEAD
                     std_dev = np.std(ys)
                     hspace = 1.2 * std_dev * nsim ** (-1. / 5.)
+=======
+                    
+>>>>>>> parent of d1c0425... working on kde plots
                     for x in range(0, xlinspace.size):
                         probdistr[x] = (1. / (nsim * hspace)) * norm.pdf((xlinspace[x] - ys) / hspace).sum()
                     probdistr /= np.max(probdistr)
@@ -759,13 +763,23 @@ def OneDhistogram(nsim=50, startsim=1, masses=[50.],
                     
             ax.set_title('True model: {} (mass: {:.0f} GeV)'.format(MODELNAME_TEX[m.name], mass), fontsize=fs)
             pl.xlim([0.,1.])  
+<<<<<<< HEAD
             pl.ylim([0., 1.])
             pl.axvline(0.9, ls='--', color='k', lw=2)
 
+=======
+            pl.ylim([0.,maxylim])
+          
+            pl.legend(loc=2, fontsize='small' )
+>>>>>>> parent of d1c0425... working on kde plots
             ax.axes.get_yaxis().set_ticks([])
-            pl.ylabel('Density', fontsize=fs)
+            pl.ylabel('Density   [Arb. Units]', fontsize=fs)
             pl.xlabel('Probability of true model', fontsize=fs)
+<<<<<<< HEAD
             
+=======
+
+>>>>>>> parent of d1c0425... working on kde plots
             figname = results_root + 'PDF_{:.0f}GeV_{}_{}sims{}.pdf'.format(mass, m.name, nsim, filelabel)
             if saveplots:
                 pl.savefig(figname)
@@ -783,8 +797,13 @@ def OneDhistogram_timeDiff(nsim=50, startsim=1, masses=[50.],
                   colors_list=['Aqua','Red','Black','Green','Magenta','Orange']):
 
     xlinspace = np.linspace(-.5,.5,300)
+<<<<<<< HEAD
     leg_top = 1.
     leg_down = 0.1
+=======
+    
+    
+>>>>>>> parent of d1c0425... working on kde plots
     if colors_list == None:
         for i,experiment in enumerate(experiments):
             colors_list = Colors[experiment_names[i]]
@@ -926,8 +945,12 @@ def OneDhistogram_timeDiff(nsim=50, startsim=1, masses=[50.],
                 #             alpha=alpha, color=colors_list[i])
                                   
                 probdistr = np.zeros(xlinspace.size)
+<<<<<<< HEAD
                 std_dev = np.std(ys)
                 hspace = 1.2 * std_dev * nsim ** (-1. / 5.)
+=======
+                
+>>>>>>> parent of d1c0425... working on kde plots
                 for x in range(0, xlinspace.size):
                     probdistr[x] = (1. / (nsim * hspace)) * norm.pdf((xlinspace[x] - ys) / hspace).sum()
 
@@ -950,11 +973,16 @@ def OneDhistogram_timeDiff(nsim=50, startsim=1, masses=[50.],
                         maxylim = maxval
                     
             ax.set_title('True model: {} (mass: {:.0f} GeV)'.format(MODELNAME_TEX[m.name], mass), fontsize=fs)
+<<<<<<< HEAD
             pl.xlim([-.5, .5])
             pl.ylim([0., 1.])
+=======
+            pl.xlim([-.15,.15])            
+            pl.ylim([0.,maxylim])
+>>>>>>> parent of d1c0425... working on kde plots
             ax.axes.get_yaxis().set_ticks([])
             pl.legend()
-            pl.ylabel('Density', fontsize=fs)
+            pl.ylabel('Density   [Arb. Units]', fontsize=fs)
             pl.xlabel('$\Delta$ Probability', fontsize=fs)
 
             figname = results_root + 'PDF_{:.0f}GeV_{}_{}sims{}.pdf'.format(mass, m.name, nsim, filelabel)
