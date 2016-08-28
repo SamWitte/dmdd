@@ -768,15 +768,15 @@ def OneDhistogram(nsim=50, startsim=1, masses=[50.],
             if time_info == 'Both':
                 shift = len(label_list) / 2
                 for i in range(len(label_list) / 2):
-                    plt.text(0.1, leg_top, label_list[i] + r'  [Success: {:.2f}$\%$]'.format(success_list[i]),
+                    plt.text(0.1, leg_top, label_list[i] + r'  [Success: {:.0f}$\%$]'.format(success_list[i]),
                              color=c_list[i], fontsize=10)
                     leg_top -= leg_down
-                    plt.text(0.1, leg_top, label_list[i + shift] + r'  [Success: {:.2f}$\%$]'.format(success_list[i + shift]),
+                    plt.text(0.1, leg_top, label_list[i + shift] + r'  [Success: {:.0f}$\%$]'.format(success_list[i + shift]),
                              color=c_list[i + shift], fontsize=10)
                     leg_top -= leg_down
             else:
                 for i in range(len(label_list)):
-                    plt.text(0.1, leg_top, label_list[i] + r'  [Success: {:.2f}$\%$]'.format(success_list[i]),
+                    plt.text(0.1, leg_top, label_list[i] + r'  [Success: {:.0f}$\%$]'.format(success_list[i]),
                              color=c_list[i], fontsize=10)
                     leg_top -= leg_down
             plt.axvline(0.9, 0, 1, ls='--', color='k', lw=2)
