@@ -590,9 +590,13 @@ def OneDhistogram(nsim=50, startsim=1, masses=[50.],
                   saveplots=True, alpha=0.3, xoffset=0.1, fs=16, fs2=18, sigma_lim_file=None,
                   colors_list=['Aqua','Red','Black','Green','Magenta','Orange']):
 
-    xlinspace = np.linspace(0,1,100)
-    leg_top = 1.
-    leg_down = 0.1
+    xlinspace = np.linspace(0, 1, 200)
+    leg_top = 0.
+    leg_down = 0.
+    success_list = []
+    label_list = []
+    c_list = []
+
     if colors_list == None:
         for i,experiment in enumerate(experiments):
             colors_list = Colors[experiment_names[i]]
@@ -737,20 +741,18 @@ def OneDhistogram(nsim=50, startsim=1, masses=[50.],
                     #    plt.plot([y,y], [ 0., 10. ], lw=1,
                     #             alpha=alpha, color=colors_list[ii])
                     probdistr = np.zeros(xlinspace.size)
-<<<<<<< HEAD
                     std_dev = np.std(ys)
-                    hspace = 1.2 * std_dev * nsim ** (-1. / 5.)
-=======
-                    
->>>>>>> parent of d1c0425... working on kde plots
+                    hspace = 1.06 * std_dev * nsim ** (-1. / 5.)
                     for x in range(0, xlinspace.size):
                         probdistr[x] = (1. / (nsim * hspace)) * norm.pdf((xlinspace[x] - ys) / hspace).sum()
-                    probdistr /= np.max(probdistr)
-                    success = np.sum(ys > 0.9) / len(ys) * 100.
+
+                    success = float(np.sum(ys > 0.9)) / len(ys) * 100.
+                    success_list.append(success)
                     label = experiment_labels[ii]
+                    label_list.append(experiment_labels[ii])
+                    c_list.append(colors_list[ii])
                     plt.plot(xlinspace, probdistr, linewidth=1, color=colors_list[ii], label=label)
-                    plt.text(0.1, leg_top, experiment_labels[ii] + r'  [Success: {:.2f}$\%$]'.format(success),
-                             color=colors_list[ii], fontsize=10)
+
                     leg_top -= leg_down
 #                    bins = np.linspace(0.0,1.,10)
 #                    plt.hist(ys, bins, alpha=0.3, facecolor=colors_list[ii],normed=True)
@@ -760,26 +762,31 @@ def OneDhistogram(nsim=50, startsim=1, masses=[50.],
                     else:
                         if maxval > maxylim:
                             maxylim = maxval
-                    
+
+            leg_down = maxylim / 12.
+            leg_top = maxylim - leg_down
+            if time_info == 'Both':
+                shift = len(label_list) / 2
+                for i in range(len(label_list) / 2):
+                    plt.text(0.1, leg_top, label_list[i] + r'  [Success: {:.2f}$\%$]'.format(success_list[i]),
+                             color=c_list[i], fontsize=10)
+                    leg_top -= leg_down
+                    plt.text(0.1, leg_top, label_list[i + shift] + r'  [Success: {:.2f}$\%$]'.format(success_list[i + shift]),
+                             color=c_list[i + shift], fontsize=10)
+                    leg_top -= leg_down
+            else:
+                for i in range(len(label_list)):
+                    plt.text(0.1, leg_top, label_list[i] + r'  [Success: {:.2f}$\%$]'.format(success_list[i]),
+                             color=c_list[i], fontsize=10)
+                    leg_top -= leg_down
+            plt.axvline(0.9, 0, 1, ls='--', color='k', lw=2)
             ax.set_title('True model: {} (mass: {:.0f} GeV)'.format(MODELNAME_TEX[m.name], mass), fontsize=fs)
-            pl.xlim([0.,1.])  
-<<<<<<< HEAD
-            pl.ylim([0., 1.])
-            pl.axvline(0.9, ls='--', color='k', lw=2)
-
-=======
-            pl.ylim([0.,maxylim])
-          
-            pl.legend(loc=2, fontsize='small' )
->>>>>>> parent of d1c0425... working on kde plots
+            pl.xlim([0., 1.])
+            pl.ylim([0., maxylim])
             ax.axes.get_yaxis().set_ticks([])
-            pl.ylabel('Density   [Arb. Units]', fontsize=fs)
+            pl.ylabel('Density', fontsize=fs)
             pl.xlabel('Probability of true model', fontsize=fs)
-<<<<<<< HEAD
-            
-=======
 
->>>>>>> parent of d1c0425... working on kde plots
             figname = results_root + 'PDF_{:.0f}GeV_{}_{}sims{}.pdf'.format(mass, m.name, nsim, filelabel)
             if saveplots:
                 pl.savefig(figname)
@@ -797,13 +804,13 @@ def OneDhistogram_timeDiff(nsim=50, startsim=1, masses=[50.],
                   colors_list=['Aqua','Red','Black','Green','Magenta','Orange']):
 
     xlinspace = np.linspace(-.5,.5,300)
-<<<<<<< HEAD
-    leg_top = 1.
-    leg_down = 0.1
-=======
-    
-    
->>>>>>> parent of d1c0425... working on kde plots
+    leg_top = 0.
+    leg_down = 0.
+    avg_list = []
+    med_list = []
+    label_list = []
+    c_list = []
+
     if colors_list == None:
         for i,experiment in enumerate(experiments):
             colors_list = Colors[experiment_names[i]]
@@ -937,30 +944,28 @@ def OneDhistogram_timeDiff(nsim=50, startsim=1, masses=[50.],
                         
                     if ev_sum == np.inf:
                         print 'yikes. evidence is infinity.'
-                
                 ys = ys - ys_nt
-
                 #for y in ys:
                 #    plt.plot([y,y], [ 0., 100. ], lw=1,
                 #             alpha=alpha, color=colors_list[i])
                                   
                 probdistr = np.zeros(xlinspace.size)
-<<<<<<< HEAD
                 std_dev = np.std(ys)
-                hspace = 1.2 * std_dev * nsim ** (-1. / 5.)
-=======
-                
->>>>>>> parent of d1c0425... working on kde plots
+                hspace = 1.06 * std_dev * nsim ** (-1. / 5.)
+
                 for x in range(0, xlinspace.size):
                     probdistr[x] = (1. / (nsim * hspace)) * norm.pdf((xlinspace[x] - ys) / hspace).sum()
+                avg = np.mean(ys) * 100.
+                med = np.median(ys) * 100.
+                avg_list.append(avg)
+                med_list.append(med)
+                label = experiment_labels[i]
+                label_list.append(experiment_labels[i])
+                c_list.append(colors_list[i])
 
-                probdistr /= np.max(probdistr)
-                avg = np.mean(ys)
-                med = np.median(ys)
                 label = experiment_labels[i]
                 plt.plot(xlinspace, probdistr, linewidth=1, color=colors_list[i], label=label)
-                plt.text(-0.4, leg_top, experiment_labels[i] + r'  [$\bar{{\Delta>}}$ = {:.2f}, $\tilde{{\Delta>}}$ = {:.2f}]'.format(avg, med),
-                         color=colors_list[i], fontsize=10)
+
                 leg_top -= leg_down
 #                bins = np.linspace(-.09,.09,15)
 #                plt.hist(ys, bins, alpha=0.3, facecolor='r')                    
@@ -971,18 +976,22 @@ def OneDhistogram_timeDiff(nsim=50, startsim=1, masses=[50.],
                 else:
                     if maxval > maxylim:
                         maxylim = maxval
-                    
+
+            leg_down = maxylim / 12.
+            leg_top = maxylim - leg_down
+            for i in range(len(label_list)):
+                plt.text(-0.4, leg_top, label_list[i] +
+                         r'  [$\bar{{\Delta}}$ = {:.1f} \%, $\tilde{{\Delta}}$ = {:.1f} \%]'.format(avg_list[i],
+                                                                                                med_list[i]),
+                         color=c_list[i], fontsize=10)
+                leg_top -= leg_down
             ax.set_title('True model: {} (mass: {:.0f} GeV)'.format(MODELNAME_TEX[m.name], mass), fontsize=fs)
-<<<<<<< HEAD
+
             pl.xlim([-.5, .5])
-            pl.ylim([0., 1.])
-=======
-            pl.xlim([-.15,.15])            
-            pl.ylim([0.,maxylim])
->>>>>>> parent of d1c0425... working on kde plots
+            pl.ylim([0., maxylim])
             ax.axes.get_yaxis().set_ticks([])
-            pl.legend()
-            pl.ylabel('Density   [Arb. Units]', fontsize=fs)
+
+            pl.ylabel('Density', fontsize=fs)
             pl.xlabel('$\Delta$ Probability', fontsize=fs)
 
             figname = results_root + 'PDF_{:.0f}GeV_{}_{}sims{}.pdf'.format(mass, m.name, nsim, filelabel)
