@@ -987,7 +987,7 @@ def OneDhistogram_timeDiff(nsim=50, startsim=1, masses=[50.],
                 leg_top -= leg_down
             ax.set_title('True model: {} (mass: {:.0f} GeV)'.format(MODELNAME_TEX[m.name], mass), fontsize=fs)
 
-            pl.xlim([-.5, .5])
+            pl.xlim([-.05, .25])
             pl.ylim([0., maxylim])
             ax.axes.get_yaxis().set_ticks([])
 
@@ -1209,7 +1209,7 @@ def line_plots_classes(nsim=50, startsim=1, masses=[50.], experiment_names=['Xe'
             ax.set_xticks( ticks )
             ax.set_xticklabels( experiment_labels )
             ax.set_title('True model: {} (mass: {:.0f} GeV)'.format(MODELNAME_TEX[m.name], mass), fontsize=fs)
-            pl.ylim( ( -0.04, 1.19 ) )
+            pl.ylim(( -0.04, 1.19 ))
             pl.axhline(0.9, ls='--', color='k', lw=2)
           
             pl.annotate('Simulations preferring true class (with \\textgreater 0.9 probability):', 
