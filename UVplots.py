@@ -230,9 +230,9 @@ sigma_names = {}
 fnfp_names = {}
 fnfp_vals = {}
 
-for m in MODELS_UV1 + MODELS_UV2:        
+for m in MODELS_UV1 + MODELS_UV2:
     sigma_names[m.name] = m.param_names[1]
-    
+
     if len(m.fixed_params) > 0:
         fnfp_names[m.name] = m.fixed_params.keys()[0]
         fnfp_vals[m.name] = m.fixed_params.values()[0]
@@ -295,7 +295,7 @@ MASSES=np.logspace(np.log10(mmin),np.log10(mmax),100)
 for m in MODELS_UV1 + MODELS_UV2:
     sigma_lims[m.name] = np.zeros(len(MASSES))
 for i,mass in enumerate(MASSES):
-  
+
     sigma_lux[mass]={}
     sigma_pandax[mass] = {}
     sigma_cdmslite[mass]={}
@@ -382,16 +382,16 @@ def f_sigma_lims(modelname, mass):
 
 def line_plots_1vsall(nsim=100, startsim=1, masses=[50.],
                       experiment_names=['Xe'],#['I','Ilo'], ['Xe','Xelo','Xehi','Xewide']
-                      simmodels=[SI_Higgs], models=[SI_Higgs, anapole], time_info='True', GF=False, 
+                      simmodels=[SI_Higgs], models=[SI_Higgs, anapole], time_info='True', GF=False,
                       filelabel='No_Time', allverbose=True, verbose=True,
                       results_root='/Users/SamWitte/Desktop/dmdd/Storage/results_uv/',
                       saveplots=True, alpha=0.3, xoffset=0.1, fs=20, fs2=18, sigma_lim_file=None, colors_list=None,
                       timeonly=False):
-    
+
     if colors_list == None:
         for i,experiment in enumerate(experiments):
             colors_list = Colors[experiment_names[i]]
-    
+
     if time_info == 'Both':
         time_list = ['T', 'F']
     elif time_info == 'True':
@@ -416,13 +416,13 @@ def line_plots_1vsall(nsim=100, startsim=1, masses=[50.],
     for i,exn in enumerate(experiment_names):
         experiments.append(ALL_EXPERIMENTS[exn])
         experiment_labels.append(Experiment_LaTeX[exn])
-        
+
     if time_info == 'Both':
         indexchange = 0
-        for x in range(0, len(experiment_labels)):     
+        for x in range(0, len(experiment_labels)):
             experiment_labels = np.append(experiment_labels,experiment_labels[x] + '\n No Time')
             indexchange += 1
-            
+
     elif time_info == 'False':
         for x in range(0, len(experiment_labels)):
             experiment_labels[x] = experiment_labels[x] + '\n No Time'
@@ -431,9 +431,9 @@ def line_plots_1vsall(nsim=100, startsim=1, masses=[50.],
         for x in range(0,experiment_labels.size / 2):
             holdarray[2*x]=experiment_labels[x]
             holdarray[2*x+1] = experiment_labels[x+experiment_labels.size/2]
-        
+
         experiment_labels=holdarray
-    
+
     for mass in masses:
         print '{}GeV:'.format(mass)
 
@@ -464,7 +464,7 @@ def line_plots_1vsall(nsim=100, startsim=1, masses=[50.],
 
 
 
-            
+
         for m in simmodels:
             print ''
             print ''
@@ -476,7 +476,7 @@ def line_plots_1vsall(nsim=100, startsim=1, masses=[50.],
                     ticks = np.arange(2 * len(experiments)) + 0.5
                 else:
                     ticks = np.arange(len(experiments)) + 0.5
-                
+
                 for i,experiment in enumerate(experiments):
                     try:
                         if len(experiment) > 1:
@@ -484,18 +484,18 @@ def line_plots_1vsall(nsim=100, startsim=1, masses=[50.],
                     except:
                         experimentlist = [experiment]
                     ys = np.zeros(nsim)
-                    
-                    
+
+
                     for ni,n in enumerate(np.arange(startsim, nsim + startsim)):
                         renorm = -np.inf
                         ev_sum = 0.
                         ln_ev = np.zeros(len(models))
                         prob = np.zeros(len(models))
-                        
+
                         for j,fitm in enumerate(models):
                             pardic = {'mass': mass, sigma_names[m.name]: sigma_limvals[mass][m.name]}
-                            
-                            mnrun = MultinestRun('sim{}'.format(n), experimentlist, m, pardic, 
+
+                            mnrun = MultinestRun('sim{}'.format(n), experimentlist, m, pardic,
                                                     fitm, prior_ranges=prior_ranges,
                                                     force_sim=False,n_live_points=n_live_points,silent=True,
                                                     time_info=tval, GF=GF, TIMEONLY=timeonly)
@@ -505,13 +505,13 @@ def line_plots_1vsall(nsim=100, startsim=1, masses=[50.],
                             if verbose and not allverbose and fitm.name == m.name:
                                 print ''
                                 print '({})'.format(mnrun.foldername)
-                                
+
                             ln_ev[j] = mnrun.get_evidence()
                             renorm = np.amax(np.array([renorm,ln_ev[j]]))
-                    
+
                         for j,fitm in enumerate(models):
                             ev_sum += np.exp(-renorm + ln_ev[j])
-                        
+
                         for j,fitm in enumerate(models):
                             prob[j] = np.exp(-renorm + ln_ev[j]) / ev_sum
                             if fitm.name != m.name:
@@ -524,53 +524,53 @@ def line_plots_1vsall(nsim=100, startsim=1, masses=[50.],
                                 if verbose and prob[j]<0.1:
                                     print 'FLAG! truth unlikely?   <-----------|'
                                     print ''
-                                    
-    
+
+
                         if verbose:
                             print ''
-                            
+
                         if ev_sum == np.inf:
                             print 'yikes. evidence is infinity.'
-                        
-                        
+
+
                     ymedian = np.median(ys)
                     ylo, yhi = np.percentile(ys, 25), np.percentile(ys, 75)
-                    
+
                     if time_info != 'Both':
                         for y in ys:
-                            plt.plot( [ i + xoffset, i + 1 - xoffset ], [ y, y ], lw=1, 
+                            plt.plot( [ i + xoffset, i + 1 - xoffset ], [ y, y ], lw=1,
                                       alpha=alpha, color=colors_list[i])
                         plt.plot( [ i + 0.5, i + 0.5 ], [ ylo, yhi ], color='k', lw=2)
                         plt.plot( i + 0.5, ymedian, 'x', ms = 10, color='k', mew=2 )
                         success = float(np.sum( ys > 0.9 )) / len( ys ) * 100.
-        
+
                         if success > 0:
-                            plt.annotate( '{:.0f}\\%%'.format(success), xy = ( i + 0.5, 1.05 ), 
+                            plt.annotate( '{:.0f}\\%%'.format(success), xy = ( i + 0.5, 1.05 ),
                                           fontsize=fs2, va='center', ha='center', color='k' )
                     else:
                         if tval == 'F':
                             ii = 2*i + 1
                         else:
                             ii=2*i
-                        
+
                         for y in ys:
                             plt.plot( [ ii + xoffset, ii + 1 - xoffset ], [ y, y ], lw=1.25,
                                       alpha=alpha, color=colors_list[ii])
                         plt.plot( [ ii + 0.5, ii + 0.5 ], [ ylo, yhi ], color='k', lw=2)
                         plt.plot( ii + 0.5, ymedian, 'x', ms = 10, color='k', mew=2 )
                         success = float(np.sum( ys > 0.9 )) / len( ys ) * 100.
-        
+
                         if success > 0:
-                            plt.annotate( '{:.0f}\\%%'.format(success), xy = ( ii + 0.5, 1.05 ), 
+                            plt.annotate( '{:.0f}\\%%'.format(success), xy = ( ii + 0.5, 1.05 ),
                                           fontsize=fs2, va='center', ha='center', color='k' )
-                        
-                        
+
+
             ax.set_xticks( ticks )
             ax.set_xticklabels( experiment_labels, size='small' )
             ax.set_title('True model: {} (mass: {:.0f} GeV)'.format(MODELNAME_TEX[m.name], mass), fontsize=fs)
             pl.ylim( ( -0.04, 1.19 ) )
             pl.axhline(0.9, ls='--', color='k', lw=2)
-          
+
             pl.annotate('Simulations preferring true model (with \\textgreater 0.9 probability):',
                         xy=( 0.02, 0.96 ), xycoords='axes fraction', fontsize=fs2, va='top', color='k')
             pl.ylabel('Probability of true model', fontsize=fs)
@@ -578,13 +578,13 @@ def line_plots_1vsall(nsim=100, startsim=1, masses=[50.],
             figname = results_root + 'lineplot_{:.0f}GeV_{}_{}sims{}.pdf'.format(mass, m.name, nsim, filelabel)
             if saveplots:
                 pl.savefig(figname)
-                
+
 
 
 #########################################
 def OneDhistogram(nsim=50, startsim=1, masses=[50.],
                   experiment_names=['Xe'],#['I','Ilo'], ['Xe','Xelo','Xehi','Xewide']
-                  simmodels=[SI_Higgs], models=[SI_Higgs, anapole], time_info='Both', GF=True, 
+                  simmodels=[SI_Higgs], models=[SI_Higgs, anapole], time_info='Both', GF=True,
                   hspace = (1.06 * 50. ** (-1. / 5.)), filelabel='', allverbose=True, verbose=True,
                   results_root=os.environ['DMDD_AM_MAIN_PATH']+'/results_uv/', timeonly=False,
                   saveplots=True, alpha=0.3, xoffset=0.1, fs=18, fs2=18, sigma_lim_file=None,
@@ -595,7 +595,7 @@ def OneDhistogram(nsim=50, startsim=1, masses=[50.],
     leg_down = 0.
     success_list = []
     label_list = []
-    c_list = []
+    ymax_list = []
     leg_down = np.zeros(4)
     leg_top = np.zeros(4)
     lab = []
@@ -606,7 +606,7 @@ def OneDhistogram(nsim=50, startsim=1, masses=[50.],
 
     totlines = len(experiment_names)
     if time_info == 'Both':
-        time_list = ['T', 'F']
+        time_list = ['F', 'T']
         totlines *= 2
     elif time_info == 'True':
         time_list = ['T']
@@ -692,18 +692,18 @@ def OneDhistogram(nsim=50, startsim=1, masses=[50.],
                     except:
                         experimentlist = [experiment]
                     ys = np.zeros(nsim)
-                    
-                    
+
+
                     for ni,n in enumerate(np.arange(startsim, nsim + startsim)):
                         renorm = -np.inf
                         ev_sum = 0.
                         ln_ev = np.zeros(len(models))
                         prob = np.zeros(len(models))
-                        
+
                         for j,fitm in enumerate(models):
                             pardic = {'mass': mass, sigma_names[m.name]: sigma_limvals[mass][m.name]}
-                            
-                            mnrun = MultinestRun('sim{}'.format(n), experimentlist, m, pardic, 
+
+                            mnrun = MultinestRun('sim{}'.format(n), experimentlist, m, pardic,
                                                     fitm, prior_ranges=prior_ranges,
                                                     force_sim=False,n_live_points=n_live_points,silent=True,
                                                     time_info=tval, GF=GF, TIMEONLY=timeonly)
@@ -713,13 +713,13 @@ def OneDhistogram(nsim=50, startsim=1, masses=[50.],
                             if verbose and not allverbose and fitm.name == m.name:
                                 print ''
                                 print '({})'.format(mnrun.foldername)
-                                
+
                             ln_ev[j] = mnrun.get_evidence()
                             renorm = np.amax(np.array([renorm,ln_ev[j]]))
-                    
+
                         for j,fitm in enumerate(models):
                             ev_sum += np.exp(-renorm + ln_ev[j])
-                        
+
                         for j,fitm in enumerate(models):
                             prob[j] = np.exp(-renorm + ln_ev[j]) / ev_sum
                             if fitm.name != m.name:
@@ -732,13 +732,13 @@ def OneDhistogram(nsim=50, startsim=1, masses=[50.],
                                 if verbose and prob[j]<0.1:
                                     print 'FLAG! truth unlikely?   <-----------|'
                                     print ''
-    
+
                         if verbose:
                             print ''
-                            
+
                         if ev_sum == np.inf:
                             print 'yikes. evidence is infinity.'
-                    
+
                     if tval == 'F':
                         ii = 2*i + 1
                     else:
@@ -770,20 +770,20 @@ def OneDhistogram(nsim=50, startsim=1, masses=[50.],
                     ii = i
                     if tval == 'F':
                         ls = '--'
-
+                        ymax = np.max(probdistr) + .1
                         axarr[ax_x, ax_y].plot(100. * xlinspace, probdistr, ls, linewidth=2,
                                                color=colors_list[ii], dashes=(10, 10))
-                        lab[i] = '(Dashed) No Time: ' + r'[Success: {:.0f}$\%$]'.format(success) + lab[i]
+                        lab.append('(Dashed) No Time: ' + r'[Success: {:.0f}$\%$]'.format(success))
                         axarr[ax_x, ax_y].axes.get_yaxis().set_ticks([])
-                        axarr[ax_x, ax_y].text(5, leg_top[i], lab[i], color=colors_list[i], fontsize=10)
+                        leg_top[i] = 0.7 * ymax
+                        axarr[ax_x, ax_y].text(5, 0.85 * ymax, experiment_labels[2 * ii], color='k', fontsize=16)
+                        axarr[ax_x, ax_y].set_ylim([0., ymax])
                     else:
                         axarr[ax_x, ax_y].plot(100. * xlinspace, probdistr, linewidth=2, color=colors_list[ii])
+                        lab[i] += ('\n (Solid) Time: ' + r'[Success: {:.0f}$\%$]'.format(success))
+                        axarr[ax_x, ax_y].text(5, leg_top[i], lab[i], color=colors_list[i], fontsize=10)
 
-                        lab.append('\n (Solid) Time: ' + r'[Success: {:.0f}$\%$]'.format(success))
-                        ymax = np.max(probdistr) + .1
-                        axarr[ax_x, ax_y].text(5, 0.85 * ymax, experiment_labels[2 * ii], color='k', fontsize=16)
-                        leg_top[i] = 0.7 * ymax
-                        axarr[ax_x, ax_y].set_ylim([0., ymax])
+
 
             #axarr[1, 1].text(10, 0.5 * ymax, 'Solid: Time \n Dashed: No Time', color='k', fontsize=10)
             pl.suptitle('True model: {} (mass: {:.0f} GeV)'.format(MODELNAME_TEX[m.name], mass), fontsize=fs)
@@ -794,7 +794,7 @@ def OneDhistogram(nsim=50, startsim=1, masses=[50.],
             figname = results_root + 'PDF_{:.0f}GeV_{}_{}sims{}.pdf'.format(mass, m.name, nsim, filelabel)
             if saveplots:
                 pl.savefig(figname)
-                
+
 
 
 
@@ -835,8 +835,8 @@ def OneDhistogram_timeDiff(nsim=50, startsim=1, masses=[50.],
     for i,exn in enumerate(experiment_names):
         experiments.append(ALL_EXPERIMENTS[exn])
         experiment_labels.append(Experiment_LaTeX[exn])
-        
-    
+
+
     for mass in masses:
         print '{}GeV:'.format(mass)
 
@@ -867,14 +867,14 @@ def OneDhistogram_timeDiff(nsim=50, startsim=1, masses=[50.],
 
 
 
-            
+
         for m in simmodels:
             print ''
             print ''
             print m.name
             plt.figure()
             ax=plt.gca()
-            
+
             for i,experiment in enumerate(experiments):
                 try:
                     if len(experiment) > 1:
@@ -883,48 +883,48 @@ def OneDhistogram_timeDiff(nsim=50, startsim=1, masses=[50.],
                     experimentlist = [experiment]
                 ys = np.zeros(nsim)
                 ys_nt = np.zeros(nsim)
-                                    
+
                 for ni,n in enumerate(np.arange(startsim, nsim + startsim)):
                     renorm = -np.inf
                     ev_sum = 0.
                     ln_ev = np.zeros(len(models))
                     prob = np.zeros(len(models))
-                    
+
                     renorm_nt = -np.inf
                     ev_sum_nt = 0.
                     ln_ev_nt = np.zeros(len(models))
                     prob_nt = np.zeros(len(models))
-                    
+
                     for j,fitm in enumerate(models):
                         pardic = {'mass': mass, sigma_names[m.name]: sigma_limvals[mass][m.name]}
-                        
-                        mnrun = MultinestRun('sim{}'.format(n), experimentlist, m, pardic, 
+
+                        mnrun = MultinestRun('sim{}'.format(n), experimentlist, m, pardic,
                                                 fitm, prior_ranges=prior_ranges,
                                                 force_sim=False,n_live_points=n_live_points,silent=True,
                                                 time_info='T', GF=GF, TIMEONLY=timeonly)
-                                                
-                        mnrun_nt = MultinestRun('sim{}'.format(n), experimentlist, m, pardic, 
+
+                        mnrun_nt = MultinestRun('sim{}'.format(n), experimentlist, m, pardic,
                                                 fitm, prior_ranges=prior_ranges,
                                                 force_sim=False,n_live_points=n_live_points,silent=True,
                                                 time_info='F', GF=GF, TIMEONLY=timeonly)
-                                                
+
                         if allverbose:
                             print ''
                             print mnrun.foldername
                         if verbose and not allverbose and fitm.name == m.name:
                             print ''
                             print '({})'.format(mnrun.foldername)
-                            
+
                         ln_ev[j] = mnrun.get_evidence()
                         renorm = np.amax(np.array([renorm,ln_ev[j]]))
-                        
+
                         ln_ev_nt[j] = mnrun_nt.get_evidence()
                         renorm_nt = np.amax(np.array([renorm_nt,ln_ev_nt[j]]))
-                
+
                     for j,fitm in enumerate(models):
                         ev_sum += np.exp(-renorm + ln_ev[j])
                         ev_sum_nt += np.exp(-renorm_nt + ln_ev_nt[j])
-                    
+
                     for j,fitm in enumerate(models):
                         prob[j] = np.exp(-renorm + ln_ev[j]) / ev_sum
                         prob_nt[j] = np.exp(-renorm_nt + ln_ev_nt[j]) / ev_sum_nt
@@ -941,18 +941,18 @@ def OneDhistogram_timeDiff(nsim=50, startsim=1, masses=[50.],
                             if verbose and prob[j]<0.1:
                                 print 'FLAG! truth unlikely?   <-----------|'
                                 print ''
-                                
+
 
                     if verbose:
                         print ''
-                        
+
                     if ev_sum == np.inf:
                         print 'yikes. evidence is infinity.'
                 ys = ys - ys_nt
                 #for y in ys:
                 #    plt.plot([y,y], [ 0., 100. ], lw=1,
                 #             alpha=alpha, color=colors_list[i])
-                                  
+
                 probdistr = np.zeros(xlinspace.size)
                 std_dev = np.std(ys)
                 hspace = 1.06 * std_dev * nsim ** (-1. / 5.)
@@ -972,7 +972,7 @@ def OneDhistogram_timeDiff(nsim=50, startsim=1, masses=[50.],
 
                 bins = np.linspace(-.1, .25, 8)
                 plt.hist(ys, bins, ec=colors_list[i], histtype='step')
-                    
+
                 maxval = np.max(probdistr) + 1
                 if i == 0:
                     maxylim = np.max(probdistr) + 1
@@ -1000,7 +1000,7 @@ def OneDhistogram_timeDiff(nsim=50, startsim=1, masses=[50.],
             figname = results_root + 'PDF_{:.0f}GeV_{}_{}sims{}.pdf'.format(mass, m.name, nsim, filelabel)
             if saveplots:
                 pl.savefig(figname)
-                
+
 
 
 
@@ -1026,11 +1026,11 @@ def compare_UV_models(masses=[50.], experiment_name='Xe',
     for mi,mass in enumerate(masses):
         if sigma_limvals is None:
             sigma_limvals = {}
-   
+
         for j,m in enumerate(models):
             if m.name not in sigma_limvals.keys():
                 sigma_limvals[m.name] = pandax.sigma_limit(mass=mass, sigma_name=sigma_names[m.name],
-                                                fnfp_name=fnfp_names[m.name], 
+                                                fnfp_name=fnfp_names[m.name],
                                                 fnfp_val=fnfp_vals[m.name],
                                                            Nbackground=Nbg[pandax.name])
 
@@ -1044,10 +1044,10 @@ def compare_UV_models(masses=[50.], experiment_name='Xe',
                 }
             if len(m.fixed_params) > 0:
                 for k,v in m.fixed_params.iteritems():
-                    kwargs[k] = v 
+                    kwargs[k] = v
 
             Nexp_tot = np.zeros(len(qs))
-           
+
             for i,experiment in enumerate(experiments):
                 allkwargs = dict(kwargs)
                 allkwargs['element'] = experiment.element
@@ -1090,13 +1090,13 @@ def compare_UV_models(masses=[50.], experiment_name='Xe',
         #plt.savefig(filename)
 
 
-    
 
-        
+
+
 ################################################################################################
 
 def line_plots_classes(nsim=50, startsim=1, masses=[50.], experiment_names=['Xe'],
-                      allmodels=MODELS_UV1, classes=MODEL_CLASSES, classes_names=MODEL_CLASSES_NAMES, 
+                      allmodels=MODELS_UV1, classes=MODEL_CLASSES, classes_names=MODEL_CLASSES_NAMES,
                       filelabel='', verbose=True,
                       results_root='/Users/SamWitte/Desktop/dmdd/Storage/results_uv/',
                       saveplots=True, alpha=0.3, xoffset=0.1, fs=20, fs2=18):
@@ -1138,11 +1138,11 @@ def line_plots_classes(nsim=50, startsim=1, masses=[50.], experiment_names=['Xe'
 
 
 
-        
+
         #sigma_limvals[mass] = {}
         #for m in allmodels:
-        #    sigma_limvals[mass][m.name] = lux.sigma_limit(mass=mass, sigma_name=sigma_names[m.name], 
-        #                                                    fnfp_name=fnfp_names[m.name], 
+        #    sigma_limvals[mass][m.name] = lux.sigma_limit(mass=mass, sigma_name=sigma_names[m.name],
+        #                                                    fnfp_name=fnfp_names[m.name],
         #                                                    fnfp_val=fnfp_vals[m.name])
 
         for m in allmodels:
@@ -1150,7 +1150,7 @@ def line_plots_classes(nsim=50, startsim=1, masses=[50.], experiment_names=['Xe'
             plt.figure()
             ax=plt.gca()
             ticks = np.arange(len(experiments)) + 0.5
-            
+
             for i,experiment in enumerate(experiments):
                 try:
                     if len(experiment) > 1:
@@ -1158,7 +1158,7 @@ def line_plots_classes(nsim=50, startsim=1, masses=[50.], experiment_names=['Xe'
                 except:
                     experimentlist = [experiment]
                 ys = np.zeros(nsim)
-                
+
                 for ni,n in enumerate(np.arange(startsim, nsim + startsim)):
                     for mi,mclass in enumerate(classes_names):
                         if m.name in mclass:
@@ -1170,52 +1170,52 @@ def line_plots_classes(nsim=50, startsim=1, masses=[50.], experiment_names=['Xe'
                     ev_sum = 0.
                     ln_ev = np.zeros(len(allmodels))
                     prob = np.zeros(len(allmodels))
-                    
+
                     for j,fitm in enumerate(allmodels):
                         pardic = {'mass': mass, sigma_names[m.name]: sigma_limvals[mass][m.name]}
-           
-                        mnrun = MultinestRun('sim{}'.format(n), experimentlist, m, pardic, 
+
+                        mnrun = MultinestRun('sim{}'.format(n), experimentlist, m, pardic,
                                                 fitm, prior_ranges=prior_ranges,
                                                 force_sim=False,n_live_points=n_live_points,silent=True)
                         ln_ev[j] = mnrun.get_evidence()
                         renorm = np.amax(np.array([renorm,ln_ev[j]]))
-                        
+
                     for j,fitm in enumerate(allmodels):
                         ev_sum += np.exp(-renorm + ln_ev[j])
-                        
+
                     for j,fitm in enumerate(allmodels):
                         prob[j] = np.exp(-renorm + ln_ev[j]) / ev_sum
                         if fitm.name in trueclass_names:
                             ys[ni] += prob[j] * trueclass_factor
                             if verbose:
                                 print 'adding {} {}'.format(fitm.name, prob[j])
-                    if verbose:    
+                    if verbose:
                         print 'sim{}: trueclass prob={}'.format(n, ys[ni])
-                       
+
                     if ev_sum == np.inf:
                         print 'yikes. evidence is infinity.'
-                    
-                    
+
+
                 ymedian = np.median(ys)
                 ylo, yhi = np.percentile(ys, 25), np.percentile(ys, 75)
                 for y in ys:
-                    plt.plot( [ i + xoffset, i + 1 - xoffset ], [ y, y ], lw=1, 
+                    plt.plot( [ i + xoffset, i + 1 - xoffset ], [ y, y ], lw=1,
                               alpha=alpha, color=Colors[experiment_labels[i]])
                 plt.plot( [ i + 0.5, i + 0.5 ], [ ylo, yhi ], color='k', lw=2)
                 plt.plot( i + 0.5, ymedian, 'x', ms = 10, color='k', mew=2 )
                 success = float(np.sum( ys > 0.9 )) / len( ys ) * 100.
 
                 if success > 0:
-                    plt.annotate( '{:.0f}\\%%'.format(success), xy = ( i + 0.5, 1.05 ), 
+                    plt.annotate( '{:.0f}\\%%'.format(success), xy = ( i + 0.5, 1.05 ),
                                   fontsize=fs2, va='center', ha='center', color='k' )
-                    
+
             ax.set_xticks( ticks )
             ax.set_xticklabels( experiment_labels )
             ax.set_title('True model: {} (mass: {:.0f} GeV)'.format(MODELNAME_TEX[m.name], mass), fontsize=fs)
             pl.ylim(( -0.04, 1.19 ))
             pl.axhline(0.9, ls='--', color='k', lw=2)
-          
-            pl.annotate('Simulations preferring true class (with \\textgreater 0.9 probability):', 
+
+            pl.annotate('Simulations preferring true class (with \\textgreater 0.9 probability):',
                         xy=( 0.02, 0.96 ), xycoords='axes fraction', fontsize=fs2, va='top', color='k')
             pl.ylabel('Probability of true class', fontsize=fs)
 
@@ -1227,7 +1227,7 @@ def line_plots_classes(nsim=50, startsim=1, masses=[50.], experiment_names=['Xe'
 ################################################################################################
 
 def line_plots_all(nsim=1, startsim=1, masses=[50.], experiment_names=['Xe'],
-                      allmodels=MODELS_UV1, classes=MODEL_CLASSES, classes_names=MODEL_CLASSES_NAMES, 
+                      allmodels=MODELS_UV1, classes=MODEL_CLASSES, classes_names=MODEL_CLASSES_NAMES,
                       filelabel='', verbose=True,
                       results_root='/Users/SamWitte/Desktop/dmdd/Storage/results_uv/',
                       saveplots=True, alpha=0.3, xoffset=0.1, fs=20, fs2=18):
@@ -1244,7 +1244,7 @@ def line_plots_all(nsim=1, startsim=1, masses=[50.], experiment_names=['Xe'],
         sigma_limvals[mass] = {}
         for m in allmodels:
             sigma_limvals[mass][m.name] = pandax.sigma_limit(mass=mass, sigma_name=sigma_names[m.name],
-                                                            fnfp_name=fnfp_names[m.name], 
+                                                            fnfp_name=fnfp_names[m.name],
                                                             fnfp_val=fnfp_vals[m.name],
                                                              Nbackground=Nbg[pandax.name])
 
@@ -1253,7 +1253,7 @@ def line_plots_all(nsim=1, startsim=1, masses=[50.], experiment_names=['Xe'],
             plt.figure()
             ax=plt.gca()
             ticks = np.arange(len(experiments)) + 0.5
-            
+
             for i,experiment in enumerate(experiments):
                 try:
                     if len(experiment) > 1:
@@ -1262,7 +1262,7 @@ def line_plots_all(nsim=1, startsim=1, masses=[50.], experiment_names=['Xe'],
                     experimentlist = [experiment]
                 ys = np.zeros(nsim)
                 ysclass = np.zeros(nsim)
-                
+
                 for ni,n in enumerate(np.arange(startsim, nsim + startsim)):
                     for mi,mclass in enumerate(classes_names):
                         if m.name in mclass:
@@ -1273,19 +1273,19 @@ def line_plots_all(nsim=1, startsim=1, masses=[50.], experiment_names=['Xe'],
                     ev_sum = 0.
                     ln_ev = np.zeros(len(allmodels))
                     prob = np.zeros(len(allmodels))
-                    
+
                     for j,fitm in enumerate(allmodels):
                         pardic = {'mass': mass, sigma_names[m.name]: sigma_limvals[mass][m.name]}
-           
-                        mnrun = MultinestRun('sim{}'.format(n), experimentlist, m, pardic, 
+
+                        mnrun = MultinestRun('sim{}'.format(n), experimentlist, m, pardic,
                                                 fitm, prior_ranges=prior_ranges,
                                                 force_sim=False,n_live_points=n_live_points,silent=True)
                         ln_ev[j] = mnrun.get_evidence()
                         renorm = np.amax(np.array([renorm,ln_ev[j]]))
-                        
+
                     for j,fitm in enumerate(allmodels):
                         ev_sum += np.exp(-renorm + ln_ev[j])
-                        
+
                     for j,fitm in enumerate(allmodels):
                         prob[j] = np.exp(-renorm + ln_ev[j]) / ev_sum
                         if fitm.name == m.name:
@@ -1294,42 +1294,42 @@ def line_plots_all(nsim=1, startsim=1, masses=[50.], experiment_names=['Xe'],
                             ysclass[ni] += prob[j] * trueclass_factor
                             if verbose:
                                 print 'adding {} {}'.format(fitm.name, prob[j])
-                    if verbose:    
+                    if verbose:
                         print 'sim{}: trueclass prob={}, truemodel prob={} <--sim'.format(n, ysclass[ni], ys[ni])
-                       
+
                     if ev_sum == np.inf:
                         print 'yikes. evidence is infinity.'
-                    
-                    
+
+
                 ymedian = np.median(ys)
                 yclassmedian = np.median(ysclass)
                 ylo, yhi = np.percentile(ys, 25), np.percentile(ys, 75)
                 yclasslo, yclasshi = np.percentile(ysclass, 25), np.percentile(ysclass, 75)
                 for y in ys:
-                    plt.plot( [ i + xoffset, i + 1 - xoffset ], [ y, y ], lw=1, 
+                    plt.plot( [ i + xoffset, i + 1 - xoffset ], [ y, y ], lw=1,
                               alpha=alpha, color=Colors[experiment_labels[i]])
                 plt.plot( [ i + 0.5, i + 0.5 ], [ ylo, yhi ], color='k', lw=2)
                 plt.plot( i + 0.5, ymedian, 'x', ms = 10, color='k', mew=2 )
 
                 plt.plot( [ i + 0.53, i + 0.53 ], [ yclasslo, yclasshi ], color='gray', lw=2,alpha=0.5)
                 plt.plot( i + 0.53, yclassmedian, 'o', ms = 10, color='white', mew=2 )
-                
+
                 success = float(np.sum( ys > 0.9 )) / len( ys ) * 100.
                 successclass = float(np.sum( ysclass > 0.9 )) / len( ysclass ) * 100.
                 print successclass
                 #if success > 0:
-                plt.annotate( '{:.0f}\\%%'.format(success), xy = ( i + 0.5, 1.05 ), 
+                plt.annotate( '{:.0f}\\%%'.format(success), xy = ( i + 0.5, 1.05 ),
                                   fontsize=fs2, va='center', ha='center', color='k' )
-                plt.annotate( '({:.0f}\\%% )'.format(successclass), xy = ( i + 0.58, 1.05 ), 
+                plt.annotate( '({:.0f}\\%% )'.format(successclass), xy = ( i + 0.58, 1.05 ),
                                   fontsize=fs2, va='center', ha='center', color='gray' )
-                    
+
             ax.set_xticks( ticks )
             ax.set_xticklabels( experiment_labels )
             ax.set_title('True model: {} (mass: {:.0f} GeV)'.format(MODELNAME_TEX[m.name], mass), fontsize=fs)
             pl.ylim( ( -0.04, 1.19 ) )
             pl.axhline(0.9, ls='--', color='k', lw=2)
-          
-            pl.annotate('Simulations preferring true model (class):', 
+
+            pl.annotate('Simulations preferring true model (class):',
                         xy=( 0.02, 0.96 ), xycoords='axes fraction', fontsize=fs2, va='top', color='k')
             pl.ylabel('Probability of true model', fontsize=fs)
 
@@ -1350,21 +1350,21 @@ color_groups = [('Aqua', 'Blue'),
                 ('Orange', 'Red'),
                 ('Magenta', 'Pink')]
 
-def plot_multiple_posteriors(folders=[folder1,folder3], 
+def plot_multiple_posteriors(folders=[folder1,folder3],
                              colors=None,
                              savefile=None, **kwargs):
     files = [f + '/1-post_equal_weights.dat' for f in folders]
     plt.figure()
     ax = plt.gca()
     for i,f in enumerate(files):
-        plot_posterior(f, ax=ax, alpha=1, 
+        plot_posterior(f, ax=ax, alpha=1,
                        contour_colors=color_groups[i],
                        zorder=10*i,
                        **kwargs)
 
     if savefile is not None:
         plt.savefig('test.png')
-    
+
 def plot_posterior(filename, **kwargs):
     x,y = np.loadtxt(filename, usecols=(0,1), unpack=True)
     return plot_2d_posterior(x,y, **kwargs)
@@ -1383,7 +1383,7 @@ def plot_2d_posterior(x, y,xlabel='', ylabel='',
     if ax is None:
         plt.figure()
         ax = pl.gca()
-    
+
     n = 100
 
     points = np.array([x,y])
@@ -1421,7 +1421,7 @@ def plot_2d_posterior(x, y,xlabel='', ylabel='',
     ax.plot(input_x,input_y,'x',mew=3,ms=15,color=input_color,label='input',zorder=4)
     if plot_contours:
         percentage_integral = np.array([0.95,0.68,0.])
-        contours = 0.* percentage_integral		
+        contours = 0.* percentage_integral
         num_epsilon_steps = 1000.
         epsilon = grid_posterior.max()/num_epsilon_steps
         epsilon_marks = np.arange(num_epsilon_steps + 1)
@@ -1436,12 +1436,12 @@ def plot_2d_posterior(x, y,xlabel='', ylabel='',
         contours[-1]=grid_posterior.max()
         ax.contour(par_x, par_y, grid_posterior, contours, linewidths=contour_lw,colors='k',zorder=3+zorder)
         ax.contourf(par_x, par_y, grid_posterior, contours,colors=contour_colors,alpha=alpha,zorder=2+zorder)
-        
+
     ax.set_xlim(min(ax.get_xlim()[0],xmin), max(ax.get_xlim()[1],xmax))
     ax.set_xlim(min(ax.get_ylim()[0],ymin), max(ax.get_ylim()[1],ymax))
     if return_ax:
         return ax
-    if show_legend: 
+    if show_legend:
         ax.legend(prop={'size':20},numpoints=1)
     if savefile is None:
         return par_x, par_y, grid_posterior, contours
@@ -1471,22 +1471,22 @@ def make_Nexpected_latextable(masses=[15,50,500],experiments=[xe,ge,iod,flu],fil
         fout.write('& {}'.format(experiment.name))
     fout.write('\\\\\n')
     fout.write('\\hline\\hline\\\\\n')
-    
+
     for m in models:
-        
+
         fout.write(MODELNAME_TEX[m.name])
         for experiment in experiments:
             entry = '& ('
             for mass in masses:
-                Nexps = dmdd.Nexpected(experiment.element, 
+                Nexps = dmdd.Nexpected(experiment.element,
                                             experiment.Qmin,
-                                            experiment.Qmax, 
-                                            experiment.exposure, 
+                                            experiment.Qmax,
+                                            experiment.exposure,
                                             experiment.efficiency,
                                             experiment.Start, experiment.End,
-                                            sigma_names[m.name], 
-                                            f_sigma_lims(m.name,mass), 
-                                            mass=mass, 
+                                            sigma_names[m.name],
+                                            f_sigma_lims(m.name,mass),
+                                            mass=mass,
                                             fnfp_name=fnfp_names[m.name],
                                             fnfp_val=fnfp_vals[m.name])
                 if mass == masses[0]:
@@ -1496,7 +1496,7 @@ def make_Nexpected_latextable(masses=[15,50,500],experiments=[xe,ge,iod,flu],fil
             entry += ')'
             fout.write(entry)
         fout.write('\\\\\n')
-        
+
     fout.write('\\end{tabular}\n')
     fout.write('\\end{center}\n')
     fout.write('\\caption{}\n')
@@ -1507,7 +1507,7 @@ def make_Nexpected_latextable(masses=[15,50,500],experiments=[xe,ge,iod,flu],fil
 
 ##########################################
 def get_chains(sim_name, experiments, sim_model,
-            param_values, fit_model, 
+            param_values, fit_model,
             prior='logflat',
             sim_root=SIM_PATH, chains_root=CHAINS_PATH,
             n_live_points=2000, basename='1-', time_tag='With_Time',
@@ -1524,11 +1524,11 @@ def get_chains(sim_name, experiments, sim_model,
         all_params[k] = sim_model.fixed_params[k]
 
     all_param_names = sim_model.param_names + sim_model.fixed_params.keys()
-    inds = np.argsort(all_param_names)        
+    inds = np.argsort(all_param_names)
     sorted_param_names = np.array(all_param_names)[inds]
     sorted_param_values = [all_params[par] for par in sorted_param_names]
     for parname, parval in zip(sorted_param_names, sorted_param_values):
-        foldername += '_{}_{:.2f}'.format(parname, parval)      
+        foldername += '_{}_{:.2f}'.format(parname, parval)
     foldername += '_fitfor'
 
     inds = np.argsort(fit_model.param_names)
@@ -1544,10 +1544,10 @@ def get_chains(sim_name, experiments, sim_model,
         sorted_fixedparam_names = np.array(keys)[inds]
         sorted_fixedparam_values = [fit_model.fixed_params[par] for par in sorted_fixedparam_names]
         for parname, parval in zip(sorted_fixedparam_names, sorted_fixedparam_values):
-            foldername += '_{}_{:.2f}'.format(parname, parval)   
+            foldername += '_{}_{:.2f}'.format(parname, parval)
 
     foldername += '_{}_nlive{}_{}'.format(prior, n_live_points, time_tag)
-    
+
     chainspath = '{}/{}/'.format(chains_root, foldername)
 
     chainsfile = chainspath + '/' + basename + 'post_equal_weights.dat'
@@ -1592,7 +1592,7 @@ def marginal_plot(samples, ax=None, orientation='vertical', **kwargs):
 
 def spaghetti(param, sim_range,mass=50,
             experiments=[xe,ge,flu], sim_model=SI_Higgs,
-            fit_model=SI_Higgs, 
+            fit_model=SI_Higgs,
             prior='logflat',xy=( 0.80, 0.90 ),labelfont=20,
             sim_root=SIM_PATH, chains_root=CHAINS_PATH,
             n_live_points=2000, basename='1-', time_tag='With_Time',
@@ -1616,19 +1616,19 @@ def spaghetti(param, sim_range,mass=50,
     for i in range(*sim_range):
         sim_name = 'sim{}'.format(i)
         chain = get_chains(sim_name, experiments, sim_model,
-                            param_values, fit_model, 
+                            param_values, fit_model,
                             prior=prior,sim_root=sim_root, chains_root=chains_root,
                             n_live_points=n_live_points, basename=basename, time_tag=time_tag,
                             params_to_get=param)
-        
+
         marginal_plot(chain, ax=ax, color=color, **kwargs)
         ax.axvline(param_values[param], color='b')
         plt.xlim(xmax=xmax)
 
     plt.yticks([])
     #plt.ylabel('posterior probability density')
-    pl.annotate(MODELNAME_TEX[sim_model.name], xy=xy, 
-                xycoords='axes fraction', fontsize=labelfont, 
+    pl.annotate(MODELNAME_TEX[sim_model.name], xy=xy,
+                xycoords='axes fraction', fontsize=labelfont,
                 va='top', color='k')
     if show_xlabel:
         plt.xlabel(PARAM_TEX[param], fontsize=22)
@@ -1645,14 +1645,14 @@ def all_spaghetti(models=MODELS_UV1,sim_range=[1,10],
     for m in models:
         spaghetti(param, sim_range,mass=50,
             experiments=experiment, sim_model=m,
-            fit_model=m, 
+            fit_model=m,
             prior=prior,
             sim_root=SIM_PATH, chains_root=CHAINS_PATH,
             n_live_points=2000, basename='1-',
             time_tag=time_tag, xmax=xmax,
             show_xlabel=show_xlabel, color=color,
             **kwargs)
-    
+
         filename=results_root + 'spaghetti_{}_{}_{:.0f}GeV_{}.pdf'.format(param,m.name,mass,tag)
         plt.savefig(filename)
-    
+
