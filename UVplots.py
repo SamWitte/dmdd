@@ -587,8 +587,8 @@ def OneDhistogram(nsim=50, startsim=1, masses=[50.],
                   simmodels=[SI_Higgs], models=[SI_Higgs, anapole], time_info='Both', GF=True, 
                   hspace = (1.06 * 50. ** (-1. / 5.)), filelabel='', allverbose=True, verbose=True,
                   results_root=os.environ['DMDD_AM_MAIN_PATH']+'/results_uv/', timeonly=False,
-                  saveplots=True, alpha=0.3, xoffset=0.1, fs=16, fs2=18, sigma_lim_file=None,
-                  colors_list=['Aqua','Red','Black','Green','Magenta','Orange']):
+                  saveplots=True, alpha=0.3, xoffset=0.1, fs=18, fs2=18, sigma_lim_file=None,
+                  colors_list=['Blue','Red','Green','Magenta','Orange']):
 
     xlinspace = np.linspace(0, 1, 200)
     leg_top = 0.
@@ -596,13 +596,18 @@ def OneDhistogram(nsim=50, startsim=1, masses=[50.],
     success_list = []
     label_list = []
     c_list = []
+    leg_down = np.zeros(4)
+    leg_top = np.zeros(4)
+    lab = []
 
     if colors_list == None:
         for i,experiment in enumerate(experiments):
             colors_list = Colors[experiment_names[i]]
-    
+
+    totlines = len(experiment_names)
     if time_info == 'Both':
         time_list = ['T', 'F']
+        totlines *= 2
     elif time_info == 'True':
         time_list = ['T']
     elif time_info == 'False':
@@ -610,7 +615,8 @@ def OneDhistogram(nsim=50, startsim=1, masses=[50.],
     else:
         print 'ERROR'
 
-    if len(filelabel)>0:
+
+    if len(filelabel) > 0:
         filelabel = '_' + filelabel
     if sigma_lim_file is None:
         sigma_limvals = {}
@@ -676,8 +682,8 @@ def OneDhistogram(nsim=50, startsim=1, masses=[50.],
             print ''
             print ''
             print m.name
-            plt.figure()
-            ax=plt.gca()
+            fig = plt.figure()
+            f, axarr = plt.subplots(2, 2, sharex='col')
             for tval in time_list:
                 for i,experiment in enumerate(experiments):
                     try:
@@ -737,56 +743,54 @@ def OneDhistogram(nsim=50, startsim=1, masses=[50.],
                         ii = 2*i + 1
                     else:
                         ii=2*i
-                    #for y in ys:
-                    #    plt.plot([y,y], [ 0., 10. ], lw=1,
-                    #             alpha=alpha, color=colors_list[ii])
-                    probdistr = np.zeros(xlinspace.size)
+
+                    probdistr = np.zeros_like(xlinspace)
                     std_dev = np.std(ys)
                     hspace = 1.06 * std_dev * nsim ** (-1. / 5.)
                     for x in range(0, xlinspace.size):
                         probdistr[x] = (1. / (nsim * hspace)) * norm.pdf((xlinspace[x] - ys) / hspace).sum()
 
                     success = float(np.sum(ys > 0.9)) / len(ys) * 100.
-                    success_list.append(success)
-                    label = experiment_labels[ii]
-                    label_list.append(experiment_labels[ii])
-                    c_list.append(colors_list[ii])
-                    plt.plot(xlinspace, probdistr, linewidth=1, color=colors_list[ii], label=label)
-
-                    leg_top -= leg_down
-#                    bins = np.linspace(0.0,1.,10)
-#                    plt.hist(ys, bins, alpha=0.3, facecolor=colors_list[ii],normed=True)
-                    maxval = round(np.max(probdistr) + .5)
+                    #success_list.append(success)
+                    #label = experiment_labels[ii]
+                    #label_list.append(experiment_labels[ii])
+                    #c_list.append(colors_list[ii])
                     if i == 0:
-                        maxylim = maxval
+                        ax_x = 0
+                        ax_y = 0
+                    elif i == 1:
+                        ax_x = 0
+                        ax_y = 1
+                    elif i == 2:
+                        ax_x = 1
+                        ax_y = 0
                     else:
-                        if maxval > maxylim:
-                            maxylim = maxval
+                        ax_x = 1
+                        ax_y = 1
+                    ii = i
+                    if tval == 'F':
+                        ls = '--'
 
-            leg_down = maxylim / 12.
-            leg_top = maxylim - leg_down
-            if time_info == 'Both':
-                shift = len(label_list) / 2
-                for i in range(len(label_list) / 2):
-                    plt.text(0.1, leg_top, label_list[i] + r'  [Success: {:.0f}$\%$]'.format(success_list[i]),
-                             color=c_list[i], fontsize=10)
-                    leg_top -= leg_down
-                    plt.text(0.1, leg_top, label_list[i + shift] + r'  [Success: {:.0f}$\%$]'.format(success_list[i + shift]),
-                             color=c_list[i + shift], fontsize=10)
-                    leg_top -= leg_down
-            else:
-                for i in range(len(label_list)):
-                    plt.text(0.1, leg_top, label_list[i] + r'  [Success: {:.0f}$\%$]'.format(success_list[i]),
-                             color=c_list[i], fontsize=10)
-                    leg_top -= leg_down
-            plt.axvline(0.9, 0, 1, ls='--', color='k', lw=2)
-            ax.set_title('True model: {} (mass: {:.0f} GeV)'.format(MODELNAME_TEX[m.name], mass), fontsize=fs)
-            pl.xlim([0., 1.])
-            pl.ylim([0., maxylim])
-            ax.axes.get_yaxis().set_ticks([])
-            pl.ylabel('Density', fontsize=fs)
-            pl.xlabel('Probability of true model', fontsize=fs)
+                        axarr[ax_x, ax_y].plot(100. * xlinspace, probdistr, ls, linewidth=2,
+                                               color=colors_list[ii], dashes=(10, 10))
+                        lab[i] = '(Dashed) No Time: ' + r'[Success: {:.0f}$\%$]'.format(success) + lab[i]
+                        axarr[ax_x, ax_y].axes.get_yaxis().set_ticks([])
+                        axarr[ax_x, ax_y].text(5, leg_top[i], lab[i], color=colors_list[i], fontsize=10)
+                    else:
+                        axarr[ax_x, ax_y].plot(100. * xlinspace, probdistr, linewidth=2, color=colors_list[ii])
 
+                        lab.append('\n (Solid) Time: ' + r'[Success: {:.0f}$\%$]'.format(success))
+                        ymax = np.max(probdistr) + .1
+                        axarr[ax_x, ax_y].text(5, 0.85 * ymax, experiment_labels[2 * ii], color='k', fontsize=16)
+                        leg_top[i] = 0.7 * ymax
+                        axarr[ax_x, ax_y].set_ylim([0., ymax])
+
+            #axarr[1, 1].text(10, 0.5 * ymax, 'Solid: Time \n Dashed: No Time', color='k', fontsize=10)
+            pl.suptitle('True model: {} (mass: {:.0f} GeV)'.format(MODELNAME_TEX[m.name], mass), fontsize=fs)
+            f.text(0.5, .05, r'Probability of True Model   [$\%$]', ha='center', va='center', fontsize=fs)
+            f.tight_layout(rect=(0, .05, 1, .95))
+            # fig.text(0.06, 0.5, 'common ylabel', ha='center', va='center', rotation='vertical')
+            plt.subplots_adjust(wspace=0.0, hspace=0.)
             figname = results_root + 'PDF_{:.0f}GeV_{}_{}sims{}.pdf'.format(mass, m.name, nsim, filelabel)
             if saveplots:
                 pl.savefig(figname)
@@ -964,11 +968,10 @@ def OneDhistogram_timeDiff(nsim=50, startsim=1, masses=[50.],
                 c_list.append(colors_list[i])
 
                 label = experiment_labels[i]
-                plt.plot(xlinspace, probdistr, linewidth=1, color=colors_list[i], label=label)
+                #plt.plot(xlinspace, probdistr, linewidth=1, color=colors_list[i], label=label)
 
-                leg_top -= leg_down
-#                bins = np.linspace(-.09,.09,15)
-#                plt.hist(ys, bins, alpha=0.3, facecolor='r')                    
+                bins = np.linspace(-.1, .25, 8)
+                plt.hist(ys, bins, ec=colors_list[i], histtype='step')
                     
                 maxval = np.max(probdistr) + 1
                 if i == 0:
@@ -980,7 +983,7 @@ def OneDhistogram_timeDiff(nsim=50, startsim=1, masses=[50.],
             leg_down = maxylim / 12.
             leg_top = maxylim - leg_down
             for i in range(len(label_list)):
-                plt.text(-0.4, leg_top, label_list[i] +
+                plt.text(0.3, leg_top, label_list[i] +
                          r'  [$\bar{{\Delta}}$ = {:.1f} \%, $\tilde{{\Delta}}$ = {:.1f} \%]'.format(avg_list[i],
                                                                                                 med_list[i]),
                          color=c_list[i], fontsize=10)
@@ -988,7 +991,7 @@ def OneDhistogram_timeDiff(nsim=50, startsim=1, masses=[50.],
             ax.set_title('True model: {} (mass: {:.0f} GeV)'.format(MODELNAME_TEX[m.name], mass), fontsize=fs)
 
             pl.xlim([-.05, .25])
-            pl.ylim([0., maxylim])
+            #pl.ylim([0., maxylim])
             ax.axes.get_yaxis().set_ticks([])
 
             pl.ylabel('Density', fontsize=fs)
