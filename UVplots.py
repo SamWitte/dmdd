@@ -595,7 +595,7 @@ def OneDhistogram(nsim=50, startsim=1, masses=[50.],
     leg_down = 0.
     success_list = []
     label_list = []
-    ymax_list = []
+    ymax_list = np.zeros(4)
     leg_down = np.zeros(4)
     leg_top = np.zeros(4)
     lab = []
