@@ -510,6 +510,7 @@ def line_plots_1vsall(nsim=100, startsim=1, masses=[50.],
                             renorm = np.amax(np.array([renorm,ln_ev[j]]))
 
                         for j,fitm in enumerate(models):
+                            print j, ln_ev[j]
                             ev_sum += np.exp(-renorm + ln_ev[j])
 
                         for j,fitm in enumerate(models):
