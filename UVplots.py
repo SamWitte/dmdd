@@ -751,6 +751,7 @@ def OneDhistogram(nsim=50, startsim=1, masses=[50.],
                         probdistr[x] = (1. / (nsim * hspace)) * norm.pdf((xlinspace[x] - ys) / hspace).sum()
 
                     success = float(np.sum(ys > 0.9)) / len(ys) * 100.
+                    probdistr = probdistr
                     #success_list.append(success)
                     #label = experiment_labels[ii]
                     #label_list.append(experiment_labels[ii])
@@ -769,20 +770,31 @@ def OneDhistogram(nsim=50, startsim=1, masses=[50.],
                         ax_y = 1
                     ii = i
                     if tval == 'F':
+                        axarr[ax_x, ax_y].set_xlim([10., 100.])
+                        ticks = np.power(10., 2 * np.array([.5, .7, .8, .9, .95]))
+                        axarr[ax_x, ax_y].axes.get_xaxis().set_ticks(ticks)
+                        axarr[ax_x, ax_y].axes.get_xaxis().set_ticklabels(['{:.0f}'.format(50),
+                                                                           '{:.0f}'.format(70),
+                                                                           '{:.0f}'.format(80),
+                                                                           '{:.0f}'.format(90),
+                                                                           '{:.0f}'.format(95)])
                         ls = '--'
                         ymax_list[i] = np.max(probdistr) + 0.1
-                        axarr[ax_x, ax_y].plot(100. * xlinspace, probdistr, ls, linewidth=2,
+                        axarr[ax_x, ax_y].plot(10 ** (2. * xlinspace), probdistr, ls, linewidth=2,
                                                color=colors_list[ii], dashes=(10, 10))
                         lab.append('(Dashed) No Time: ' + r'[Success: {:.0f}$\%$]'.format(success))
                         axarr[ax_x, ax_y].axes.get_yaxis().set_ticks([])
                     else:
                         ymax_list[i] = np.max([ymax_list[i], np.max(probdistr) + 0.1])
-                        leg_top[i] = 0.7 * ymax_list[i]
-                        axarr[ax_x, ax_y].plot(100. * xlinspace, probdistr, linewidth=2, color=colors_list[ii])
-                        lab[i] += ('\n (Solid) Time: ' + r'[Success: {:.0f}$\%$]'.format(success))
 
-                        axarr[ax_x, ax_y].text(5, leg_top[i], lab[i], color=colors_list[i], fontsize=10)
-                        axarr[ax_x, ax_y].text(5, 0.85 * ymax_list[i], experiment_labels[2 * ii], color='k', fontsize=16)
+                        axarr[ax_x, ax_y].plot(10 ** (2. * xlinspace), probdistr, linewidth=2, color=colors_list[ii])
+                        lab[i] += ('\n (Solid) Time: ' + r'[Success: {:.0f}$\%$]'.format(success))
+                        if i > 1:
+                            leg_top[i] = 0.7 * ymax_list[i]
+                        else:
+                            leg_top[i] = 0.1 * ymax_list[i]
+                        axarr[ax_x, ax_y].text(12, leg_top[i], lab[i], color=colors_list[i], fontsize=10)
+                        axarr[ax_x, ax_y].text(12, 0.85 * ymax_list[i], experiment_labels[2 * ii], color='k', fontsize=16)
                         axarr[ax_x, ax_y].set_ylim([0., ymax_list[i]])
 
             #axarr[1, 1].text(10, 0.5 * ymax, 'Solid: Time \n Dashed: No Time', color='k', fontsize=10)
