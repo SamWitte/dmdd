@@ -89,7 +89,7 @@ FITMODELS = MODELS1
 
 ##get upper limits for a given mass:
 pandax=dmdd.Experiment('PandaX','xenon', 4., 30., 188., dmdd.eff.efficiency_Xe, 0., 1., energy_resolution=True)
-lux=dmdd.Experiment('LUX','xenon', 4., 30., 30.7, dmdd.eff.efficiency_Xe, 0., 1., energy_resolution=True)
+lux=dmdd.Experiment('LUX','xenon', 5., 50., 70., dmdd.eff.efficiency_Xe, 0., 1., energy_resolution=True)
 cdmslite=dmdd.Experiment('CDMSlite','germanium', 0.840, 6, 0.0164, dmdd.eff.efficiency_Xe, 0., 1., energy_resolution=True)
 supercdms=dmdd.Experiment('SuperCDMS','germanium', 1.6, 12, 1.581, dmdd.eff.efficiency_Xe, 0., 1., energy_resolution=True)
 sigma_vals = {}
