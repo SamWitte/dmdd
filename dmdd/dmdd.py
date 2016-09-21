@@ -493,7 +493,7 @@ class MultinestRun(object):
                 fitmodel_dRdQ_params[k] = v 
         for i,k in enumerate(self.fit_model.param_names): 
             fitmodel_dRdQ_params[k] = param_values[i]
-                
+
         for sim in self.simulations:
             filename = self.chainspath + '/{}_theoryfitdata_{}.pdf'.format(self.sim_name, sim.experiment.name)
             if self.time_info:
@@ -501,10 +501,10 @@ class MultinestRun(object):
                 Tbins_theory, Thist_theory, t_binsize, tbinsizetheory = sim.plot_data(make_plot=False, return_plot_items=True)
             else:
                 Qbins, Qhist, xerr, yerr, Qbins_theory, Qhist_theory, binsize = sim.plot_data(make_plot=False, return_plot_items=True)
-            
+
             fitmodel_dRdQ_params['element'] = sim.experiment.element
-           
-            fitmodel_dRdQ = sim.model.dRdQ(Qbins_theory,0.,**fitmodel_dRdQ_params)
+
+            fitmodel_dRdQ = sim.model.dRdQ(Qbins_theory, 0.67, **fitmodel_dRdQ_params)
             Ntot = sim.N
             Qhist_fit = fitmodel_dRdQ*binsize*sim.experiment.exposure*YEAR_IN_S*sim.experiment.efficiency(Qbins_theory)
 
@@ -519,7 +519,7 @@ class MultinestRun(object):
                 else:
                     simmodel_title = self.sim_model.name
             dp.plot_theoryfitdata(Qbins, Qhist, xerr, yerr, Qbins_theory, Qhist_theory, Qhist_fit,
-                                    filename=filename, save_file=True, Ntot=Ntot, 
+                                    filename=filename, save_file=True, Ntot=Ntot,
                                     fitmodel=fitmodel_title, simmodel=simmodel_title,
                                     experiment=sim.experiment.name, labelfont=18, legendfont=17,titlefont=20, mass=self.param_values['mass'])
          
@@ -528,7 +528,7 @@ class MultinestRun(object):
             for sim in self.simulations:
                 Ntot = sim.N
                 fitmodel_dRdQ_params['element'] = sim.experiment.element
-                fitmodel_dRdQ = sim.model.dRdQ(Qbins_theory,0.,**fitmodel_dRdQ_params)
+                fitmodel_dRdQ = sim.model.dRdQ(Qbins_theory, 0.67, **fitmodel_dRdQ_params)
                 filename = self.chainspath + '/{}_theoryfitdata_TIME_{}.pdf'.format(self.sim_name, sim.experiment.name)
                 Qbins, Qhist, xerr, yerr, Qbins_theory, Qhist_theory, binsize, time_bins, Thist, txerr, tyerr, \
                 Tbins_theory, Thist_theory, t_binsize, tbinsizetheory = sim.plot_data(make_plot=False, return_plot_items=True)
@@ -551,7 +551,7 @@ class MultinestRun(object):
                     else:
                         fitmodel_dRdQ_params['time_info']=True
                         Thist_fit[i] = (np.trapz(sim.experiment.efficiency(sim.model_Qgrid) * sim.model.dRdQ(sim.model_Qgrid, Tbins_theory[i], **fitmodel_dRdQ_params),
-                                              sim.model_Qgrid) * sim.experiment.exposure*YEAR_IN_S * t_binsize )
+                                              sim.model_Qgrid) * sim.experiment.exposure*YEAR_IN_S * t_binsize)
                                               
                 dp.plot_theoryfitdata_time(time_bins, Thist, txerr, tyerr, Tbins_theory, Thist_theory, Thist_fit,
                                         filename=filename, save_file=True, Ntot=Ntot, 
@@ -731,22 +731,20 @@ class Simulation(object):
         dRdQ_params['GF'] = self.GF
         allpars['GF'] = self.GF        
                      
-        self.model_Qgrid = np.linspace(experiment.Qmin, experiment.Qmax, 1000)
+        self.model_Qgrid = np.linspace(experiment.Qmin, experiment.Qmax, 100)
         efficiencies = experiment.efficiency(self.model_Qgrid)
 
         if self.GF:
             dRdQ_params['time_info'] = False
             self.model_dRdQ = self.model.dRdQ(self.model_Qgrid, 0., **dRdQ_params)
             R_integrand = self.model_dRdQ * efficiencies
-            self.model_R = np.trapz(R_integrand,self.model_Qgrid)
+            self.model_R = np.trapz(R_integrand, self.model_Qgrid)
             dRdQ_params['time_info'] = self.time_info
             
         else:
-            dRdQ_params['time_info'] = False
-            self.model_dRdQ = self.model.dRdQ(self.model_Qgrid, 0., **dRdQ_params)
+            self.model_dRdQ = self.model.dRdQ(self.model_Qgrid, 0.67, **dRdQ_params)
             R_integrand = self.model_dRdQ * efficiencies
             self.model_R = np.trapz(R_integrand,self.model_Qgrid)
-            dRdQ_params['time_info'] = self.time_info
 
         self.model_N = self.model_R * experiment.exposure * YEAR_IN_S
 
@@ -838,10 +836,10 @@ class Simulation(object):
             npts = 10000
             Nevents = poisson.rvs(Nexpected)
       
-            Qgrid = np.linspace(self.experiment.Qmin,self.experiment.Qmax,npts)
+            Qgrid = np.linspace(self.experiment.Qmin, self.experiment.Qmax, npts)
             efficiency = self.experiment.efficiency(Qgrid)
             
-            pdf = self.model.dRdQ(Qgrid, 0., **self.dRdQ_params) * efficiency / self.model_R
+            pdf = self.model.dRdQ(Qgrid, 0.67, **self.dRdQ_params) * efficiency / self.model_R
             cdf = pdf.cumsum()
             cdf /= cdf.max()
             u = random.rand(Nevents)
@@ -886,8 +884,6 @@ class Simulation(object):
                     Ylist.append(y)
                 else:
                     pass #otherwise do nothing
-
-
             Q = np.zeros((Nevents,2))
             for i in range(0, len(Xlist)):
                 Q[i] = Ylist[i],Xlist[i]
@@ -902,7 +898,6 @@ class Simulation(object):
         return Q
         
     def pdf_fun(self, Q, t):
-        
         efficiency = self.experiment.efficiency(np.array([Q]))        
         if self.GF:            
             res = self.model.dRdQ(np.array([Q]), t, **self.dRdQ_params) * efficiency / self.model_R
@@ -1465,7 +1460,7 @@ def dRdQ_time(dRdQ_func, dRdQ_param, Q_vals, t):
     kwags = dRdQ_param
     kwags['v_lag'] = 220.0 + 29.8 * 0.49 * cos(2.0 * np.pi * (t - 0.42))
     
-    result = dRdQ_func(Q_vals, 0., **kwags)
+    result = dRdQ_func(Q_vals, .67, **kwags)
     kwags['v_lag'] = 220.0
     
     return result
