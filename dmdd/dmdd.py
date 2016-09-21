@@ -731,7 +731,7 @@ class Simulation(object):
         dRdQ_params['GF'] = self.GF
         allpars['GF'] = self.GF        
                      
-        self.model_Qgrid = np.linspace(experiment.Qmin,experiment.Qmax, 1000)
+        self.model_Qgrid = np.linspace(experiment.Qmin, experiment.Qmax, 1000)
         efficiencies = experiment.efficiency(self.model_Qgrid)
 
         if self.GF:
@@ -742,9 +742,11 @@ class Simulation(object):
             dRdQ_params['time_info'] = self.time_info
             
         else:
+            dRdQ_params['time_info'] = False
             self.model_dRdQ = self.model.dRdQ(self.model_Qgrid, 0., **dRdQ_params)
             R_integrand = self.model_dRdQ * efficiencies
             self.model_R = np.trapz(R_integrand,self.model_Qgrid)
+            dRdQ_params['time_info'] = self.time_info
 
         self.model_N = self.model_R * experiment.exposure * YEAR_IN_S
 
@@ -1463,7 +1465,7 @@ def dRdQ_time(dRdQ_func, dRdQ_param, Q_vals, t):
     kwags = dRdQ_param
     kwags['v_lag'] = 220.0 + 29.8 * 0.49 * cos(2.0 * np.pi * (t - 0.42))
     
-    result = dRdQ_func(Q_vals,0.,**kwags)
+    result = dRdQ_func(Q_vals, 0., **kwags)
     kwags['v_lag'] = 220.0
     
     return result
