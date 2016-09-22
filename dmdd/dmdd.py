@@ -731,7 +731,8 @@ class Simulation(object):
         dRdQ_params['GF'] = self.GF
         allpars['GF'] = self.GF        
                      
-        self.model_Qgrid = np.linspace(experiment.Qmin, experiment.Qmax, 100)
+        self.model_Qgrid = np.logspace(np.log10(experiment.Qmin),
+                                       np.log10(experiment.Qmax), 100)
         efficiencies = experiment.efficiency(self.model_Qgrid)
 
         if self.GF:
@@ -744,7 +745,7 @@ class Simulation(object):
         else:
             self.model_dRdQ = self.model.dRdQ(self.model_Qgrid, 0.67, **dRdQ_params)
             R_integrand = self.model_dRdQ * efficiencies
-            self.model_R = np.trapz(R_integrand,self.model_Qgrid)
+            self.model_R = np.trapz(R_integrand, self.model_Qgrid)
 
         self.model_N = self.model_R * experiment.exposure * YEAR_IN_S
 
@@ -836,7 +837,7 @@ class Simulation(object):
             npts = 10000
             Nevents = poisson.rvs(Nexpected)
       
-            Qgrid = np.linspace(self.experiment.Qmin, self.experiment.Qmax, npts)
+            Qgrid = np.logspace(np.log10(self.experiment.Qmin), np.log10(self.experiment.Qmax), npts)
             efficiency = self.experiment.efficiency(Qgrid)
             
             pdf = self.model.dRdQ(Qgrid, 0.67, **self.dRdQ_params) * efficiency / self.model_R
@@ -942,7 +943,8 @@ class Simulation(object):
         xerr = Qwidths
         yerr = Qhist**0.5
 
-        Qhist_theory = self.model_dRdQ*binsize*self.experiment.exposure*YEAR_IN_S*self.experiment.efficiency(self.model_Qgrid)
+        Qhist_theory = self.model_dRdQ*binsize*self.experiment.exposure* \
+                       YEAR_IN_S*self.experiment.efficiency(self.model_Qgrid)
         Qbins_theory = self.model_Qgrid
 
         if make_plot:
