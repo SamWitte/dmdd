@@ -107,7 +107,7 @@ def dRdQSI(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t V0, DTYPE_t v_lag, DTYP
         v_min = ((2.*weight*mN*q))**0.5/(2.*weight*mN*mx/(weight*mN+mx)) *3.*10.**5
         ff = formUV.factor_SI(element_name,y_harm,fnfp)
         if not GF:
-            val_eta = eta(v_min,v_esc,V0,v_lag)
+            val_eta = eta(v_min, v_esc, V0, v_lag)
         elif GF:
             val_eta = eta_GF(v_min, time, time_info)
         tot = v_independent * val_eta * ff
@@ -1051,7 +1051,7 @@ def loglikelihood(np.ndarray[DTYPE_t] Q, np.ndarray[DTYPE_t] tim, object efficie
     cdef DTYPE_t tot = 0.
     cdef DTYPE_t Ts = 0.
 
-    cdef DTYPE_t Tobs = exposure * 24. * 3600. * 365.
+    cdef DTYPE_t Tobs = exposure * 24. * 3600. * 365.25
 
     cdef DTYPE_t two_pi = 2.0 * 3.141519
     
@@ -1089,7 +1089,6 @@ def loglikelihood(np.ndarray[DTYPE_t] Q, np.ndarray[DTYPE_t] tim, object efficie
         return 0.
     tot += Nevents * log(Nexp) - Nexp 
 
-    
     if not TIMEONLY:
         if energy_resolution:
             tot -= Nevents * log(Rate)

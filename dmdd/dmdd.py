@@ -900,11 +900,10 @@ class Simulation(object):
         
     def pdf_fun(self, Q, t):
         efficiency = self.experiment.efficiency(np.array([Q]))
-        res = self.model.dRdQ(np.array([Q]), t, **self.dRdQ_params) * efficiency / self.model_R
-        # if self.GF:
-        #     res = self.model.dRdQ(np.array([Q]), t, **self.dRdQ_params) * efficiency / self.model_R
-        # else:
-        #     res = dRdQ_time(self.model.dRdQ, self.dRdQ_params, np.array([Q]), t) * efficiency / self.model_R
+        if self.GF:
+            res = self.model.dRdQ(np.array([Q]), t, **self.dRdQ_params) * efficiency / self.model_R
+        else:
+            res = dRdQ_time(self.model.dRdQ, self.dRdQ_params, np.array([Q]), t) * efficiency / self.model_R
         return res
 
     def plot_data(self, plot_nbins=20, plot_theory=True, save_plot=True,
