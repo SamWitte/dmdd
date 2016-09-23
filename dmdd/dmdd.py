@@ -834,7 +834,7 @@ class Simulation(object):
         """
         Nexpected = self.model_N
         if Nexpected > 0:
-            npts = 10000
+            npts = 100
             Nevents = poisson.rvs(Nexpected)
       
             Qgrid = np.logspace(np.log10(self.experiment.Qmin), np.log10(self.experiment.Qmax), npts)
@@ -899,15 +899,14 @@ class Simulation(object):
         return Q
         
     def pdf_fun(self, Q, t):
-        efficiency = self.experiment.efficiency(np.array([Q]))        
-        if self.GF:            
-            res = self.model.dRdQ(np.array([Q]), t, **self.dRdQ_params) * efficiency / self.model_R
-        else:   
-            res = (dRdQ_time(self.model.dRdQ, self.dRdQ_params, np.array([Q]), t) *
-                        efficiency / self.model_R)
-        
+        efficiency = self.experiment.efficiency(np.array([Q]))
+        res = self.model.dRdQ(np.array([Q]), t, **self.dRdQ_params) * efficiency / self.model_R
+        # if self.GF:
+        #     res = self.model.dRdQ(np.array([Q]), t, **self.dRdQ_params) * efficiency / self.model_R
+        # else:
+        #     res = dRdQ_time(self.model.dRdQ, self.dRdQ_params, np.array([Q]), t) * efficiency / self.model_R
         return res
-	    
+
     def plot_data(self, plot_nbins=20, plot_theory=True, save_plot=True,
                   make_plot=False, return_plot_items=False):
         """

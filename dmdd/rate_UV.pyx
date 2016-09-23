@@ -971,14 +971,14 @@ def R(object efficiency_fn, DTYPE_t mass=50.,
     :return:
       total recoil energy rate in counts/kg/sec
     """
-    cdef unsigned int npoints = 100 
+    cdef unsigned int npoints = 100
     cdef unsigned int i
     cdef DTYPE_t result
     cdef DTYPE_t expQmin = log10(Qmin)
     cdef DTYPE_t expQmax = log10(Qmax)
     cdef DTYPE_t expQstep = (expQmax - expQmin)/(npoints - 1)
-    cdef np.ndarray[DTYPE_t] Qs = np.empty(npoints,dtype=float)
-    cdef DTYPE_t Ts = 0.
+    cdef np.ndarray[DTYPE_t] Qs = np.empty(npoints, dtype=float)
+    cdef DTYPE_t Ts = 0.67
 
     for i in xrange(npoints):
         expQ = expQmin + i*expQstep
@@ -1053,7 +1053,7 @@ def loglikelihood(np.ndarray[DTYPE_t] Q, np.ndarray[DTYPE_t] tim, object efficie
 
     cdef DTYPE_t Tobs = exposure * 24. * 3600. * 365.
 
-    cdef DTYPE_t two_pi = 2.0 * 3.1415
+    cdef DTYPE_t two_pi = 2.0 * 3.141519
     
     cdef unsigned int npoints = 35 
     cdef DTYPE_t result
