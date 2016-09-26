@@ -753,7 +753,7 @@ class Simulation(object):
             dRdQ_params['v_lag'] = vlag
             test1[i] = np.trapz(self.model.dRdQ(self.model_Qgrid, 0.67, **dRdQ_params), self.model_Qgrid)
 #        print experiment.exposure * YEAR_IN_S * np.trapz(test1, t)
-        self.model_R = experiment.exposure * YEAR_IN_S * np.trapz(test1, t)
+        self.model_R = np.trapz(test1, t)
 
         self.model_N = self.model_R * experiment.exposure * YEAR_IN_S
         print 'Expected Number of Events: ', self.model_N
