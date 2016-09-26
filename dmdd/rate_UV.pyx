@@ -1051,13 +1051,16 @@ def loglikelihood(np.ndarray[DTYPE_t] Q, np.ndarray[DTYPE_t] tim, object efficie
     cdef DTYPE_t Tobs = exposure * 24. * 3600. * 365.25
 
     cdef DTYPE_t two_pi = 2.0 * 3.141519
-    cdef v_lag2 = v_lag
     cdef unsigned int npoints = 35 
     cdef DTYPE_t result
     cdef DTYPE_t expQmin = log10(Qmin)
     cdef DTYPE_t expQmax = log10(Qmax)
     cdef DTYPE_t expQstep = (expQmax - expQmin)/(npoints - 1)
     cdef np.ndarray[DTYPE_t] Qs = np.empty(npoints,dtype=float)
+    cdef np.ndarray[DTYPE_t] vlags = np.ones(len(Q)) * v_lag
+
+    if time_info and not GF:
+        vlags += v_erth_proj * np.cos(two_pi * (tim - mod_phase))
 
     cdef DTYPE_t Rate = R(efficiency_fn, mass=mass,
                                          v_rms=v_rms, v_lag=v_lag, v_esc=v_esc, rho_x=rho_x,
@@ -1088,10 +1091,8 @@ def loglikelihood(np.ndarray[DTYPE_t] Q, np.ndarray[DTYPE_t] tim, object efficie
         if energy_resolution:
             tot -= Nevents * log(Rate)
             for i in range(0, Nevents):
-                if time_info and not GF:
-                    v_lag2 = v_rms + v_erth_proj * np.cos(two_pi * (tim[i] - mod_phase))
                 event_inf = dRdQ(np.array([Q[i]]), np.array([tim[i]]), mass=mass,
-                                                v_lag=v_lag2, v_rms=v_rms, v_esc=v_esc, rho_x=rho_x, element=element,
+                                                v_lag=vlags[i], v_rms=v_rms, v_esc=v_esc, rho_x=rho_x, element=element,
                                                 fnfp_si=fnfp_si, fnfp_sd=fnfp_sd,
                                                   fnfp_anapole=fnfp_anapole, fnfp_magdip=fnfp_magdip, fnfp_elecdip=fnfp_elecdip,
                                                   fnfp_LS=fnfp_LS, fnfp_f1=fnfp_f1, fnfp_f2=fnfp_f2, fnfp_f3=fnfp_f3,
@@ -1109,7 +1110,7 @@ def loglikelihood(np.ndarray[DTYPE_t] Q, np.ndarray[DTYPE_t] tim, object efficie
                                                   sigma_LS_massless=sigma_LS_massless, sigma_f1_massless=sigma_f1_massless, sigma_f2_massless=sigma_f2_massless,
                                                   sigma_f3_massless=sigma_f3_massless,
                                                   GF=GF, time_info=time_info) * efficiency_fn(np.array([Q[i]]))
-                v_lag2 = v_lag
+
                 if event_inf==0.:
                     return -1.*INFINITY #if an event is seen where the model expects zero events (behind the V_lag), this model is excluded, and loglikelihood=-Infinity.
                 tot += log(event_inf)
@@ -1121,10 +1122,8 @@ def loglikelihood(np.ndarray[DTYPE_t] Q, np.ndarray[DTYPE_t] tim, object efficie
             
         tot -= Nevents * log(Rate)
         for i in range(0, Nevents):
-            if not GF:
-                v_lag2 = v_rms + v_erth_proj * np.cos(two_pi * (tim[i] - mod_phase))
             event_inf_arr = dRdQ(Qs, np.array([tim[i]]), mass=mass,
-                                               v_lag=v_lag, v_rms=v_rms, v_esc=v_esc, rho_x=rho_x, element=element,
+                                               v_lag=vlags[i], v_rms=v_rms, v_esc=v_esc, rho_x=rho_x, element=element,
                                                fnfp_si=fnfp_si, fnfp_sd=fnfp_sd,
                                                fnfp_anapole=fnfp_anapole, fnfp_magdip=fnfp_magdip, fnfp_elecdip=fnfp_elecdip,
                                                fnfp_LS=fnfp_LS, fnfp_f1=fnfp_f1, fnfp_f2=fnfp_f2, fnfp_f3=fnfp_f3,
@@ -1139,7 +1138,6 @@ def loglikelihood(np.ndarray[DTYPE_t] Q, np.ndarray[DTYPE_t] tim, object efficie
                                                sigma_LS_massless=sigma_LS_massless, sigma_f1_massless=sigma_f1_massless, sigma_f2_massless=sigma_f2_massless, sigma_f3_massless=sigma_f3_massless,
                                                GF=GF, time_info=True)
             result = trapz(event_inf_arr,Qs)
-            v_lag2 = v_lag
             if result==0.:
                 return -1.*INFINITY #if an event is seen where the model expects zero events (behind the V_lag), this model is excluded, and loglikelihood=-Infinity.
             tot += log(result)

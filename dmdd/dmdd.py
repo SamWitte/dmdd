@@ -682,11 +682,9 @@ class Simulation(object):
         self.silent = silent
         if not set(parvals.keys())==set(model.param_names):
             raise ValueError('Must pass parameter value dictionary corresponding exactly to model.param_names')
-        
-        
+
         self.model = model #underlying model
         self.experiment = experiment
-    
         #build param_values from parvals
         self.param_values = [parvals[par] for par in model.param_names]
         self.param_names = list(self.model.param_names)
@@ -730,11 +728,11 @@ class Simulation(object):
                
         dRdQ_params['GF'] = self.GF
         allpars['GF'] = self.GF        
-                     
+#        print dRdQ_params
+#        print allpars
         self.model_Qgrid = np.logspace(np.log10(experiment.Qmin),
-                                       np.log10(experiment.Qmax), 100)
+                                       np.log10(experiment.Qmax), 500)
         efficiencies = experiment.efficiency(self.model_Qgrid)
-
         if self.GF:
             dRdQ_params['time_info'] = False
             self.model_dRdQ = self.model.dRdQ(self.model_Qgrid, 0., **dRdQ_params)
@@ -746,22 +744,28 @@ class Simulation(object):
             self.model_dRdQ = self.model.dRdQ(self.model_Qgrid, 0.67, **dRdQ_params)
             R_integrand = self.model_dRdQ * efficiencies
             self.model_R = np.trapz(R_integrand, self.model_Qgrid)
+#        print self.model_R * experiment.exposure * YEAR_IN_S
+        t = np.linspace(0, 1, 300)
+        vlag_list = np.ones(300) * 220.
+        test1 = np.zeros(300)
+        for i,vlag in enumerate(vlag_list):
+            vlag += 29.8 * 0.49 * np.cos(2. * np.pi * (t[i] - 0.42))
+            dRdQ_params['v_lag'] = vlag
+            test1[i] = np.trapz(self.model.dRdQ(self.model_Qgrid, 0.67, **dRdQ_params), self.model_Qgrid)
+#        print experiment.exposure * YEAR_IN_S * np.trapz(test1, t)
+        self.model_R = experiment.exposure * YEAR_IN_S * np.trapz(test1, t)
 
         self.model_N = self.model_R * experiment.exposure * YEAR_IN_S
-
         print 'Expected Number of Events: ', self.model_N
-        
         #create dictionary of all parameters relevant to simulation
         self.allpars = allpars
-        self.allpars['experiment'] = experiment.name    
-
+        self.allpars['experiment'] = experiment.name
         #record dictionary for relevant coupling normalizations only:
         norm_dict = {}
         for kw in model.param_names:
             if kw in PAR_NORMS:
                 norm_dict[kw] = PAR_NORMS[kw]
         self.allpars['norms'] = norm_dict
-        
       
         self.datafile = '{}/{}.dat'.format(self.path,self.file_basename)
         self.plotfile = '{}/{}.pdf'.format(self.path,self.file_basename)
@@ -810,8 +814,6 @@ class Simulation(object):
 
                 self.Q = np.atleast_1d(Q)
                 self.N = len(self.Q)
-                
-                
 
         if asimov:
             raise ValueError('Asimov not yet implemented!')
@@ -871,15 +873,14 @@ class Simulation(object):
             Ylist = []
             
             while total < Nevents:
-                U = np.random.rand() #random number between 0 and 1
+                U = np.random.rand()  # random number between 0 and 1
                 x = (np.random.rand() * (self.experiment.end_t - self.experiment.start_t) +
                     self.experiment.start_t)
                 y = (np.random.rand() * (self.experiment.Qmax - self.experiment.Qmin) +
-                    self.experiment.Qmin) #same as above line
-
+                    self.experiment.Qmin)  # same as above line
                 pdf = self.pdf_fun(y, x)
                 env = 10.
-                if U < (pdf)/(env): # if condition is met, accept point
+                if U < (pdf) / (env): # if condition is met, accept point
                     total = total + 1 #add one to the count
                     Xlist.append(x)
                     Ylist.append(y)
@@ -887,7 +888,7 @@ class Simulation(object):
                     pass #otherwise do nothing
             Q = np.zeros((Nevents,2))
             for i in range(0, len(Xlist)):
-                Q[i] = Ylist[i],Xlist[i]
+                Q[i] = Ylist[i], Xlist[i]
 
         else:
             Q = np.array([])
@@ -910,9 +911,6 @@ class Simulation(object):
                   make_plot=False, return_plot_items=False):
         """
         Plot simuated data.
-
-        
-        
         :param plot_nbins:
             Number of bins for plotting.
 
@@ -933,7 +931,7 @@ class Simulation(object):
             
         """
 
-        Qhist,bins = np.histogram(self.Q[:,0],plot_nbins)
+        Qhist,bins = np.histogram(self.Q[:, 0], plot_nbins)
 
         Qbins = (bins[1:]+bins[:-1])/2. 
         binsize = Qbins[1]-Qbins[0] #valid only for uniform gridding.
@@ -971,7 +969,7 @@ class Simulation(object):
 
         if self.time_info:
 
-            Thist,tbins = np.histogram(self.Q[:,1], bins=[0.,.1,.2,.3,.4,.5,.6,.7,.8,.9,1.])
+            Thist,tbins = np.histogram(self.Q[:,1], bins=[0., .1, .2, .3, .4, .5, .6, .7, .8, .9, 1.])
             time_bins = (tbins[1:]+tbins[:-1])/2.
             t_binsize = time_bins[1]-time_bins[0] #valid only for uniform gridding.
             Twidths = (tbins[1:]-tbins[:-1])/2.
@@ -1456,13 +1454,10 @@ def dRdQ_time(dRdQ_func, dRdQ_param, Q_vals, t):
     """
     Changes v_lag to v_lag + v_earth * (0.49) * Cos(2 pi (t - 0.42))
     """
-    
     kwags = dRdQ_param
     kwags['v_lag'] = 220.0 + 29.8 * 0.49 * cos(2.0 * np.pi * (t - 0.42))
-    
     result = dRdQ_func(Q_vals, .67, **kwags)
     kwags['v_lag'] = 220.0
-    
     return result
 
 
