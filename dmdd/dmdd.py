@@ -956,7 +956,7 @@ class Simulation(object):
 
         if self.time_info:
 
-            Thist,tbins = np.histogram(self.Q[:,1], bins=[0., .1, .2, .3, .4, .5, .6, .7, .8, .9, 1.])
+            Thist,tbins = np.histogram(self.Q[:,1], bins=[0., .2, .4, .6, .8, 1.])
             time_bins = (tbins[1:]+tbins[:-1])/2.
             t_binsize = time_bins[1]-time_bins[0] #valid only for uniform gridding.
             Twidths = (tbins[1:]-tbins[:-1])/2.
@@ -1000,7 +1000,9 @@ class Simulation(object):
                 plt.legend(prop={'size':20},numpoints=1)
 
         if return_plot_items and self.time_info:
-            return Qbins, Qhist, xerr, yerr, Qbins_theory, Qhist_theory, binsize, time_bins, Thist, txerr, tyerr, Tbins_theory, Thist_theory, t_binsize, tbinsizetheory
+            return Qbins, Qhist, xerr, yerr, Qbins_theory, Qhist_theory, binsize, \
+                   time_bins, Thist, txerr, tyerr, Tbins_theory, Thist_theory, \
+                   t_binsize, tbinsizetheory
         else:
             return Qbins, Qhist, xerr, yerr, Qbins_theory, Qhist_theory, binsize
 
@@ -1443,7 +1445,7 @@ def dRdQ_time(dRdQ_func, dRdQ_param, Q_vals, t):
     """
     kwags = dRdQ_param
     kwags['v_lag'] = 220.0 + 29.8 * 0.49 * np.cos(2.0 * np.pi * (t - 0.42))
-    result = dRdQ_func(Q_vals, .67, **kwags)
+    result = dRdQ_func(Q_vals, 0., **kwags)
     kwags['v_lag'] = 220.0
     return result
 
