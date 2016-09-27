@@ -107,6 +107,8 @@ def dRdQSI(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t V0, DTYPE_t v_lag, DTYP
         v_min = ((2.*weight*mN*q))**0.5/(2.*weight*mN*mx/(weight*mN+mx)) *3.*10.**5
         ff = formUV.factor_SI(element_name,y_harm,fnfp)
         if not GF:
+            if time_info:
+                v_lag += 29.8 * 0.49 * np.cos(2.0 * np.pi * (time - 0.42))
             val_eta = eta(v_min, v_esc, V0, v_lag)
         elif GF:
             val_eta = eta_GF(v_min, time, time_info)
@@ -143,6 +145,8 @@ def dRdQSI_massless(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t V0, DTYPE_t v_
         q_squared = 2.*weight*mN*q
         ff = formUV.factor_SI(element_name,y_harm,fnfp)
         if not GF:
+            if time_info:
+                v_lag += 29.8 * 0.49 * np.cos(2.0 * np.pi * (time - 0.42))
             val_eta = eta(v_min,v_esc,V0,v_lag)
         elif GF:
             val_eta = eta_GF(v_min, time, time_info)
@@ -179,6 +183,8 @@ def dRdQSD(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t V0, DTYPE_t v_lag, DTYP
         v_min = ((2.*weight*mN*q))**0.5/(2.*weight*mN*mx/(weight*mN+mx)) *3.*10.**5
         ff = formUV.factor_SD(element_name,y_harm,fnfp)
         if not GF:
+            if time_info:
+                v_lag += 29.8 * 0.49 * np.cos(2.0 * np.pi * (time - 0.42))
             val_eta = eta(v_min,v_esc,V0,v_lag)
         elif GF:
             val_eta = eta_GF(v_min, time, time_info)
@@ -213,6 +219,8 @@ def dRdQSD_neutron(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t V0, DTYPE_t v_l
         v_min = ((2.*weight*mN*q))**0.5/(2.*weight*mN*mx/(weight*mN+mx)) *3.*10.**5
         ff = formUV.factor_SD_neutron(element_name,y_harm)
         if not GF:
+            if time_info:
+                v_lag += 29.8 * 0.49 * np.cos(2.0 * np.pi * (time - 0.42))
             val_eta = eta(v_min,v_esc,V0,v_lag)
         elif GF:
             val_eta = eta_GF(v_min, time, time_info)
@@ -250,6 +258,8 @@ def dRdQSD_massless(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t V0, DTYPE_t v_
         q_squared = 2.*weight*mN*q
         ff = formUV.factor_SD(element_name,y_harm,fnfp)
         if not GF:
+            if time_info:
+                v_lag += 29.8 * 0.49 * np.cos(2.0 * np.pi * (time - 0.42))
             val_eta = eta(v_min,v_esc,V0,v_lag)
         elif GF:
             val_eta = eta_GF(v_min, time, time_info)
@@ -287,6 +297,8 @@ def dRdQana(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t V0, DTYPE_t v_lag, DTY
         ff_v_std = formUV.factor_anapole_v_std(element_name,y_harm,mx,b_harm)
         ff_v_sq = formUV.factor_anapole_v_sq(element_name,y_harm)
         if not GF:
+            if time_info:
+                v_lag += 29.8 * 0.49 * np.cos(2.0 * np.pi * (time - 0.42))
             val_eta = eta(v_min,v_esc,V0,v_lag)
             val_zeta = zeta(v_min,v_esc,V0,v_lag)
         elif GF:
@@ -328,6 +340,8 @@ def dRdQana_massless(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t V0, DTYPE_t v
         ff_v_std = formUV.factor_anapole_v_std(element_name,y_harm,mx,b_harm)
         ff_v_sq = formUV.factor_anapole_v_sq(element_name,y_harm)
         if not GF:
+            if time_info:
+                v_lag += 29.8 * 0.49 * np.cos(2.0 * np.pi * (time - 0.42))
             val_eta = eta(v_min,v_esc,V0,v_lag)
             val_zeta = zeta(v_min,v_esc,V0,v_lag)
         elif GF:
@@ -368,6 +382,8 @@ def dRdQmagdip(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t V0, DTYPE_t v_lag, 
         ff_v_std = formUV.factor_magdip_v_std(element_name,y_harm,mx,b_harm)
         ff_v_sq = formUV.factor_magdip_v_sq(element_name,y_harm)
         if not GF:
+            if time_info:
+                v_lag += 29.8 * 0.49 * np.cos(2.0 * np.pi * (time - 0.42))
             val_eta = eta(v_min,v_esc,V0,v_lag)
             val_zeta = zeta(v_min,v_esc,V0,v_lag)
         elif GF:
@@ -408,6 +424,8 @@ def dRdQmagdip_massless(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t V0, DTYPE_
         ff_v_std = formUV.factor_magdip_v_std(element_name,y_harm,mx,b_harm)
         ff_v_sq = formUV.factor_magdip_v_sq(element_name,y_harm)
         if not GF:
+            if time_info:
+                v_lag += 29.8 * 0.49 * np.cos(2.0 * np.pi * (time - 0.42))
             val_eta = eta(v_min,v_esc,V0,v_lag)
             val_zeta = zeta(v_min,v_esc,V0,v_lag)
         elif GF:
@@ -447,6 +465,8 @@ def dRdQelecdip(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t V0, DTYPE_t v_lag,
         q_squared = 2.*weight*mN*q
         ff = formUV.factor_elecdip(element_name,y_harm)
         if not GF:
+            if time_info:
+                v_lag += 29.8 * 0.49 * np.cos(2.0 * np.pi * (time - 0.42))
             val_eta = eta(v_min,v_esc,V0,v_lag)
         elif GF:
             val_eta = eta_GF(v_min, time, time_info)
@@ -484,6 +504,8 @@ def dRdQelecdip_massless(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t V0, DTYPE
         q_squared = 2.*weight*mN*q
         ff = formUV.factor_elecdip(element_name,y_harm)
         if not GF:
+            if time_info:
+                v_lag += 29.8 * 0.49 * np.cos(2.0 * np.pi * (time - 0.42))
             val_eta = eta(v_min,v_esc,V0,v_lag)
         elif GF:
             val_eta = eta_GF(v_min, time, time_info)
@@ -522,6 +544,8 @@ def dRdQLS(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t V0, DTYPE_t v_lag, DTYP
         ff_vstd = formUV.factor_LS_vstd(element_name,y_harm,fnfp,mx,b_harm)
         ff_vsq = formUV.factor_LS_vsq(element_name,y_harm,fnfp)
         if not GF:
+            if time_info:
+                v_lag += 29.8 * 0.49 * np.cos(2.0 * np.pi * (time - 0.42))
             val_eta = eta(v_min,v_esc,V0,v_lag)
             val_zeta = zeta(v_min,v_esc,V0,v_lag)
         elif GF:
@@ -560,6 +584,8 @@ def dRdQLS_massless(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t V0, DTYPE_t v_
         v_min = ((2.*weight*mN*q))**0.5/(2.*weight*mN*mx/(weight*mN+mx)) *3.*10.**5
         ff = formUV.factor_LS(element_name,y_harm,fnfp,mx)
         if not GF:
+            if time_info:
+                v_lag += 29.8 * 0.49 * np.cos(2.0 * np.pi * (time - 0.42))
             val_eta = eta(v_min,v_esc,V0,v_lag)
         elif GF:
             val_eta = eta_GF(v_min, time, time_info)
@@ -597,6 +623,8 @@ def dRdQf1(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t v_rms, DTYPE_t v_lag, D
         q_squared = 2.*weight*mN*q
         ff = formUV.factor_PS_S(element_name,y_harm,fnfp)
         if not GF:
+            if time_info:
+                v_lag += 29.8 * 0.49 * np.cos(2.0 * np.pi * (time - 0.42))
             val_eta = eta(v_min,v_esc,v_rms,v_lag)
         elif GF:
             val_eta = eta_GF(v_min, time, time_info)
@@ -634,6 +662,8 @@ def dRdQf1_massless(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t v_rms, DTYPE_t
         q_squared = 2.*weight*mN*q
         ff = formUV.factor_PS_S(element_name,y_harm,fnfp)
         if not GF:
+            if time_info:
+                v_lag += 29.8 * 0.49 * np.cos(2.0 * np.pi * (time - 0.42))
             val_eta = eta(v_min,v_esc,v_rms,v_lag)
         elif GF:
             val_eta = eta_GF(v_min, time, time_info)
@@ -671,6 +701,8 @@ def dRdQf2(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t v_rms, DTYPE_t v_lag, D
         q_squared = 2.*weight*mN*q
         ff = formUV.factor_S_PS(element_name,y_harm,fnfp)
         if not GF:
+            if time_info:
+                v_lag += 29.8 * 0.49 * np.cos(2.0 * np.pi * (time - 0.42))
             val_eta = eta(v_min,v_esc,v_rms,v_lag)
         elif GF:
             val_eta = eta_GF(v_min, time, time_info)
@@ -707,6 +739,8 @@ def dRdQf2_massless(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t v_rms, DTYPE_t
         q_squared = 2.*weight*mN*q
         ff = formUV.factor_S_PS(element_name,y_harm,fnfp)
         if not GF:
+            if time_info:
+                v_lag += 29.8 * 0.49 * np.cos(2.0 * np.pi * (time - 0.42))
             val_eta = eta(v_min,v_esc,v_rms,v_lag)
         elif GF:
             val_eta = eta_GF(v_min, time, time_info)
@@ -744,6 +778,8 @@ def dRdQf3(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t v_rms, DTYPE_t v_lag, D
         q_squared = 2.*weight*mN*q
         ff = formUV.factor_PS_PS(element_name,y_harm,fnfp)
         if not GF:
+            if time_info:
+                v_lag += 29.8 * 0.49 * np.cos(2.0 * np.pi * (time - 0.42))
             val_eta = eta(v_min,v_esc,v_rms,v_lag)
         elif GF:
             val_eta = eta_GF(v_min, time, time_info)
@@ -779,6 +815,8 @@ def dRdQf3_massless(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t v_rms, DTYPE_t
         v_min = ((2.*weight*mN*q))**0.5/(2.*weight*mN*mx/(weight*mN+mx)) *3.*10.**5
         ff = formUV.factor_PS_PS(element_name,y_harm,fnfp)
         if not GF:
+            if time_info:
+                v_lag += 29.8 * 0.49 * np.cos(2.0 * np.pi * (time - 0.42))
             val_eta = eta(v_min,v_esc,v_rms,v_lag)
         elif GF:
             val_eta = eta_GF(v_min, time, time_info)
@@ -1041,8 +1079,7 @@ def loglikelihood(np.ndarray[DTYPE_t] Q, np.ndarray[DTYPE_t] tim, object efficie
     cdef long Nevents = len(Q)
     cdef np.ndarray[DTYPE_t] out
     cdef DTYPE_t Nexp
-    cdef DTYPE_t v_erth_proj = 29.8 * 0.49
-    cdef DTYPE_t mod_phase = 0.42
+
     tim = tim[0:Nevents]
     cdef DTYPE_t event_inf
     cdef np.ndarray[DTYPE_t] event_inf_arr
@@ -1057,10 +1094,6 @@ def loglikelihood(np.ndarray[DTYPE_t] Q, np.ndarray[DTYPE_t] tim, object efficie
     cdef DTYPE_t expQmax = log10(Qmax)
     cdef DTYPE_t expQstep = (expQmax - expQmin)/(npoints - 1)
     cdef np.ndarray[DTYPE_t] Qs = np.empty(npoints,dtype=float)
-    cdef np.ndarray[DTYPE_t] vlags = np.ones(len(Q)) * v_lag
-
-    if time_info and not GF:
-        vlags += v_erth_proj * np.cos(two_pi * (tim - mod_phase))
 
     cdef DTYPE_t Rate = R(efficiency_fn, mass=mass,
                           v_rms=v_rms, v_lag=v_lag, v_esc=v_esc, rho_x=rho_x,
@@ -1092,7 +1125,7 @@ def loglikelihood(np.ndarray[DTYPE_t] Q, np.ndarray[DTYPE_t] tim, object efficie
             tot -= Nevents * log(Rate)
             for i in range(Nevents):
                 event_inf = dRdQ(np.array([Q[i]]), tim[i], mass=mass,
-                                 v_lag=vlags[i], v_rms=v_rms, v_esc=v_esc, rho_x=rho_x, element=element,
+                                 v_lag=v_lag, v_rms=v_rms, v_esc=v_esc, rho_x=rho_x, element=element,
                                  fnfp_si=fnfp_si, fnfp_sd=fnfp_sd,
                                  fnfp_anapole=fnfp_anapole, fnfp_magdip=fnfp_magdip, fnfp_elecdip=fnfp_elecdip,
                                  fnfp_LS=fnfp_LS, fnfp_f1=fnfp_f1, fnfp_f2=fnfp_f2, fnfp_f3=fnfp_f3,
@@ -1122,7 +1155,7 @@ def loglikelihood(np.ndarray[DTYPE_t] Q, np.ndarray[DTYPE_t] tim, object efficie
         tot -= Nevents * log(Rate)
         for i in range(Nevents):
             event_inf_arr = dRdQ(Qs, tim[i], mass=mass,
-                                 v_lag=vlags[i], v_rms=v_rms, v_esc=v_esc, rho_x=rho_x, element=element,
+                                 v_lag=v_lag, v_rms=v_rms, v_esc=v_esc, rho_x=rho_x, element=element,
                                  fnfp_si=fnfp_si, fnfp_sd=fnfp_sd,
                                  fnfp_anapole=fnfp_anapole, fnfp_magdip=fnfp_magdip, fnfp_elecdip=fnfp_elecdip,
                                  fnfp_LS=fnfp_LS, fnfp_f1=fnfp_f1, fnfp_f2=fnfp_f2, fnfp_f3=fnfp_f3,

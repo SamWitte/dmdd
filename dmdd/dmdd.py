@@ -319,7 +319,7 @@ class MultinestRun(object):
             kwargs['energy_resolution'] = sim.experiment.energy_resolution
             kwargs['TIMEONLY'] = self.TIMEONLY
 
-            res += self.fit_model.loglikelihood(sim.Q[:,0], sim.Q[:,1], sim.experiment.efficiency, **kwargs)
+            res += self.fit_model.loglikelihood(sim.Q[:, 0], sim.Q[:, 1], sim.experiment.efficiency, **kwargs)
 
         return res
 
@@ -544,14 +544,9 @@ class MultinestRun(object):
                     else:
                         simmodel_title = self.sim_model.name
                 for i in range(0, len(Tbins_theory)):
-                    if not self.GF:
-                        Thist_fit[i] = ((np.trapz(sim.experiment.efficiency(sim.model_Qgrid) * dRdQ_time(sim.model.dRdQ, 
-                                        fitmodel_dRdQ_params, sim.model_Qgrid, Tbins_theory[i]), sim.model_Qgrid)) *
-                                        sim.experiment.exposure*YEAR_IN_S * t_binsize)
-                    else:
-                        fitmodel_dRdQ_params['time_info']=True
-                        Thist_fit[i] = (np.trapz(sim.experiment.efficiency(sim.model_Qgrid) * sim.model.dRdQ(sim.model_Qgrid, Tbins_theory[i], **fitmodel_dRdQ_params),
-                                              sim.model_Qgrid) * sim.experiment.exposure*YEAR_IN_S * t_binsize)
+                    fitmodel_dRdQ_params['time_info']=True
+                    Thist_fit[i] = (np.trapz(sim.experiment.efficiency(sim.model_Qgrid) * sim.model.dRdQ(sim.model_Qgrid, Tbins_theory[i], **fitmodel_dRdQ_params),
+                                          sim.model_Qgrid) * sim.experiment.exposure*YEAR_IN_S * t_binsize)
                                               
                 dp.plot_theoryfitdata_time(time_bins, Thist, txerr, tyerr, Tbins_theory, Thist_theory, Thist_fit,
                                         filename=filename, save_file=True, Ntot=Ntot, 
@@ -731,19 +726,11 @@ class Simulation(object):
                                        np.log10(experiment.Qmax), 100)
         efficiencies = experiment.efficiency(self.model_Qgrid)
 
-        if self.GF:
-            dRdQ_params['time_info'] = False
-            self.model_dRdQ = self.model.dRdQ(self.model_Qgrid, 0., **dRdQ_params)
-            R_integrand = self.model_dRdQ * efficiencies
-            self.model_R = np.trapz(R_integrand, self.model_Qgrid)
-            dRdQ_params['time_info'] = self.time_info
-            
-        else:
-            dRdQ_params['time_info'] = False
-            self.model_dRdQ = self.model.dRdQ(self.model_Qgrid, 0., **dRdQ_params)
-            R_integrand = self.model_dRdQ * efficiencies
-            self.model_R = np.trapz(R_integrand, self.model_Qgrid)
-            dRdQ_params['time_info'] = self.time_info
+        dRdQ_params['time_info'] = False
+        self.model_dRdQ = self.model.dRdQ(self.model_Qgrid, 0., **dRdQ_params)
+        R_integrand = self.model_dRdQ * efficiencies
+        self.model_R = np.trapz(R_integrand, self.model_Qgrid)
+        dRdQ_params['time_info'] = self.time_info
 
         self.model_N = self.model_R * experiment.exposure * YEAR_IN_S
         print 'Expected Number of Events: ', self.model_N
@@ -876,7 +863,7 @@ class Simulation(object):
                     Ylist.append(y)
                 else:
                     pass #otherwise do nothing
-            Q = np.zeros((Nevents,2))
+            Q = np.zeros((Nevents, 2))
             for i in range(0, len(Xlist)):
                 Q[i] = Ylist[i], Xlist[i]
 
@@ -891,10 +878,7 @@ class Simulation(object):
         
     def pdf_fun(self, Q, t):
         efficiency = self.experiment.efficiency(np.array([Q]))
-        if self.GF:
-            res = self.model.dRdQ(np.array([Q]), t, **self.dRdQ_params) * efficiency / self.model_R
-        else:
-            res = dRdQ_time(self.model.dRdQ, self.dRdQ_params, np.array([Q]), t) * efficiency / self.model_R
+        res = self.model.dRdQ(np.array([Q]), t, **self.dRdQ_params) * efficiency / self.model_R
         return res
 
     def plot_data(self, plot_nbins=20, plot_theory=True, save_plot=True,
@@ -971,15 +955,10 @@ class Simulation(object):
             tbinsizetheory = Tbins_theory[1] - Tbins_theory[0]
             
             for i in range(0, len(Tbins_theory)):
-              
-                if self.GF:
-                    Thist_theory[i] = ((np.trapz(self.experiment.efficiency(self.model_Qgrid) * self.model.dRdQ(self.model_Qgrid, Tbins_theory[i],
-                                        **self.dRdQ_params), self.model_Qgrid)) *
-                                        t_binsize*self.experiment.exposure*YEAR_IN_S)
-                else:
-                    Thist_theory[i] = ((np.trapz(self.experiment.efficiency(self.model_Qgrid) * dRdQ_time(self.model.dRdQ, self.dRdQ_params,
-                                        self.model_Qgrid, Tbins_theory[i]), self.model_Qgrid)) *
-                                        t_binsize*self.experiment.exposure*YEAR_IN_S)
+                Thist_theory[i] = ((np.trapz(self.experiment.efficiency(self.model_Qgrid) * self.model.dRdQ(self.model_Qgrid, Tbins_theory[i],
+                                    **self.dRdQ_params), self.model_Qgrid)) *
+                                    t_binsize*self.experiment.exposure*YEAR_IN_S)
+
                     
             if make_plot:
                 plt.figure()
@@ -1539,14 +1518,9 @@ def Plot_Modulation(experiment, models, parvals_list, time_info='T',
         tbinsizetheory = Tbins_theory[1] - Tbins_theory[0]
                 
         for i in range(0, len(Tbins_theory)):
-            if GF:
-                Thist_theory[i] = ((np.trapz(model.dRdQ(model_Qgrid, Tbins_theory[i],
-                                            **dRdQ_params), model_Qgrid)) *
-                                             experiment.exposure * YEAR_IN_S)
-            else:
-                Thist_theory[i] = ((np.trapz(dRdQ_time(model.dRdQ, dRdQ_params,
-                                            model_Qgrid, Tbins_theory[i]), model_Qgrid)) *
-                                            experiment.exposure * YEAR_IN_S)
+            Thist_theory[i] = ((np.trapz(model.dRdQ(model_Qgrid, Tbins_theory[i],
+                                        **dRdQ_params), model_Qgrid)) *
+                                         experiment.exposure * YEAR_IN_S)
 
         
         if label_params:
