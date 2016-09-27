@@ -210,7 +210,7 @@ class MultinestRun(object):
         
         if not self.time_info:
             time_tag = 'No_Time'
-        elif self.time_info:
+        else:
             time_tag = 'With_Time'
     
         self.param_values = param_values
@@ -703,7 +703,7 @@ class Simulation(object):
         sorted_parvals = np.array(self.param_values)[inds]
         for parname, parval in zip(sorted_parnames, sorted_parvals):
             self.file_basename += '_{}_{:.2f}'.format(parname, parval)
-#        self.file_basename += time_tag
+
         #calculate total expected rate
         dRdQ_params = model.default_rate_parameters.copy()
         allpars = model.default_rate_parameters.copy()
@@ -719,19 +719,16 @@ class Simulation(object):
        
         if time_info == 'T':
             self.time_info = True
-            time_tag = 'With_Time'
             dRdQ_params['time_info'] = True
         elif time_info == 'F':
             self.time_info = False
-            time_tag = 'No_Time'
             dRdQ_params['time_info'] = False
                
         dRdQ_params['GF'] = self.GF
         allpars['GF'] = self.GF        
-#        print dRdQ_params
-#        print allpars
+
         self.model_Qgrid = np.logspace(np.log10(experiment.Qmin),
-                                       np.log10(experiment.Qmax), 500)
+                                       np.log10(experiment.Qmax), 100)
         efficiencies = experiment.efficiency(self.model_Qgrid)
         if self.GF:
             dRdQ_params['time_info'] = False
@@ -741,19 +738,9 @@ class Simulation(object):
             dRdQ_params['time_info'] = self.time_info
             
         else:
-            self.model_dRdQ = self.model.dRdQ(self.model_Qgrid, 0.67, **dRdQ_params)
+            self.model_dRdQ = self.model.dRdQ(self.model_Qgrid, 0., **dRdQ_params)
             R_integrand = self.model_dRdQ * efficiencies
             self.model_R = np.trapz(R_integrand, self.model_Qgrid)
-#        print self.model_R * experiment.exposure * YEAR_IN_S
-        t = np.linspace(0, 1, 300)
-        vlag_list = np.ones(300) * 220.
-        test1 = np.zeros(300)
-        for i,vlag in enumerate(vlag_list):
-            vlag += 29.8 * 0.49 * np.cos(2. * np.pi * (t[i] - 0.42))
-            dRdQ_params['v_lag'] = vlag
-            test1[i] = np.trapz(self.model.dRdQ(self.model_Qgrid, 0.67, **dRdQ_params), self.model_Qgrid)
-#        print experiment.exposure * YEAR_IN_S * np.trapz(test1, t)
-        self.model_R = np.trapz(test1, t)
 
         self.model_N = self.model_R * experiment.exposure * YEAR_IN_S
         print 'Expected Number of Events: ', self.model_N
@@ -842,7 +829,7 @@ class Simulation(object):
             Qgrid = np.logspace(np.log10(self.experiment.Qmin), np.log10(self.experiment.Qmax), npts)
             efficiency = self.experiment.efficiency(Qgrid)
             
-            pdf = self.model.dRdQ(Qgrid, 0.67, **self.dRdQ_params) * efficiency / self.model_R
+            pdf = self.model.dRdQ(Qgrid, 0., **self.dRdQ_params) * efficiency / self.model_R
             cdf = pdf.cumsum()
             cdf /= cdf.max()
             u = random.rand(Nevents)
@@ -1455,7 +1442,7 @@ def dRdQ_time(dRdQ_func, dRdQ_param, Q_vals, t):
     Changes v_lag to v_lag + v_earth * (0.49) * Cos(2 pi (t - 0.42))
     """
     kwags = dRdQ_param
-    kwags['v_lag'] = 220.0 + 29.8 * 0.49 * cos(2.0 * np.pi * (t - 0.42))
+    kwags['v_lag'] = 220.0 + 29.8 * 0.49 * np.cos(2.0 * np.pi * (t - 0.42))
     result = dRdQ_func(Q_vals, .67, **kwags)
     kwags['v_lag'] = 220.0
     return result
