@@ -730,6 +730,7 @@ class Simulation(object):
         self.model_Qgrid = np.logspace(np.log10(experiment.Qmin),
                                        np.log10(experiment.Qmax), 100)
         efficiencies = experiment.efficiency(self.model_Qgrid)
+
         if self.GF:
             dRdQ_params['time_info'] = False
             self.model_dRdQ = self.model.dRdQ(self.model_Qgrid, 0., **dRdQ_params)
@@ -738,9 +739,11 @@ class Simulation(object):
             dRdQ_params['time_info'] = self.time_info
             
         else:
+            dRdQ_params['time_info'] = False
             self.model_dRdQ = self.model.dRdQ(self.model_Qgrid, 0., **dRdQ_params)
             R_integrand = self.model_dRdQ * efficiencies
             self.model_R = np.trapz(R_integrand, self.model_Qgrid)
+            dRdQ_params['time_info'] = self.time_info
 
         self.model_N = self.model_R * experiment.exposure * YEAR_IN_S
         print 'Expected Number of Events: ', self.model_N
@@ -842,7 +845,7 @@ class Simulation(object):
             Nexpected = 0
 
         if not self.silent:
-            print "simulated: %i events (expected %.0f)." % (Nevents,Nexpected)
+            print "simulated: %i events (expected %.0f)." % (Nevents, Nexpected)
         return Q
         
         
@@ -1056,7 +1059,7 @@ class Model(object):
                  dRdQ_fn, loglike_fn,
                  default_rate_parameters, tex_names=None,
                  fixed_params=None,
-                 modelname_tex=None, time_info='T'):
+                 modelname_tex=None):
         """
             fixed_params: dictionary
             
@@ -1103,10 +1106,8 @@ class UV_Model(Model):
         
         if time_info == 'T':
             self.time_info=True
-            time_tag = 'With_Time'
         else:
             self.time_info = False
-            time_tag = 'No_Time'
         
         default_rate_parameters['GF'] = GF
         default_rate_parameters['time_info'] = self.time_info

@@ -71,9 +71,7 @@ def interp1d(np.ndarray[DTYPE_t] x, np.ndarray[DTYPE_t] y, DTYPE_t x0):
         
     res = y[i-1] + (y[i] - y[i-1]) * (x0 - x[i-1]) / (x[i] - x[i-1])
     return res
-        
 
-    
 
 
 def log_fact(DTYPE_t xx):
