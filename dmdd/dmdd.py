@@ -544,17 +544,17 @@ class MultinestRun(object):
                     else:
                         simmodel_title = self.sim_model.name
                 for i in range(0, len(Tbins_theory)):
-                    fitmodel_dRdQ_params['time_info']=True
+                    fitmodel_dRdQ_params['time_info'] = True
                     Thist_fit[i] = (np.trapz(sim.experiment.efficiency(sim.model_Qgrid) * sim.model.dRdQ(sim.model_Qgrid, Tbins_theory[i], **fitmodel_dRdQ_params),
-                                          sim.model_Qgrid) * sim.experiment.exposure*YEAR_IN_S * t_binsize)
+                                          sim.model_Qgrid) * sim.experiment.exposure * YEAR_IN_S * t_binsize)
                                               
                 dp.plot_theoryfitdata_time(time_bins, Thist, txerr, tyerr, Tbins_theory, Thist_theory, Thist_fit,
                                         filename=filename, save_file=True, Ntot=Ntot, 
                                         fitmodel=fitmodel_title, simmodel=simmodel_title,
                                         experiment=sim.experiment.name, labelfont=18, legendfont=17,titlefont=20, mass=self.param_values['mass'])
                 filename = self.chainspath + '/{}_theoryfitdata_Residual_{}.pdf'.format(self.sim_name, sim.experiment.name)
-                ResHist = [(Thist[i] - Ntot / 10.) / (Ntot / 10.) for i in range(len(Thist))]
-                Ryerr = tyerr / (Ntot / 10.)
+                ResHist = [(Thist[i] - Ntot / 5.) / (Ntot / 5.) for i in range(len(Thist))]
+                Ryerr = tyerr / (Ntot / 5.)
                 Rhist_theory = (Thist_theory - np.mean(Thist_theory)) / np.mean(Thist_theory)
                 Rhist_fit = (Thist_fit - np.mean(Thist_fit)) / np.mean(Thist_fit)
                 dp.plot_theoryfitdata_residual(time_bins, ResHist, txerr, Ryerr, Tbins_theory, Rhist_theory, Rhist_fit,
@@ -943,21 +943,20 @@ class Simulation(object):
 
         if self.time_info:
 
-            Thist,tbins = np.histogram(self.Q[:,1], bins=[0., .2, .4, .6, .8, 1.])
-            time_bins = (tbins[1:]+tbins[:-1])/2.
+            Thist,tbins = np.histogram(self.Q[:, 1], bins=[0., .2, .4, .6, .8, 1.])
+            time_bins = (tbins[1:] + tbins[:-1]) / 2.
             t_binsize = time_bins[1]-time_bins[0] #valid only for uniform gridding.
             Twidths = (tbins[1:]-tbins[:-1])/2.
             txerr = Twidths
             tyerr = Thist**0.5
 
-            Tbins_theory = np.linspace(0.,1.,100)
+            Tbins_theory = np.linspace(0., 1., 100)
             Thist_theory = np.zeros(100)
             tbinsizetheory = Tbins_theory[1] - Tbins_theory[0]
             
             for i in range(0, len(Tbins_theory)):
                 Thist_theory[i] = ((np.trapz(self.experiment.efficiency(self.model_Qgrid) * self.model.dRdQ(self.model_Qgrid, Tbins_theory[i],
-                                    **self.dRdQ_params), self.model_Qgrid)) *
-                                    t_binsize*self.experiment.exposure*YEAR_IN_S)
+                                    **self.dRdQ_params), self.model_Qgrid)) * t_binsize * self.experiment.exposure * YEAR_IN_S)
 
                     
             if make_plot:
@@ -967,18 +966,15 @@ class Simulation(object):
                 ylabel = 'Number of events'
                 ax = plt.gca()
                 fig = plt.gcf()
-                xlabel = ax.set_xlabel(xlabel,fontsize=18)
-                ylabel = ax.set_ylabel(ylabel,fontsize=18)
+                ax.set_xlabel(xlabel,fontsize=18)
+                ax.set_ylabel(ylabel,fontsize=18)
                 if plot_theory:
                     if self.model.name in MODELNAME_TEX.keys():
                         label='True model ({})'.format(MODELNAME_TEX[self.model.name])
                     else:
                         label='True model'
-                    plt.plot(Tbins_theory, Thist_theory,lw=3,
-                         color='blue',
-                         label=label)
+                    plt.plot(Tbins_theory, Thist_theory,lw=3, color='blue', label=label)
                 plt.errorbar(time_bins, Thist,xerr=txerr,yerr=tyerr,marker='o',color='black',linestyle='None',label='Simulated data')
-
                 plt.legend(prop={'size':20},numpoints=1)
 
         if return_plot_items and self.time_info:
@@ -1471,8 +1467,8 @@ def Plot_Modulation(experiment, models, parvals_list, time_info='T',
     ylabel = 'dR/dt'
     ax = plt.gca()
     fig = plt.gcf()
-    xlabel = ax.set_xlabel(xlabel,fontsize=18)
-    ylabel = ax.set_ylabel(ylabel,fontsize=18)
+    ax.set_xlabel(xlabel,fontsize=18)
+    ax.set_ylabel(ylabel,fontsize=18)
     plt.title(experiment.name, fontsize=18)
         
     for index in range(len(models)):
@@ -1499,28 +1495,21 @@ def Plot_Modulation(experiment, models, parvals_list, time_info='T',
         
         for i,par in enumerate(model.param_names): #model parameters
             dRdQ_params[par] = param_values[i]
-            
-    
+
         dRdQ_params['element'] = experiment.element
-       
-       
         if time_info == 'T':
             dRdQ_params['time_info'] = True
         elif time_info == 'F':
             dRdQ_params['time_info'] = False
                
         dRdQ_params['GF'] = GF
-                                        
-        model_Qgrid = np.linspace(experiment.Qmin, experiment.Qmax, 1000)
+        model_Qgrid = np.logspace(np.log10(experiment.Qmin), np.log10(experiment.Qmax), 100)
         
-        Tbins_theory = np.linspace(0.,1.,100)
+        Tbins_theory = np.linspace(0., 1., 100)
         Thist_theory = np.zeros(100)
-        tbinsizetheory = Tbins_theory[1] - Tbins_theory[0]
-                
+
         for i in range(0, len(Tbins_theory)):
-            Thist_theory[i] = ((np.trapz(model.dRdQ(model_Qgrid, Tbins_theory[i],
-                                        **dRdQ_params), model_Qgrid)) *
-                                         experiment.exposure * YEAR_IN_S)
+            Thist_theory[i] = ((np.trapz(model.dRdQ(model_Qgrid, Tbins_theory[i], **dRdQ_params), model_Qgrid)) * experiment.exposure * YEAR_IN_S)
 
         
         if label_params:
