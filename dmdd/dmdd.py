@@ -727,9 +727,9 @@ class Simulation(object):
         efficiencies = experiment.efficiency(self.model_Qgrid)
 
         dRdQ_params['time_info'] = False
-        self.model_dRdQ = self.model.dRdQ(self.model_Qgrid, 0., **dRdQ_params)
-        R_integrand = self.model_dRdQ * efficiencies
-        self.model_R = np.trapz(R_integrand, self.model_Qgrid)
+        self.model_dRdQ = self.model.dRdQ(self.model_Qgrid, 0.67, **dRdQ_params)
+        #R_integrand = self.model_dRdQ * efficiencies
+        self.model_R = rate_UV.R(experiment.efficiency, Qmin=experiment.Qmin, Qmax=experiment.Qmax, **dRdQ_params)
         dRdQ_params['time_info'] = self.time_info
 
         self.model_N = self.model_R * experiment.exposure * YEAR_IN_S
@@ -761,9 +761,8 @@ class Simulation(object):
                 del ahold2['time_info']
             except:
                 pass
-            dictComp = DictDiffer(ahold1, ahold2)
 
-            if bool(dictComp.changed()):
+            if not bool(compare_dictionaries(ahold1, ahold2)):
                 print('Existing simulation does not match current parameters.  Forcing simulation.\n\n')
                 force_sim = True
                 
@@ -785,10 +784,8 @@ class Simulation(object):
         else:
             if asimov:
                 raise ValueError('Asimov simulations not yet implemented!')
-            else: 
-
+            else:
                 Q = np.loadtxt(self.datafile)
-
                 self.Q = np.atleast_1d(Q)
                 self.N = len(self.Q)
 
@@ -799,7 +796,6 @@ class Simulation(object):
                 self.N = len(self.Q)
             else:
                 self.N = len(self.Q)
-
         if force_sim:
             self.plot_data(plot_nbins=plot_nbins, plot_theory=plot_theory, save_plot=True)
         else:
@@ -937,12 +933,11 @@ class Simulation(object):
                          label=label)
             plt.errorbar(Qbins, Qhist,xerr=xerr,yerr=yerr,marker='o',color='black',linestyle='None',label='Simulated data')
      
-            plt.legend(prop={'size':20},numpoints=1)
+            plt.legend(prop={'size':20}, numpoints=1)
             if save_plot:
                 plt.savefig(self.plotfile, bbox_extra_artists=[xlabel, ylabel], bbox_inches='tight')
 
         if self.time_info:
-
             Thist,tbins = np.histogram(self.Q[:, 1], bins=[0., .2, .4, .6, .8, 1.])
             time_bins = (tbins[1:] + tbins[:-1]) / 2.
             t_binsize = time_bins[1]-time_bins[0] #valid only for uniform gridding.
@@ -957,7 +952,6 @@ class Simulation(object):
             for i in range(0, len(Tbins_theory)):
                 Thist_theory[i] = ((np.trapz(self.experiment.efficiency(self.model_Qgrid) * self.model.dRdQ(self.model_Qgrid, Tbins_theory[i],
                                     **self.dRdQ_params), self.model_Qgrid)) * t_binsize * self.experiment.exposure * YEAR_IN_S)
-
                     
             if make_plot:
                 plt.figure()
@@ -1077,7 +1071,7 @@ class UV_Model(Model):
                                     fnfp_si_massless=1.,  fnfp_sd_massless=1.,
                                     fnfp_anapole_massless=1.,  fnfp_magdip_massless=1.,  fnfp_elecdip_massless=1.,
                                     fnfp_LS_massless=1.,  fnfp_f1_massless=1.,  fnfp_f2_massless=1.,  fnfp_f3_massless=1.,
-                                    v_lag=220.,  v_rms=220.,  v_esc=544.,  rho_x=0.3, GF=False, time_info=False)
+                                    v_lag=220.,  v_rms=220.,  v_esc=533.,  rho_x=0.3, GF=False, time_info=False)
         
         if time_info == 'T':
             self.time_info=True
@@ -1166,7 +1160,7 @@ class Experiment(object):
 
     def NminusNbg(self, sigma_val, sigma_name='sigma_si', fnfp_name='fnfp_si', fnfp_val=None,
                     mass=50., Nbackground=4,
-                    v_esc=540., v_lag=220., v_rms=220., rho_x=0.3):
+                    v_esc=533., v_lag=220., v_rms=220., rho_x=0.3):
         """
         Expected number of events minus background
 
@@ -1214,7 +1208,7 @@ class Experiment(object):
 
     def sigma_limit(self, sigma_name='sigma_si', fnfp_name='fnfp_si', fnfp_val=None,
                     mass=50., Nbackground=4, sigma_guess = 1.e10, mx_guess=1.,
-                    v_esc=540., v_lag=220., v_rms=220., rho_x=0.3):
+                    v_esc=533., v_lag=220., v_rms=220., rho_x=0.3):
         """
         Returns value of sigma at which expected number of dark-matter induced recoil events is equal to the number of expected background events, N = Nbg, in order to get a rough projected exclusion for this experiment.
 
@@ -1236,7 +1230,7 @@ class Experiment(object):
 
     def sigma_exclusion(self, sigma_name, fnfp_name='fnfp_si', fnfp_val=None,
                         mass_max=5000, Nbackground=4, mx_guess=1., sigma_guess=1.e10,
-                        v_esc=540., v_lag=220., v_rms=220., rho_x=0.3,
+                        v_esc=533., v_lag=220., v_rms=220., rho_x=0.3,
                         mass_spacing='log', nmass_points=100, make_plot=False,ymax=None):
         """
         Makes exclusion curve for a chosen sigma parameter.
@@ -1291,7 +1285,7 @@ class Experiment(object):
         return masses, sigmas
         
 
-    def VminusVesc(self, mx, v_esc=540., v_lag=220.):
+    def VminusVesc(self, mx, v_esc=533., v_lag=220.):
         """
         This function returns the value of the minimum velocity needed to produce
         recoil of energy Qmin, minus escape velocity in Galactic frame.
@@ -1324,7 +1318,7 @@ class Experiment(object):
         res = mT * q /( 2. * mu**2 ) - (v_esc_lab / C_KMSEC)**2.
         return res
     
-    def find_min_mass(self, v_esc=540., v_lag=220., mx_guess=1.):
+    def find_min_mass(self, v_esc=533., v_lag=220., mx_guess=1.):
         """
         This finds the minimum dark-matter particle mass detectable with this experiment,
         by finding a zero of VminusVesc.
@@ -1346,7 +1340,7 @@ class Experiment(object):
 ############################################
 ############################################
 
-def compare_dictionaries(d1,d2,debug=False,rtol=1e-5):
+def compare_dictionaries(d1,d2,debug=True,rtol=1e-5):
     """Returns True if dictionaries are identical; false if not.
     
     It works with multi-level dicts.
@@ -1389,7 +1383,7 @@ def compare_dictionaries(d1,d2,debug=False,rtol=1e-5):
 def Nexpected(element, Qmin, Qmax, exposure, efficiency, start_t, end_t,
               sigma_name, sigma_val, fnfp_name=None, fnfp_val=None,
               mass=50.,
-              v_esc=540., v_lag=220., v_rms=220., rho_x=0.3):
+              v_esc=533., v_lag=220., v_rms=220., rho_x=0.3):
     """
     NOTE: This is only set up for models in rate_UV.
     """
