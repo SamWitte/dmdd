@@ -762,7 +762,7 @@ class Simulation(object):
             except:
                 pass
 
-            if not bool(compare_dictionaries(ahold1, ahold2)):
+            if DictDiffer(ahold1, ahold2).changed():
                 print('Existing simulation does not match current parameters.  Forcing simulation.\n\n')
                 force_sim = True
                 
