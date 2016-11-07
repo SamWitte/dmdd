@@ -498,7 +498,7 @@ def line_plots_1vsall(nsim=100, startsim=1, masses=[50.],
                             mnrun = MultinestRun('sim{}'.format(n), experimentlist, m, pardic,
                                                     fitm, prior_ranges=prior_ranges,
                                                     force_sim=False,n_live_points=n_live_points,silent=True,
-                                                    time_info=tval, GF=GF, TIMEONLY=timeonly)
+                                                    time_info=tval, GF=GF, TIMEONLY=timeonly,empty_run=True)
                             if allverbose:
                                 print ''
                                 print mnrun.foldername

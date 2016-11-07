@@ -43,7 +43,8 @@ if not on_rtd:
     from globals import *
 
 try:
-    MAIN_PATH = os.environ['DMDD_AM_MAIN_PATH']
+    MAIN_PATH = '/data/verag/Storage'
+    #MAIN_PATH = os.environ['DMDD_AM_MAIN_PATH']
     #MAIN_PATH = '/Users/SamWitte/Desktop/dmdd/Storage'
 except KeyError:
     logging.warning('DMDD_MAIN_PATH environment variable not defined, defaulting to:   ~/.dmdd')
