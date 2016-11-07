@@ -211,7 +211,7 @@ class MultinestRun(object):
         
         if not self.time_info:
             time_tag = 'No_Time'
-        elif self.time_info:
+        else:
             time_tag = 'With_Time'
     
         self.param_values = param_values
@@ -320,7 +320,7 @@ class MultinestRun(object):
             kwargs['energy_resolution'] = sim.experiment.energy_resolution
             kwargs['TIMEONLY'] = self.TIMEONLY
 
-            res += self.fit_model.loglikelihood(sim.Q[:,0], sim.Q[:,1], sim.experiment.efficiency, **kwargs)
+            res += self.fit_model.loglikelihood(sim.Q[:, 0], sim.Q[:, 1], sim.experiment.efficiency, **kwargs)
 
         return res
 
@@ -494,7 +494,7 @@ class MultinestRun(object):
                 fitmodel_dRdQ_params[k] = v 
         for i,k in enumerate(self.fit_model.param_names): 
             fitmodel_dRdQ_params[k] = param_values[i]
-                
+
         for sim in self.simulations:
             filename = self.chainspath + '/{}_theoryfitdata_{}.pdf'.format(self.sim_name, sim.experiment.name)
             if self.time_info:
@@ -502,10 +502,10 @@ class MultinestRun(object):
                 Tbins_theory, Thist_theory, t_binsize, tbinsizetheory = sim.plot_data(make_plot=False, return_plot_items=True)
             else:
                 Qbins, Qhist, xerr, yerr, Qbins_theory, Qhist_theory, binsize = sim.plot_data(make_plot=False, return_plot_items=True)
-            
+
             fitmodel_dRdQ_params['element'] = sim.experiment.element
-           
-            fitmodel_dRdQ = sim.model.dRdQ(Qbins_theory,0.,**fitmodel_dRdQ_params)
+
+            fitmodel_dRdQ = sim.model.dRdQ(Qbins_theory, 0.67, **fitmodel_dRdQ_params)
             Ntot = sim.N
             Qhist_fit = fitmodel_dRdQ*binsize*sim.experiment.exposure*YEAR_IN_S*sim.experiment.efficiency(Qbins_theory)
 
@@ -520,7 +520,7 @@ class MultinestRun(object):
                 else:
                     simmodel_title = self.sim_model.name
             dp.plot_theoryfitdata(Qbins, Qhist, xerr, yerr, Qbins_theory, Qhist_theory, Qhist_fit,
-                                    filename=filename, save_file=True, Ntot=Ntot, 
+                                    filename=filename, save_file=True, Ntot=Ntot,
                                     fitmodel=fitmodel_title, simmodel=simmodel_title,
                                     experiment=sim.experiment.name, labelfont=18, legendfont=17,titlefont=20, mass=self.param_values['mass'])
          
@@ -529,7 +529,7 @@ class MultinestRun(object):
             for sim in self.simulations:
                 Ntot = sim.N
                 fitmodel_dRdQ_params['element'] = sim.experiment.element
-                fitmodel_dRdQ = sim.model.dRdQ(Qbins_theory,0.,**fitmodel_dRdQ_params)
+                fitmodel_dRdQ = sim.model.dRdQ(Qbins_theory, 0.67, **fitmodel_dRdQ_params)
                 filename = self.chainspath + '/{}_theoryfitdata_TIME_{}.pdf'.format(self.sim_name, sim.experiment.name)
                 Qbins, Qhist, xerr, yerr, Qbins_theory, Qhist_theory, binsize, time_bins, Thist, txerr, tyerr, \
                 Tbins_theory, Thist_theory, t_binsize, tbinsizetheory = sim.plot_data(make_plot=False, return_plot_items=True)
@@ -545,22 +545,17 @@ class MultinestRun(object):
                     else:
                         simmodel_title = self.sim_model.name
                 for i in range(0, len(Tbins_theory)):
-                    if not self.GF:
-                        Thist_fit[i] = ((np.trapz(sim.experiment.efficiency(sim.model_Qgrid) * dRdQ_time(sim.model.dRdQ, 
-                                        fitmodel_dRdQ_params, sim.model_Qgrid, Tbins_theory[i]), sim.model_Qgrid)) *
-                                        sim.experiment.exposure*YEAR_IN_S * t_binsize)
-                    else:
-                        fitmodel_dRdQ_params['time_info']=True
-                        Thist_fit[i] = (np.trapz(sim.experiment.efficiency(sim.model_Qgrid) * sim.model.dRdQ(sim.model_Qgrid, Tbins_theory[i], **fitmodel_dRdQ_params),
-                                              sim.model_Qgrid) * sim.experiment.exposure*YEAR_IN_S * t_binsize )
+                    fitmodel_dRdQ_params['time_info'] = True
+                    Thist_fit[i] = (np.trapz(sim.experiment.efficiency(sim.model_Qgrid) * sim.model.dRdQ(sim.model_Qgrid, Tbins_theory[i], **fitmodel_dRdQ_params),
+                                          sim.model_Qgrid) * sim.experiment.exposure * YEAR_IN_S * t_binsize)
                                               
                 dp.plot_theoryfitdata_time(time_bins, Thist, txerr, tyerr, Tbins_theory, Thist_theory, Thist_fit,
                                         filename=filename, save_file=True, Ntot=Ntot, 
                                         fitmodel=fitmodel_title, simmodel=simmodel_title,
                                         experiment=sim.experiment.name, labelfont=18, legendfont=17,titlefont=20, mass=self.param_values['mass'])
                 filename = self.chainspath + '/{}_theoryfitdata_Residual_{}.pdf'.format(self.sim_name, sim.experiment.name)
-                ResHist = [(Thist[i] - Ntot / 10.) / (Ntot / 10.) for i in range(len(Thist))]
-                Ryerr = tyerr / (Ntot / 10.)
+                ResHist = [(Thist[i] - Ntot / 5.) / (Ntot / 5.) for i in range(len(Thist))]
+                Ryerr = tyerr / (Ntot / 5.)
                 Rhist_theory = (Thist_theory - np.mean(Thist_theory)) / np.mean(Thist_theory)
                 Rhist_fit = (Thist_fit - np.mean(Thist_fit)) / np.mean(Thist_fit)
                 dp.plot_theoryfitdata_residual(time_bins, ResHist, txerr, Ryerr, Tbins_theory, Rhist_theory, Rhist_fit,
@@ -683,11 +678,9 @@ class Simulation(object):
         self.silent = silent
         if not set(parvals.keys())==set(model.param_names):
             raise ValueError('Must pass parameter value dictionary corresponding exactly to model.param_names')
-        
-        
+
         self.model = model #underlying model
         self.experiment = experiment
-    
         #build param_values from parvals
         self.param_values = [parvals[par] for par in model.param_names]
         self.param_names = list(self.model.param_names)
@@ -706,7 +699,7 @@ class Simulation(object):
         sorted_parvals = np.array(self.param_values)[inds]
         for parname, parval in zip(sorted_parnames, sorted_parvals):
             self.file_basename += '_{}_{:.2f}'.format(parname, parval)
-#        self.file_basename += time_tag
+
         #calculate total expected rate
         dRdQ_params = model.default_rate_parameters.copy()
         allpars = model.default_rate_parameters.copy()
@@ -722,46 +715,35 @@ class Simulation(object):
        
         if time_info == 'T':
             self.time_info = True
-            time_tag = 'With_Time'
             dRdQ_params['time_info'] = True
         elif time_info == 'F':
             self.time_info = False
-            time_tag = 'No_Time'
             dRdQ_params['time_info'] = False
                
         dRdQ_params['GF'] = self.GF
         allpars['GF'] = self.GF        
-                     
-        self.model_Qgrid = np.linspace(experiment.Qmin,experiment.Qmax, 1000)
+
+        self.model_Qgrid = np.logspace(np.log10(experiment.Qmin),
+                                       np.log10(experiment.Qmax), 100)
         efficiencies = experiment.efficiency(self.model_Qgrid)
 
-        if self.GF:
-            dRdQ_params['time_info'] = False
-            self.model_dRdQ = self.model.dRdQ(self.model_Qgrid, 0., **dRdQ_params)
-            R_integrand = self.model_dRdQ * efficiencies
-            self.model_R = np.trapz(R_integrand,self.model_Qgrid)
-            dRdQ_params['time_info'] = self.time_info
-            
-        else:
-            self.model_dRdQ = self.model.dRdQ(self.model_Qgrid, 0., **dRdQ_params)
-            R_integrand = self.model_dRdQ * efficiencies
-            self.model_R = np.trapz(R_integrand,self.model_Qgrid)
+        dRdQ_params['time_info'] = False
+        self.model_dRdQ = self.model.dRdQ(self.model_Qgrid, 0.67, **dRdQ_params)
+        #R_integrand = self.model_dRdQ * efficiencies
+        self.model_R = rate_UV.R(experiment.efficiency, Qmin=experiment.Qmin, Qmax=experiment.Qmax, **dRdQ_params)
+        dRdQ_params['time_info'] = self.time_info
 
         self.model_N = self.model_R * experiment.exposure * YEAR_IN_S
-
         print 'Expected Number of Events: ', self.model_N
-        
         #create dictionary of all parameters relevant to simulation
         self.allpars = allpars
-        self.allpars['experiment'] = experiment.name    
-
+        self.allpars['experiment'] = experiment.name
         #record dictionary for relevant coupling normalizations only:
         norm_dict = {}
         for kw in model.param_names:
             if kw in PAR_NORMS:
                 norm_dict[kw] = PAR_NORMS[kw]
         self.allpars['norms'] = norm_dict
-        
       
         self.datafile = '{}/{}.dat'.format(self.path,self.file_basename)
         self.plotfile = '{}/{}.pdf'.format(self.path,self.file_basename)
@@ -780,9 +762,8 @@ class Simulation(object):
                 del ahold2['time_info']
             except:
                 pass
-            dictComp = DictDiffer(ahold1, ahold2)
 
-            if bool(dictComp.changed()):
+            if DictDiffer(ahold1, ahold2).changed():
                 print('Existing simulation does not match current parameters.  Forcing simulation.\n\n')
                 force_sim = True
                 
@@ -804,14 +785,10 @@ class Simulation(object):
         else:
             if asimov:
                 raise ValueError('Asimov simulations not yet implemented!')
-            else: 
-
+            else:
                 Q = np.loadtxt(self.datafile)
-
                 self.Q = np.atleast_1d(Q)
                 self.N = len(self.Q)
-                
-                
 
         if asimov:
             raise ValueError('Asimov not yet implemented!')
@@ -820,7 +797,6 @@ class Simulation(object):
                 self.N = len(self.Q)
             else:
                 self.N = len(self.Q)
-
         if force_sim:
             self.plot_data(plot_nbins=plot_nbins, plot_theory=plot_theory, save_plot=True)
         else:
@@ -834,10 +810,10 @@ class Simulation(object):
         """
         Nexpected = self.model_N
         if Nexpected > 0:
-            npts = 10000
+            npts = 100
             Nevents = poisson.rvs(Nexpected)
       
-            Qgrid = np.linspace(self.experiment.Qmin,self.experiment.Qmax,npts)
+            Qgrid = np.logspace(np.log10(self.experiment.Qmin), np.log10(self.experiment.Qmax), npts)
             efficiency = self.experiment.efficiency(Qgrid)
             
             pdf = self.model.dRdQ(Qgrid, 0., **self.dRdQ_params) * efficiency / self.model_R
@@ -853,7 +829,7 @@ class Simulation(object):
             Nexpected = 0
 
         if not self.silent:
-            print "simulated: %i events (expected %.0f)." % (Nevents,Nexpected)
+            print "simulated: %i events (expected %.0f)." % (Nevents, Nexpected)
         return Q
         
         
@@ -871,25 +847,22 @@ class Simulation(object):
             Ylist = []
             
             while total < Nevents:
-                U = np.random.rand() #random number between 0 and 1
+                U = np.random.rand()  # random number between 0 and 1
                 x = (np.random.rand() * (self.experiment.end_t - self.experiment.start_t) +
                     self.experiment.start_t)
                 y = (np.random.rand() * (self.experiment.Qmax - self.experiment.Qmin) +
-                    self.experiment.Qmin) #same as above line
-
+                    self.experiment.Qmin)  # same as above line
                 pdf = self.pdf_fun(y, x)
                 env = 10.
-                if U < (pdf)/(env): # if condition is met, accept point
+                if U < (pdf) / (env): # if condition is met, accept point
                     total = total + 1 #add one to the count
                     Xlist.append(x)
                     Ylist.append(y)
                 else:
                     pass #otherwise do nothing
-
-
-            Q = np.zeros((Nevents,2))
+            Q = np.zeros((Nevents, 2))
             for i in range(0, len(Xlist)):
-                Q[i] = Ylist[i],Xlist[i]
+                Q[i] = Ylist[i], Xlist[i]
 
         else:
             Q = np.array([])
@@ -901,23 +874,14 @@ class Simulation(object):
         return Q
         
     def pdf_fun(self, Q, t):
-        
-        efficiency = self.experiment.efficiency(np.array([Q]))        
-        if self.GF:            
-            res = self.model.dRdQ(np.array([Q]), t, **self.dRdQ_params) * efficiency / self.model_R
-        else:   
-            res = (dRdQ_time(self.model.dRdQ, self.dRdQ_params, np.array([Q]), t) *
-                        efficiency / self.model_R)
-        
+        efficiency = self.experiment.efficiency(np.array([Q]))
+        res = self.model.dRdQ(np.array([Q]), t, **self.dRdQ_params) * efficiency / self.model_R
         return res
-	    
+
     def plot_data(self, plot_nbins=20, plot_theory=True, save_plot=True,
                   make_plot=False, return_plot_items=False):
         """
         Plot simuated data.
-
-        
-        
         :param plot_nbins:
             Number of bins for plotting.
 
@@ -938,7 +902,7 @@ class Simulation(object):
             
         """
 
-        Qhist,bins = np.histogram(self.Q[:,0],plot_nbins)
+        Qhist,bins = np.histogram(self.Q[:, 0], plot_nbins)
 
         Qbins = (bins[1:]+bins[:-1])/2. 
         binsize = Qbins[1]-Qbins[0] #valid only for uniform gridding.
@@ -946,7 +910,8 @@ class Simulation(object):
         xerr = Qwidths
         yerr = Qhist**0.5
 
-        Qhist_theory = self.model_dRdQ*binsize*self.experiment.exposure*YEAR_IN_S*self.experiment.efficiency(self.model_Qgrid)
+        Qhist_theory = self.model_dRdQ*binsize*self.experiment.exposure* \
+                       YEAR_IN_S*self.experiment.efficiency(self.model_Qgrid)
         Qbins_theory = self.model_Qgrid
 
         if make_plot:
@@ -969,33 +934,25 @@ class Simulation(object):
                          label=label)
             plt.errorbar(Qbins, Qhist,xerr=xerr,yerr=yerr,marker='o',color='black',linestyle='None',label='Simulated data')
      
-            plt.legend(prop={'size':20},numpoints=1)
+            plt.legend(prop={'size':20}, numpoints=1)
             if save_plot:
                 plt.savefig(self.plotfile, bbox_extra_artists=[xlabel, ylabel], bbox_inches='tight')
 
         if self.time_info:
-
-            Thist,tbins = np.histogram(self.Q[:,1], bins=[0.,.1,.2,.3,.4,.5,.6,.7,.8,.9,1.])
-            time_bins = (tbins[1:]+tbins[:-1])/2.
+            Thist,tbins = np.histogram(self.Q[:, 1], bins=[0., .2, .4, .6, .8, 1.])
+            time_bins = (tbins[1:] + tbins[:-1]) / 2.
             t_binsize = time_bins[1]-time_bins[0] #valid only for uniform gridding.
             Twidths = (tbins[1:]-tbins[:-1])/2.
             txerr = Twidths
             tyerr = Thist**0.5
 
-            Tbins_theory = np.linspace(0.,1.,100)
+            Tbins_theory = np.linspace(0., 1., 100)
             Thist_theory = np.zeros(100)
             tbinsizetheory = Tbins_theory[1] - Tbins_theory[0]
             
             for i in range(0, len(Tbins_theory)):
-              
-                if self.GF:
-                    Thist_theory[i] = ((np.trapz(self.experiment.efficiency(self.model_Qgrid) * self.model.dRdQ(self.model_Qgrid, Tbins_theory[i],
-                                        **self.dRdQ_params), self.model_Qgrid)) *
-                                        t_binsize*self.experiment.exposure*YEAR_IN_S)
-                else:
-                    Thist_theory[i] = ((np.trapz(self.experiment.efficiency(self.model_Qgrid) * dRdQ_time(self.model.dRdQ, self.dRdQ_params,
-                                        self.model_Qgrid, Tbins_theory[i]), self.model_Qgrid)) *
-                                        t_binsize*self.experiment.exposure*YEAR_IN_S)
+                Thist_theory[i] = ((np.trapz(self.experiment.efficiency(self.model_Qgrid) * self.model.dRdQ(self.model_Qgrid, Tbins_theory[i],
+                                    **self.dRdQ_params), self.model_Qgrid)) * t_binsize * self.experiment.exposure * YEAR_IN_S)
                     
             if make_plot:
                 plt.figure()
@@ -1004,22 +961,21 @@ class Simulation(object):
                 ylabel = 'Number of events'
                 ax = plt.gca()
                 fig = plt.gcf()
-                xlabel = ax.set_xlabel(xlabel,fontsize=18)
-                ylabel = ax.set_ylabel(ylabel,fontsize=18)
+                ax.set_xlabel(xlabel,fontsize=18)
+                ax.set_ylabel(ylabel,fontsize=18)
                 if plot_theory:
                     if self.model.name in MODELNAME_TEX.keys():
                         label='True model ({})'.format(MODELNAME_TEX[self.model.name])
                     else:
                         label='True model'
-                    plt.plot(Tbins_theory, Thist_theory,lw=3,
-                         color='blue',
-                         label=label)
+                    plt.plot(Tbins_theory, Thist_theory,lw=3, color='blue', label=label)
                 plt.errorbar(time_bins, Thist,xerr=txerr,yerr=tyerr,marker='o',color='black',linestyle='None',label='Simulated data')
-
                 plt.legend(prop={'size':20},numpoints=1)
 
         if return_plot_items and self.time_info:
-            return Qbins, Qhist, xerr, yerr, Qbins_theory, Qhist_theory, binsize, time_bins, Thist, txerr, tyerr, Tbins_theory, Thist_theory, t_binsize, tbinsizetheory
+            return Qbins, Qhist, xerr, yerr, Qbins_theory, Qhist_theory, binsize, \
+                   time_bins, Thist, txerr, tyerr, Tbins_theory, Thist_theory, \
+                   t_binsize, tbinsizetheory
         else:
             return Qbins, Qhist, xerr, yerr, Qbins_theory, Qhist_theory, binsize
 
@@ -1073,7 +1029,7 @@ class Model(object):
                  dRdQ_fn, loglike_fn,
                  default_rate_parameters, tex_names=None,
                  fixed_params=None,
-                 modelname_tex=None, time_info='T'):
+                 modelname_tex=None):
         """
             fixed_params: dictionary
             
@@ -1116,14 +1072,12 @@ class UV_Model(Model):
                                     fnfp_si_massless=1.,  fnfp_sd_massless=1.,
                                     fnfp_anapole_massless=1.,  fnfp_magdip_massless=1.,  fnfp_elecdip_massless=1.,
                                     fnfp_LS_massless=1.,  fnfp_f1_massless=1.,  fnfp_f2_massless=1.,  fnfp_f3_massless=1.,
-                                    v_lag=220.,  v_rms=220.,  v_esc=544.,  rho_x=0.3, GF=False, time_info=False)
+                                    v_lag=220.,  v_rms=220.,  v_esc=533.,  rho_x=0.3, GF=False, time_info=False)
         
         if time_info == 'T':
             self.time_info=True
-            time_tag = 'With_Time'
         else:
             self.time_info = False
-            time_tag = 'No_Time'
         
         default_rate_parameters['GF'] = GF
         default_rate_parameters['time_info'] = self.time_info
@@ -1207,7 +1161,7 @@ class Experiment(object):
 
     def NminusNbg(self, sigma_val, sigma_name='sigma_si', fnfp_name='fnfp_si', fnfp_val=None,
                     mass=50., Nbackground=4,
-                    v_esc=540., v_lag=220., v_rms=220., rho_x=0.3):
+                    v_esc=533., v_lag=220., v_rms=220., rho_x=0.3):
         """
         Expected number of events minus background
 
@@ -1255,7 +1209,7 @@ class Experiment(object):
 
     def sigma_limit(self, sigma_name='sigma_si', fnfp_name='fnfp_si', fnfp_val=None,
                     mass=50., Nbackground=4, sigma_guess = 1.e10, mx_guess=1.,
-                    v_esc=540., v_lag=220., v_rms=220., rho_x=0.3):
+                    v_esc=533., v_lag=220., v_rms=220., rho_x=0.3):
         """
         Returns value of sigma at which expected number of dark-matter induced recoil events is equal to the number of expected background events, N = Nbg, in order to get a rough projected exclusion for this experiment.
 
@@ -1277,7 +1231,7 @@ class Experiment(object):
 
     def sigma_exclusion(self, sigma_name, fnfp_name='fnfp_si', fnfp_val=None,
                         mass_max=5000, Nbackground=4, mx_guess=1., sigma_guess=1.e10,
-                        v_esc=540., v_lag=220., v_rms=220., rho_x=0.3,
+                        v_esc=533., v_lag=220., v_rms=220., rho_x=0.3,
                         mass_spacing='log', nmass_points=100, make_plot=False,ymax=None):
         """
         Makes exclusion curve for a chosen sigma parameter.
@@ -1332,7 +1286,7 @@ class Experiment(object):
         return masses, sigmas
         
 
-    def VminusVesc(self, mx, v_esc=540., v_lag=220.):
+    def VminusVesc(self, mx, v_esc=533., v_lag=220.):
         """
         This function returns the value of the minimum velocity needed to produce
         recoil of energy Qmin, minus escape velocity in Galactic frame.
@@ -1365,7 +1319,7 @@ class Experiment(object):
         res = mT * q /( 2. * mu**2 ) - (v_esc_lab / C_KMSEC)**2.
         return res
     
-    def find_min_mass(self, v_esc=540., v_lag=220., mx_guess=1.):
+    def find_min_mass(self, v_esc=533., v_lag=220., mx_guess=1.):
         """
         This finds the minimum dark-matter particle mass detectable with this experiment,
         by finding a zero of VminusVesc.
@@ -1387,7 +1341,7 @@ class Experiment(object):
 ############################################
 ############################################
 
-def compare_dictionaries(d1,d2,debug=False,rtol=1e-5):
+def compare_dictionaries(d1,d2,debug=True,rtol=1e-5):
     """Returns True if dictionaries are identical; false if not.
     
     It works with multi-level dicts.
@@ -1430,7 +1384,7 @@ def compare_dictionaries(d1,d2,debug=False,rtol=1e-5):
 def Nexpected(element, Qmin, Qmax, exposure, efficiency, start_t, end_t,
               sigma_name, sigma_val, fnfp_name=None, fnfp_val=None,
               mass=50.,
-              v_esc=540., v_lag=220., v_rms=220., rho_x=0.3):
+              v_esc=533., v_lag=220., v_rms=220., rho_x=0.3):
     """
     NOTE: This is only set up for models in rate_UV.
     """
@@ -1460,13 +1414,10 @@ def dRdQ_time(dRdQ_func, dRdQ_param, Q_vals, t):
     """
     Changes v_lag to v_lag + v_earth * (0.49) * Cos(2 pi (t - 0.42))
     """
-    
     kwags = dRdQ_param
-    kwags['v_lag'] = 220.0 + 29.8 * 0.49 * cos(2.0 * np.pi * (t - 0.42))
-    
-    result = dRdQ_func(Q_vals,0.,**kwags)
+    kwags['v_lag'] = 220.0 + 29.8 * 0.49 * np.cos(2.0 * np.pi * (t - 0.42))
+    result = dRdQ_func(Q_vals, 0., **kwags)
     kwags['v_lag'] = 220.0
-    
     return result
 
 
@@ -1511,8 +1462,8 @@ def Plot_Modulation(experiment, models, parvals_list, time_info='T',
     ylabel = 'dR/dt'
     ax = plt.gca()
     fig = plt.gcf()
-    xlabel = ax.set_xlabel(xlabel,fontsize=18)
-    ylabel = ax.set_ylabel(ylabel,fontsize=18)
+    ax.set_xlabel(xlabel,fontsize=18)
+    ax.set_ylabel(ylabel,fontsize=18)
     plt.title(experiment.name, fontsize=18)
         
     for index in range(len(models)):
@@ -1539,33 +1490,21 @@ def Plot_Modulation(experiment, models, parvals_list, time_info='T',
         
         for i,par in enumerate(model.param_names): #model parameters
             dRdQ_params[par] = param_values[i]
-            
-    
+
         dRdQ_params['element'] = experiment.element
-       
-       
         if time_info == 'T':
             dRdQ_params['time_info'] = True
         elif time_info == 'F':
             dRdQ_params['time_info'] = False
                
         dRdQ_params['GF'] = GF
-                                        
-        model_Qgrid = np.linspace(experiment.Qmin, experiment.Qmax, 1000)
+        model_Qgrid = np.logspace(np.log10(experiment.Qmin), np.log10(experiment.Qmax), 100)
         
-        Tbins_theory = np.linspace(0.,1.,100)
+        Tbins_theory = np.linspace(0., 1., 100)
         Thist_theory = np.zeros(100)
-        tbinsizetheory = Tbins_theory[1] - Tbins_theory[0]
-                
+
         for i in range(0, len(Tbins_theory)):
-            if GF:
-                Thist_theory[i] = ((np.trapz(model.dRdQ(model_Qgrid, Tbins_theory[i],
-                                            **dRdQ_params), model_Qgrid)) *
-                                             experiment.exposure * YEAR_IN_S)
-            else:
-                Thist_theory[i] = ((np.trapz(dRdQ_time(model.dRdQ, dRdQ_params,
-                                            model_Qgrid, Tbins_theory[i]), model_Qgrid)) *
-                                            experiment.exposure * YEAR_IN_S)
+            Thist_theory[i] = ((np.trapz(model.dRdQ(model_Qgrid, Tbins_theory[i], **dRdQ_params), model_Qgrid)) * experiment.exposure * YEAR_IN_S)
 
         
         if label_params:

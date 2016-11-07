@@ -71,9 +71,7 @@ def interp1d(np.ndarray[DTYPE_t] x, np.ndarray[DTYPE_t] y, DTYPE_t x0):
         
     res = y[i-1] + (y[i] - y[i-1]) * (x0 - x[i-1]) / (x[i] - x[i-1])
     return res
-        
 
-    
 
 
 def log_fact(DTYPE_t xx):
@@ -129,6 +127,11 @@ def eta_GF(DTYPE_t v_min, DTYPE_t time, bool time_info):
     """
     cdef DTYPE_t res
     cdef DTYPE_t vmin_max=700.
+    cdef DTYPE_t vlag = 220.
+    cdef DTYPE_t mod_amp = 29.8 * 0.49
+    cdef DTYPE_t mod_phase = 0.42
+    cdef DTYPE_t twopi = 2. * pi
+
 
     global eta0_a0_tabbed
     global eta0_a1_tabbed
@@ -150,7 +153,9 @@ def eta_GF(DTYPE_t v_min, DTYPE_t time, bool time_info):
         else:   
             res = 3. * 10.**5. * (interp1d(a0_x, a0_y, v_min))
     else:
-        res = eta(v_min, 533., 220., 220.)
+        if time_info:
+            vlag += mod_amp * cos(twopi * (time - mod_phase))
+        res = eta(v_min, 533., 220., vlag)
     
     return res
 
@@ -163,6 +168,10 @@ def zeta_GF(DTYPE_t v_min, DTYPE_t time, bool time_info):
     """
     cdef DTYPE_t res
     cdef DTYPE_t vmin_max=700.
+    cdef DTYPE_t vlag = 220.
+    cdef DTYPE_t mod_amp = 29.8 * 0.49
+    cdef DTYPE_t mod_phase = 0.42
+    cdef DTYPE_t twopi = 2. * pi
 
     global eta1_a0_tabbed
     global eta1_a1_tabbed
@@ -184,7 +193,9 @@ def zeta_GF(DTYPE_t v_min, DTYPE_t time, bool time_info):
         else:
             res = interp1d(a0_x, a0_y, v_min) / (3.*10**5.) 
     else:
-        res = zeta(v_min, 533., 220., 220.)
+        if time_info:
+            vlag += mod_amp * cos(twopi * (time - mod_phase))
+        res = zeta(v_min, 533., 220., vlag)
 
     return res
 
