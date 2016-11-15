@@ -380,14 +380,15 @@ def f_sigma_lims(modelname, mass):
 
 ################################################################################################
 
-def line_plots_1vsall(nsim=100, startsim=1, masses=[50.],
+def line_plots_1vsall(nsim=30, startsim=1, masses=[20.],
                       experiment_names=['Xe'],#['I','Ilo'], ['Xe','Xelo','Xehi','Xewide']
                       simmodels=[SI_Higgs], models=[SI_Higgs, anapole], time_info='True', GF=False,
-                      filelabel='No_Time', allverbose=True, verbose=True,
-                      results_root='/Users/SamWitte/Desktop/dmdd/Storage/results_uv/',
+                      filelabel='With_Time', allverbose=True, verbose=True,
+                      results_root='/data/verag/dmdd-am/results_uv/',
                       saveplots=True, alpha=0.3, xoffset=0.1, fs=20, fs2=18, sigma_lim_file=None, colors_list=None,
                       timeonly=False):
 
+    experiments = ['Xe']
     if colors_list == None:
         for i,experiment in enumerate(experiments):
             colors_list = Colors[experiment_names[i]]

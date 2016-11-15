@@ -119,19 +119,24 @@ def eta(DTYPE_t v_min, DTYPE_t v_esc, DTYPE_t v_rms, DTYPE_t v_lag):
     return res
 
 
-def eta_GF(DTYPE_t v_min, DTYPE_t time, bool time_info):
+def eta_GF(DTYPE_t v_min, DTYPE_t time, bool time_info,
+           DTYPE_t v_rms=220., DTYPE_t v_lag=220., DTYPE_t v_esc=533.,
+           DTYPE_t delta_v_lag=0.):
     """
-    Calculated only for v_esc = 533km/s, v_rms = v_lag = 220 km/s
+    Calculation only valid for v_esc = 533km/s, v_rms = v_lag = 220 km/s;
+    function returns error otherwise, this should be fixed.
     
-    Also, if vmin_
+    Also, if v_min > vmin_max=700., this function returns the result with NO gravitational
+    focusing. This is only due to the range of pre-tabulated eta values, and should
+    be fixed.
     """
+
+    if (v_lag != 220.) or (v_rms != 220.) or (v_esc !=533.):
+        raise ValueError('eta_GF does not have tables for v_lag={}, v_rms={}, v_esc={}.'.format(v_lag,v_rms,v_esc))
+         
     cdef DTYPE_t res
     cdef DTYPE_t vmin_max=700.
-    cdef DTYPE_t vlag = 220.
-    cdef DTYPE_t mod_amp = 29.8 * 0.49
-    cdef DTYPE_t mod_phase = 0.42
-    cdef DTYPE_t twopi = 2. * pi
-
+    cdef DTYPE_t v_lag_pass
 
     global eta0_a0_tabbed
     global eta0_a1_tabbed
@@ -153,25 +158,36 @@ def eta_GF(DTYPE_t v_min, DTYPE_t time, bool time_info):
         else:   
             res = 3. * 10.**5. * (interp1d(a0_x, a0_y, v_min))
     else:
-        if time_info:
-            vlag += mod_amp * cos(twopi * (time - mod_phase))
-        res = eta(v_min, 533., 220., vlag)
+        if (not time_info) and (delta_v_lag!=0.):
+            raise ValueError('eta_GF got conflicting instructions: time_info=False and delta_v_lag={}'.format(delta_v_lag))
+        vlag_pass = v_lag + delta_v_lag
+        res = eta(v_min, v_esc, v_rms, vlag_pass)
     
     return res
 
-def zeta_GF(DTYPE_t v_min, DTYPE_t time, bool time_info):
+def zeta_GF(DTYPE_t v_min, DTYPE_t time, bool time_info,
+           DTYPE_t v_rms=220., DTYPE_t v_lag=220., DTYPE_t v_esc=533.,
+           DTYPE_t delta_v_lag=0.):
     """
     This is the correctly scaled velocity integral for a rate
     with no special velocity dependence.
 
     The input units for all velocities are km/s.
+
+    Calculation only valid for v_esc = 533km/s, v_rms = v_lag = 220 km/s;
+    function returns error otherwise, this should be fixed.
+    
+    Also, if v_min > vmin_max=700., this function returns the result with NO gravitational
+    focusing. This is only due to the range of pre-tabulated eta values, and should
+    be fixed.
     """
+
+    if (v_lag != 220.) or (v_rms != 220.) or (v_esc !=533.):
+        raise ValueError('zeta_GF does not have tables for v_lag={}, v_rms={}, v_esc={}.'.format(v_lag,v_rms,v_esc))
+    
     cdef DTYPE_t res
     cdef DTYPE_t vmin_max=700.
-    cdef DTYPE_t vlag = 220.
-    cdef DTYPE_t mod_amp = 29.8 * 0.49
-    cdef DTYPE_t mod_phase = 0.42
-    cdef DTYPE_t twopi = 2. * pi
+    cdef DTYPE_t v_lag_pass
 
     global eta1_a0_tabbed
     global eta1_a1_tabbed
@@ -193,9 +209,10 @@ def zeta_GF(DTYPE_t v_min, DTYPE_t time, bool time_info):
         else:
             res = interp1d(a0_x, a0_y, v_min) / (3.*10**5.) 
     else:
-        if time_info:
-            vlag += mod_amp * cos(twopi * (time - mod_phase))
-        res = zeta(v_min, 533., 220., vlag)
+        if (not time_info) and (delta_v_lag!=0.):
+            raise ValueError('zeta_GF got conflicting instructions: time_info=False, delta_v_lag={}'.format(delta_v_lag))
+        vlag_pass = v_lag + delta_v_lag
+        res = zeta(v_min, v_esc, v_rms, vlag_pass)
 
     return res
 

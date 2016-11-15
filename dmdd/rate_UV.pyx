@@ -20,8 +20,12 @@ cdef extern from "math.h":
     double log(double)
     double cos(double)
 
+cdef DTYPE_T pi = np.pi
+
 #constants for this module:
 cdef DTYPE_t ratenorm = 1.6817124283286463e31 # conversion from cm**-1 * GeV**-2 to DRU = cts / keV / kg / sec
+cdef mod_amp = 29.8 * 0.49 #annual modulation amplitude
+cdef mod_phase = 0.42 #annual modulation phase (for not grav. focusing)
 
 #physical constants from constants.py:
 cdef DTYPE_t mN = const.NUCLEON_MASS # Nucleon mass in GeV
@@ -30,6 +34,8 @@ cdef DTYPE_t nmag = const.N_MAGMOM # neutron magnetic moment, PDG Live
 
 #information about target nuclei:
 eltshort = const.ELEMENT_INFO
+
+
 
 
 ############################# rates dR/dQ for each operator:
@@ -92,18 +98,15 @@ def dRdQSI(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t V0, DTYPE_t v_lag, DTYP
     cdef int npts = len(Er)
     cdef np.ndarray[DTYPE_t] out = np.empty(npts,dtype=float)
     cdef int i
-    cdef element_name = str(elt.title())
+    cdef str element_name = str(elt.title())
 
     cdef DTYPE_t q, tot, m_reduced_sq, y_harm, b_harm, v_min, val_eta, weight, v_independent
     cdef DTYPE_t ff
-    cdef v_lag_pass
-    cdef mod_amp = 29.8 * 0.49
-    cdef mod_phase = 0.42
+    cdef DTYPE_t v_lag_pass, delta_v_lag=0.
 
-    if time_info and not GF:
-        v_lag_pass = v_lag + mod_amp * cos(2.0 * np.pi * (time - mod_phase))
-    else:
-        v_lag_pass = v_lag
+    if time_info:
+        delta_v_lag = mod_amp * cos(2.0 * pi * (time - mod_phase))
+    v_lag_pass = v_lag + delta_v_lag
 
     weight = eltshort[elt]['weight']
     b_harm = 5.0677*(41.467/(45.*weight**(-1./3.) - 25.*weight**(-2./3.)))**0.5 #this is in [1/GeV]
@@ -117,7 +120,7 @@ def dRdQSI(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t V0, DTYPE_t v_lag, DTYP
         if not GF:
             val_eta = eta(v_min, v_esc, V0, v_lag_pass)
         elif GF:
-            val_eta = eta_GF(v_min, time, time_info)
+            val_eta = eta_GF(v_min, time, time_info, v_rms, v_lag, v_esc, delta_v_lag)
         tot = v_independent * val_eta * ff
         out[i] = tot
     return out
@@ -134,18 +137,15 @@ def dRdQSI_massless(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t V0, DTYPE_t v_
     cdef int npts = len(Er)
     cdef np.ndarray[DTYPE_t] out = np.empty(npts,dtype=float)
     cdef int i
-    cdef element_name = str(elt.title())
+    cdef str element_name = str(elt.title())
 
     cdef DTYPE_t q, tot, m_reduced_sq, y_harm, b_harm, v_min, val_eta, weight, qref, q_squared, v_independent
     cdef DTYPE_t ff
-    cdef v_lag_pass
-    cdef mod_amp = 29.8 * 0.49
-    cdef mod_phase = 0.42
+    cdef DTYPE_t v_lag_pass, delta_v_lag=0.
 
-    if time_info and not GF:
-        v_lag_pass = v_lag + mod_amp * cos(2.0 * np.pi * (time - mod_phase))
-    else:
-        v_lag_pass = v_lag
+    if time_info:
+        delta_v_lag = mod_amp * cos(2.0 * pi * (time - mod_phase))
+    v_lag_pass = v_lag + delta_v_lag
 
     weight = eltshort[elt]['weight']
     b_harm = 5.0677*(41.467/(45.*weight**(-1./3.) - 25.*weight**(-2./3.)))**0.5 #this is in [1/GeV]
@@ -161,7 +161,7 @@ def dRdQSI_massless(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t V0, DTYPE_t v_
         if not GF:
             val_eta = eta(v_min,v_esc,V0,v_lag_pass)
         elif GF:
-            val_eta = eta_GF(v_min, time, time_info)
+            val_eta = eta_GF(v_min, time, time_info, v_rms, v_lag, v_esc, delta_v_lag)
         tot = v_independent * (qref**2./q_squared)**2. * val_eta * ff
         out[i] = tot
     return out
@@ -180,18 +180,16 @@ def dRdQSD(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t V0, DTYPE_t v_lag, DTYP
     cdef int npts = len(Er)
     cdef np.ndarray[DTYPE_t] out = np.empty(npts,dtype=float)
     cdef int i
-    cdef element_name = str(elt.title())
+    cdef str element_name = str(elt.title())
 
     cdef DTYPE_t q, tot, m_reduced_sq, y_harm, b_harm, v_min, val_eta, weight, v_independent
     cdef DTYPE_t ff
-    cdef v_lag_pass
-    cdef mod_amp = 29.8 * 0.49
-    cdef mod_phase = 0.42
+    cdef DTYPE_t v_lag_pass, delta_v_lag=0.
 
-    if time_info and not GF:
-        v_lag_pass = v_lag + mod_amp * cos(2.0 * np.pi * (time - mod_phase))
-    else:
-        v_lag_pass = v_lag
+    if time_info:
+        delta_v_lag = mod_amp * cos(2.0 * pi * (time - mod_phase))
+    v_lag_pass = v_lag + delta_v_lag
+
 
     weight = eltshort[elt]['weight']
     b_harm = 5.0677*(41.467/(45.*weight**(-1./3.) - 25.*weight**(-2./3.)))**0.5 #this is in [1/GeV]
@@ -205,7 +203,7 @@ def dRdQSD(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t V0, DTYPE_t v_lag, DTYP
         if not GF:
             val_eta = eta(v_min,v_esc,V0,v_lag_pass)
         elif GF:
-            val_eta = eta_GF(v_min, time, time_info)
+            val_eta = eta_GF(v_min, time, time_info, v_rms, v_lag, v_esc, delta_v_lag)
         tot = v_independent * val_eta * ff
         out[i]=tot
     return out
@@ -222,18 +220,15 @@ def dRdQSD_neutron(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t V0, DTYPE_t v_l
     cdef int npts = len(Er)
     cdef np.ndarray[DTYPE_t] out = np.empty(npts,dtype=float)
     cdef int i
-    cdef element_name = str(elt.title())
+    cdef str element_name = str(elt.title())
 
     cdef DTYPE_t q, tot, m_reduced_sq, y_harm, b_harm, v_min, val_eta, weight, v_independent
     cdef DTYPE_t ff
-    cdef v_lag_pass
-    cdef mod_amp = 29.8 * 0.49
-    cdef mod_phase = 0.42
+    cdef DTYPE_t v_lag_pass, delta_v_lag
 
-    if time_info and not GF:
-        v_lag_pass = v_lag + mod_amp * cos(2.0 * np.pi * (time - mod_phase))
-    else:
-        v_lag_pass = v_lag
+    if time_info:
+        delta_v_lag = mod_amp * cos(2.0 * pi * (time - mod_phase))
+    v_lag_pass = v_lag + delta_v_lag
 
     weight = eltshort[elt]['weight']
     b_harm = 5.0677*(41.467/(45.*weight**(-1./3.) - 25.*weight**(-2./3.)))**0.5 #this is in [1/GeV]
@@ -247,7 +242,7 @@ def dRdQSD_neutron(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t V0, DTYPE_t v_l
         if not GF:
             val_eta = eta(v_min,v_esc,V0,v_lag_pass)
         elif GF:
-            val_eta = eta_GF(v_min, time, time_info)
+            val_eta = eta_GF(v_min, time, time_info, v_rms, v_lag, v_esc, delta_v_lag)
         tot = v_independent * val_eta * ff
         out[i]=tot
     return out
@@ -265,18 +260,15 @@ def dRdQSD_massless(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t V0, DTYPE_t v_
     cdef int npts = len(Er)
     cdef np.ndarray[DTYPE_t] out = np.empty(npts,dtype=float)
     cdef int i
-    cdef element_name = str(elt.title())
+    cdef str element_name = str(elt.title())
 
     cdef DTYPE_t q, tot, m_reduced_sq, y_harm, b_harm, v_min, val_eta, weight, qref, q_squared, v_independent
     cdef DTYPE_t ff
-    cdef v_lag_pass
-    cdef mod_amp = 29.8 * 0.49
-    cdef mod_phase = 0.42
+    cdef DTYPE_t v_lag_pass, delta_v_lag=0.
 
-    if time_info and not GF:
-        v_lag_pass = v_lag + mod_amp * cos(2.0 * np.pi * (time - mod_phase))
-    else:
-        v_lag_pass = v_lag
+    if time_info:
+        delta_v_lag = mod_amp * cos(2.0 * pi * (time - mod_phase))
+    v_lag_pass = v_lag + delta_v_lag
 
     weight = eltshort[elt]['weight']
     b_harm = 5.0677*(41.467/(45.*weight**(-1./3.) - 25.*weight**(-2./3.)))**0.5 #this is in [1/GeV]
@@ -292,7 +284,7 @@ def dRdQSD_massless(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t V0, DTYPE_t v_
         if not GF:
             val_eta = eta(v_min,v_esc,V0,v_lag_pass)
         elif GF:
-            val_eta = eta_GF(v_min, time, time_info)
+            val_eta = eta_GF(v_min, time, time_info, v_rms, v_lag, v_esc, delta_v_lag)
         tot = v_independent * (qref**2./q_squared)**2. * val_eta * ff
         out[i]=tot
     return out
@@ -311,18 +303,15 @@ def dRdQana(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t V0, DTYPE_t v_lag, DTY
     cdef int npts = len(Er)
     cdef np.ndarray[DTYPE_t] out = np.empty(npts,dtype=float)
     cdef int i
-    cdef element_name = str(elt.title())
+    cdef str element_name = str(elt.title())
 
     cdef DTYPE_t q, tot, m_reduced_sq, y_harm, b_harm, v_min, val_eta, val_zeta, weight, v_independent
     cdef DTYPE_t ff_v_sq, ff_v_std
-    cdef v_lag_pass
-    cdef mod_amp = 29.8 * 0.49
-    cdef mod_phase = 0.42
-
-    if time_info and not GF:
-        v_lag_pass = v_lag + mod_amp * cos(2.0 * np.pi * (time - mod_phase))
-    else:
-        v_lag_pass = v_lag
+    cdef DTYPE_t v_lag_pass, delta_v_lag=0.
+    
+    if time_info:
+        delta_v_lag = mod_amp * cos(2.0 * pi * (time - mod_phase))
+    v_lag_pass = v_lag + delta_v_lag
 
     weight = eltshort[elt]['weight']
     b_harm = 5.0677*(41.467/(45.*weight**(-1./3.) - 25.*weight**(-2./3.)))**0.5 #this is in [1/GeV]
@@ -338,8 +327,8 @@ def dRdQana(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t V0, DTYPE_t v_lag, DTY
             val_eta = eta(v_min,v_esc,V0,v_lag_pass)
             val_zeta = zeta(v_min,v_esc,V0,v_lag_pass)
         elif GF:
-            val_eta = eta_GF(v_min, time, time_info)
-            val_zeta = zeta_GF(v_min, time, time_info)
+            val_eta = eta_GF(v_min, time, time_info, v_rms, v_lag, v_esc, delta_v_lag)
+            val_zeta = zeta_GF(v_min, time, time_info, v_rms, v_lag, v_esc, delta_v_lag)
         tot = v_independent * (val_zeta * ff_v_sq + val_eta * ff_v_std)
         out[i]=tot
     return out
@@ -358,18 +347,15 @@ def dRdQana_massless(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t V0, DTYPE_t v
     cdef int npts = len(Er)
     cdef np.ndarray[DTYPE_t] out = np.empty(npts,dtype=float)
     cdef int i
-    cdef element_name = str(elt.title())
+    cdef str element_name = str(elt.title())
 
     cdef DTYPE_t q, tot, m_reduced_sq, y_harm, b_harm, v_min, val_eta, val_zeta, weight, qref, q_squared, v_independent
     cdef DTYPE_t ff_v_sq, ff_v_std
-    cdef v_lag_pass
-    cdef mod_amp = 29.8 * 0.49
-    cdef mod_phase = 0.42
+    cdef DTYPE_t v_lag_pass, delta_v_lag=0.
 
-    if time_info and not GF:
-        v_lag_pass = v_lag + mod_amp * cos(2.0 * np.pi * (time - mod_phase))
-    else:
-        v_lag_pass = v_lag
+    if time_info:
+        delta_v_lag = mod_amp * cos(2.0 * pi * (time - mod_phase))
+    v_lag_pass = v_lag + delta_v_lag
 
     weight = eltshort[elt]['weight']
     b_harm = 5.0677*(41.467/(45.*weight**(-1./3.) - 25.*weight**(-2./3.)))**0.5 #this is in [1/GeV]
@@ -387,8 +373,8 @@ def dRdQana_massless(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t V0, DTYPE_t v
             val_eta = eta(v_min,v_esc,V0,v_lag_pass)
             val_zeta = zeta(v_min,v_esc,V0,v_lag_pass)
         elif GF:
-            val_eta = eta_GF(v_min, time, time_info)
-            val_zeta = zeta_GF(v_min, time, time_info)
+            val_eta = eta_GF(v_min, time, time_info, v_rms, v_lag, v_esc, delta_v_lag)
+            val_zeta = zeta_GF(v_min, time, time_info, v_rms, v_lag, v_esc, delta_v_lag)
         tot = v_independent * (qref**2./q_squared)**2. * (val_zeta * ff_v_sq + val_eta * ff_v_std)
         out[i]=tot
     return out
@@ -406,18 +392,15 @@ def dRdQmagdip(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t V0, DTYPE_t v_lag, 
     cdef int npts = len(Er)
     cdef np.ndarray[DTYPE_t] out = np.empty(npts,dtype=float)
     cdef int i
-    cdef element_name = str(elt.title())
+    cdef str element_name = str(elt.title())
 
     cdef DTYPE_t q, tot, m_reduced_sq, y_harm, b_harm, v_min, val_eta, val_zeta, weight, qref, q_squared, v_independent
     cdef DTYPE_t ff_v_sq, ff_v_std
-    cdef v_lag_pass
-    cdef mod_amp = 29.8 * 0.49
-    cdef mod_phase = 0.42
+    cdef DTYPE_t v_lag_pass, delta_v_lag=0.
 
-    if time_info and not GF:
-        v_lag_pass = v_lag + mod_amp * cos(2.0 * np.pi * (time - mod_phase))
-    else:
-        v_lag_pass = v_lag
+    if time_info:
+        delta_v_lag = mod_amp * cos(2.0 * pi * (time - mod_phase))
+    v_lag_pass = v_lag + delta_v_lag
 
     weight = eltshort[elt]['weight']
     b_harm = 5.0677*(41.467/(45.*weight**(-1./3.) - 25.*weight**(-2./3.)))**0.5 #this is in [1/GeV]
@@ -435,8 +418,8 @@ def dRdQmagdip(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t V0, DTYPE_t v_lag, 
             val_eta = eta(v_min,v_esc,V0,v_lag_pass)
             val_zeta = zeta(v_min,v_esc,V0,v_lag_pass)
         elif GF:
-            val_eta = eta_GF(v_min, time, time_info)
-            val_zeta = zeta_GF(v_min, time, time_info)
+            val_eta = eta_GF(v_min, time, time_info, v_rms, v_lag, v_esc, delta_v_lag)
+            val_zeta = zeta_GF(v_min, time, time_info, v_rms, v_lag, v_esc, delta_v_lag)
         tot = v_independent * q_squared/(qref**2.) * ( val_zeta * ff_v_sq +  val_eta * ff_v_std )
         out[i]=tot
     return out
@@ -454,18 +437,15 @@ def dRdQmagdip_massless(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t V0, DTYPE_
     cdef int npts = len(Er)
     cdef np.ndarray[DTYPE_t] out = np.empty(npts,dtype=float)
     cdef int i
-    cdef element_name = str(elt.title())
+    cdef str element_name = str(elt.title())
 
     cdef DTYPE_t q, tot, m_reduced_sq, y_harm, b_harm, v_min, val_eta, val_zeta, weight, qref, q_squared, v_independent
     cdef DTYPE_t ff_v_sq, ff_v_std
-    cdef v_lag_pass
-    cdef mod_amp = 29.8 * 0.49
-    cdef mod_phase = 0.42
+    cdef DTYPE_t v_lag_pass, delta_v_lag=0.
 
-    if time_info and not GF:
-        v_lag_pass = v_lag + mod_amp * cos(2.0 * np.pi * (time - mod_phase))
-    else:
-        v_lag_pass = v_lag
+    if time_info:
+        delta_v_lag = mod_amp * cos(2.0 * pi * (time - mod_phase))
+    v_lag_pass = v_lag + delta_v_lag
 
     weight = eltshort[elt]['weight']
     b_harm = 5.0677*(41.467/(45.*weight**(-1./3.) - 25.*weight**(-2./3.)))**0.5 #this is in [1/GeV]
@@ -483,8 +463,8 @@ def dRdQmagdip_massless(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t V0, DTYPE_
             val_eta = eta(v_min,v_esc,V0,v_lag_pass)
             val_zeta = zeta(v_min,v_esc,V0,v_lag_pass)
         elif GF:
-            val_eta = eta_GF(v_min, time, time_info)
-            val_zeta = zeta_GF(v_min, time, time_info)
+            val_eta = eta_GF(v_min, time, time_info, v_rms, v_lag, v_esc, delta_v_lag)
+            val_zeta = zeta_GF(v_min, time, time_info, v_rms, v_lag, v_esc, delta_v_lag)
         tot = v_independent * qref**2./q_squared * ( val_zeta * ff_v_sq +  val_eta * ff_v_std )
         out[i]=tot
     return out
@@ -502,18 +482,15 @@ def dRdQelecdip(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t V0, DTYPE_t v_lag,
     cdef int npts = len(Er)
     cdef np.ndarray[DTYPE_t] out = np.empty(npts,dtype=float)
     cdef int i
-    cdef element_name = str(elt.title())
+    cdef str element_name = str(elt.title())
 
     cdef DTYPE_t q, tot, m_reduced_sq, y_harm, b_harm, v_min, val_eta, weight, qref, v_independent
     cdef DTYPE_t ff
-    cdef v_lag_pass
-    cdef mod_amp = 29.8 * 0.49
-    cdef mod_phase = 0.42
+    cdef DTYPE_t v_lag_pass, delta_v_lag=0.
 
-    if time_info and not GF:
-        v_lag_pass = v_lag + mod_amp * cos(2.0 * np.pi * (time - mod_phase))
-    else:
-        v_lag_pass = v_lag
+    if time_info:
+        delta_v_lag = mod_amp * cos(2.0 * pi * (time - mod_phase))
+    v_lag_pass = v_lag + delta_v_lag
 
     weight = eltshort[elt]['weight']
     b_harm = 5.0677*(41.467/(45.*weight**(-1./3.) - 25.*weight**(-2./3.)))**0.5 #this is in [1/GeV]
@@ -529,7 +506,7 @@ def dRdQelecdip(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t V0, DTYPE_t v_lag,
         if not GF:
             val_eta = eta(v_min,v_esc,V0,v_lag_pass)
         elif GF:
-            val_eta = eta_GF(v_min, time, time_info)
+            val_eta = eta_GF(v_min, time, time_info, v_rms, v_lag, v_esc, delta_v_lag)
         tot = v_independent * q_squared/(qref**2.) * val_eta * ff
         out[i]=tot
     return out
@@ -547,18 +524,15 @@ def dRdQelecdip_massless(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t V0, DTYPE
     cdef int npts = len(Er)
     cdef np.ndarray[DTYPE_t] out = np.empty(npts,dtype=float)
     cdef int i
-    cdef element_name = str(elt.title())
+    cdef str element_name = str(elt.title())
 
     cdef DTYPE_t q, tot, m_reduced_sq, y_harm, b_harm, v_min, val_eta, weight, qref, q_squared, v_independent
     cdef DTYPE_t ff
-    cdef v_lag_pass
-    cdef mod_amp = 29.8 * 0.49
-    cdef mod_phase = 0.42
+    cdef DTYPE_t v_lag_pass, delta_v_lag=0.
 
-    if time_info and not GF:
-        v_lag_pass = v_lag + mod_amp * cos(2.0 * np.pi * (time - mod_phase))
-    else:
-        v_lag_pass = v_lag
+    if time_info:
+        delta_v_lag = mod_amp * cos(2.0 * pi * (time - mod_phase))
+    v_lag_pass = v_lag + delta_v_lag
 
     weight = eltshort[elt]['weight']
     b_harm = 5.0677*(41.467/(45.*weight**(-1./3.) - 25.*weight**(-2./3.)))**0.5 #this is in [1/GeV]
@@ -574,7 +548,7 @@ def dRdQelecdip_massless(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t V0, DTYPE
         if not GF:
             val_eta = eta(v_min,v_esc,V0,v_lag_pass)
         elif GF:
-            val_eta = eta_GF(v_min, time, time_info)
+            val_eta = eta_GF(v_min, time, time_info, v_rms, v_lag, v_esc, delta_v_lag)
         tot = v_independent * qref**2./q_squared * val_eta * ff
         out[i]=tot
     return out
@@ -592,18 +566,15 @@ def dRdQLS(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t V0, DTYPE_t v_lag, DTYP
     cdef int npts = len(Er)
     cdef np.ndarray[DTYPE_t] out = np.empty(npts,dtype=float)
     cdef int i
-    cdef element_name = str(elt.title())
+    cdef str element_name = str(elt.title())
 
     cdef DTYPE_t q, tot, m_reduced_sq, y_harm, b_harm, v_min, val_eta, weight, q_squared, v_independent
     cdef DTYPE_t ff
-    cdef v_lag_pass
-    cdef mod_amp = 29.8 * 0.49
-    cdef mod_phase = 0.42
+    cdef DTYPE_t v_lag_pass, delta_v_lag=0.
 
-    if time_info and not GF:
-        v_lag_pass = v_lag + mod_amp * cos(2.0 * np.pi * (time - mod_phase))
-    else:
-        v_lag_pass = v_lag
+    if time_info:
+        delta_v_lag = mod_amp * cos(2.0 * pi * (time - mod_phase))
+    v_lag_pass = v_lag + delta_v_lag
 
     weight = eltshort[elt]['weight']
     b_harm = 5.0677*(41.467/(45.*weight**(-1./3.) - 25.*weight**(-2./3.)))**0.5 #this is in [1/GeV]
@@ -621,8 +592,8 @@ def dRdQLS(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t V0, DTYPE_t v_lag, DTYP
             val_eta = eta(v_min,v_esc,V0,v_lag_pass)
             val_zeta = zeta(v_min,v_esc,V0,v_lag_pass)
         elif GF:
-            val_eta = eta_GF(v_min, time, time_info)
-            val_zeta = zeta_GF(v_min, time, time_info)
+            val_eta = eta_GF(v_min, time, time_info, v_rms, v_lag, v_esc, delta_v_lag)
+            val_zeta = zeta_GF(v_min, time, time_info, v_rms, v_lag, v_esc, delta_v_lag)
         tot = v_independent * q_squared/(qref**2.) * ( val_eta * ff_vstd + val_zeta * ff_vsq )
         out[i]=tot
     return out
@@ -640,18 +611,15 @@ def dRdQLS_massless(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t V0, DTYPE_t v_
     cdef int npts = len(Er)
     cdef np.ndarray[DTYPE_t] out = np.empty(npts,dtype=float)
     cdef int i
-    cdef element_name = str(elt.title())
+    cdef str element_name = str(elt.title())
 
     cdef DTYPE_t q, tot, m_reduced_sq, y_harm, b_harm, v_min, val_eta, weight, qref, v_independent
     cdef DTYPE_t ff
-    cdef v_lag_pass
-    cdef mod_amp = 29.8 * 0.49
-    cdef mod_phase = 0.42
+    cdef DTYPE_t v_lag_pass=0., delta_v_lag
 
-    if time_info and not GF:
-        v_lag_pass = v_lag + mod_amp * cos(2.0 * np.pi * (time - mod_phase))
-    else:
-        v_lag_pass = v_lag
+    if time_info:
+        delta_v_lag = mod_amp * cos(2.0 * pi * (time - mod_phase))
+    v_lag_pass = v_lag + delta_v_lag
 
     weight = eltshort[elt]['weight']
     b_harm = 5.0677*(41.467/(45.*weight**(-1./3.) - 25.*weight**(-2./3.)))**0.5 #this is in [1/GeV]
@@ -666,7 +634,7 @@ def dRdQLS_massless(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t V0, DTYPE_t v_
         if not GF:
             val_eta = eta(v_min,v_esc,V0,v_lag_pass)
         elif GF:
-            val_eta = eta_GF(v_min, time, time_info)
+            val_eta = eta_GF(v_min, time, time_info, v_rms, v_lag, v_esc, delta_v_lag)
         tot = v_independent * val_eta * ff
         out[i]=tot
     return out
@@ -684,18 +652,15 @@ def dRdQf1(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t v_rms, DTYPE_t v_lag, D
     cdef int npts = len(Er)
     cdef np.ndarray[DTYPE_t] out = np.empty(npts,dtype=float)
     cdef int i
-    cdef element_name = str(elt.title())
+    cdef str element_name = str(elt.title())
 
     cdef DTYPE_t q, tot, m_reduced_sq, y_harm, b_harm, v_min, val_eta, weight, qref, q_squared, v_independent
     cdef DTYPE_t ff
-    cdef v_lag_pass
-    cdef mod_amp = 29.8 * 0.49
-    cdef mod_phase = 0.42
+    cdef DTYPE_t v_lag_pass, delta_v_lag=0.
 
-    if time_info and not GF:
-        v_lag_pass = v_lag + mod_amp * cos(2.0 * np.pi * (time - mod_phase))
-    else:
-        v_lag_pass = v_lag
+    if time_info:
+        delta_v_lag = mod_amp * cos(2.0 * pi * (time - mod_phase))
+    v_lag_pass = v_lag + delta_v_lag
 
     weight = eltshort[elt]['weight']
     b_harm = 5.0677*(41.467/(45.*weight**(-1./3.) - 25.*weight**(-2./3.)))**0.5 #this is in [1/GeV]
@@ -711,7 +676,7 @@ def dRdQf1(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t v_rms, DTYPE_t v_lag, D
         if not GF:
             val_eta = eta(v_min,v_esc,v_rms,v_lag_pass)
         elif GF:
-            val_eta = eta_GF(v_min, time, time_info)
+            val_eta = eta_GF(v_min, time, time_info, v_rms, v_lag, v_esc, delta_v_lag)
         tot = v_independent * q_squared/qref**2 * val_eta * ff
         out[i]=tot
     return out
@@ -729,18 +694,15 @@ def dRdQf1_massless(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t v_rms, DTYPE_t
     cdef int npts = len(Er)
     cdef np.ndarray[DTYPE_t] out = np.empty(npts,dtype=float)
     cdef int i
-    cdef element_name = str(elt.title())
+    cdef str element_name = str(elt.title())
 
     cdef DTYPE_t q, tot, m_reduced_sq, y_harm, b_harm, v_min, val_eta, weight, qref, q_squared, v_independent
     cdef DTYPE_t ff
-    cdef v_lag_pass
-    cdef mod_amp = 29.8 * 0.49
-    cdef mod_phase = 0.42
+    cdef DTYPE_t v_lag_pass, delta_v_lag=0.
 
-    if time_info and not GF:
-        v_lag_pass = v_lag + mod_amp * cos(2.0 * np.pi * (time - mod_phase))
-    else:
-        v_lag_pass = v_lag
+    if time_info:
+        delta_v_lag = mod_amp * cos(2.0 * pi * (time - mod_phase))
+    v_lag_pass = v_lag + delta_v_lag
 
     weight = eltshort[elt]['weight']
     b_harm = 5.0677*(41.467/(45.*weight**(-1./3.) - 25.*weight**(-2./3.)))**0.5 #this is in [1/GeV]
@@ -756,7 +718,7 @@ def dRdQf1_massless(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t v_rms, DTYPE_t
         if not GF:
             val_eta = eta(v_min,v_esc,v_rms,v_lag_pass)
         elif GF:
-            val_eta = eta_GF(v_min, time, time_info)
+            val_eta = eta_GF(v_min, time, time_info, v_rms, v_lag, v_esc, delta_v_lag)
         tot = v_independent * (qref**2./q_squared) * val_eta * ff
         out[i]=tot
     return out
@@ -774,18 +736,15 @@ def dRdQf2(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t v_rms, DTYPE_t v_lag, D
     cdef int npts = len(Er)
     cdef np.ndarray[DTYPE_t] out = np.empty(npts,dtype=float)
     cdef int i
-    cdef element_name = str(elt.title())
+    cdef str element_name = str(elt.title())
 
     cdef DTYPE_t q, tot, m_reduced_sq, y_harm, b_harm, v_min, val_eta, weight, qref, q_squared, v_independent
     cdef DTYPE_t ff
-    cdef v_lag_pass
-    cdef mod_amp = 29.8 * 0.49
-    cdef mod_phase = 0.42
+    cdef DTYPE_t v_lag_pass, delta_v_lag=0.
 
-    if time_info and not GF:
-        v_lag_pass = v_lag + mod_amp * cos(2.0 * np.pi * (time - mod_phase))
-    else:
-        v_lag_pass = v_lag
+    if time_info:
+        delta_v_lag = mod_amp * cos(2.0 * pi * (time - mod_phase))
+    v_lag_pass = v_lag + delta_v_lag
 
     weight = eltshort[elt]['weight']
     b_harm = 5.0677*(41.467/(45.*weight**(-1./3.) - 25.*weight**(-2./3.)))**0.5 #this is in [1/GeV]
@@ -801,7 +760,7 @@ def dRdQf2(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t v_rms, DTYPE_t v_lag, D
         if not GF:
             val_eta = eta(v_min,v_esc,v_rms,v_lag_pass)
         elif GF:
-            val_eta = eta_GF(v_min, time, time_info)
+            val_eta = eta_GF(v_min, time, time_info, v_rms, v_lag, v_esc, delta_v_lag)
         tot = v_independent * q_squared/qref**2 * val_eta * ff
         out[i]=tot
     return out
@@ -818,18 +777,15 @@ def dRdQf2_massless(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t v_rms, DTYPE_t
     cdef int npts = len(Er)
     cdef np.ndarray[DTYPE_t] out = np.empty(npts,dtype=float)
     cdef int i
-    cdef element_name = str(elt.title())
+    cdef str element_name = str(elt.title())
 
     cdef DTYPE_t q, tot, m_reduced_sq, y_harm, b_harm, v_min, val_eta, weight, qref, q_squared, v_independent
     cdef DTYPE_t ff
-    cdef v_lag_pass
-    cdef mod_amp = 29.8 * 0.49
-    cdef mod_phase = 0.42
+    cdef DTYPE_t v_lag_pass, delta_v_lag=0.
 
-    if time_info and not GF:
-        v_lag_pass = v_lag + mod_amp * cos(2.0 * np.pi * (time - mod_phase))
-    else:
-        v_lag_pass = v_lag
+    if time_info:
+        delta_v_lag = mod_amp * cos(2.0 * pi * (time - mod_phase))
+    v_lag_pass = v_lag + delta_v_lag
 
     weight = eltshort[elt]['weight']
     b_harm = 5.0677*(41.467/(45.*weight**(-1./3.) - 25.*weight**(-2./3.)))**0.5 #this is in [1/GeV]
@@ -845,7 +801,7 @@ def dRdQf2_massless(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t v_rms, DTYPE_t
         if not GF:
             val_eta = eta(v_min,v_esc,v_rms,v_lag_pass)
         elif GF:
-            val_eta = eta_GF(v_min, time, time_info)
+            val_eta = eta_GF(v_min, time, time_info, v_rms, v_lag, v_esc, delta_v_lag)
         tot = v_independent * qref**2./q_squared * val_eta * ff
         out[i]=tot
     return out
@@ -863,18 +819,15 @@ def dRdQf3(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t v_rms, DTYPE_t v_lag, D
     cdef int npts = len(Er)
     cdef np.ndarray[DTYPE_t] out = np.empty(npts,dtype=float)
     cdef int i
-    cdef element_name = str(elt.title())
+    cdef str element_name = str(elt.title())
 
     cdef DTYPE_t q, tot, m_reduced_sq, y_harm, b_harm, v_min, val_eta, weight, qref, q_squared, v_independent
     cdef DTYPE_t ff
-    cdef v_lag_pass
-    cdef mod_amp = 29.8 * 0.49
-    cdef mod_phase = 0.42
+    cdef DTYPE_t v_lag_pass, delta_v_lag=0.
 
-    if time_info and not GF:
-        v_lag_pass = v_lag + mod_amp * cos(2.0 * np.pi * (time - mod_phase))
-    else:
-        v_lag_pass = v_lag
+    if time_info:
+        delta_v_lag = mod_amp * cos(2.0 * pi * (time - mod_phase))
+    v_lag_pass = v_lag + delta_v_lag
 
     weight = eltshort[elt]['weight']
     b_harm = 5.0677*(41.467/(45.*weight**(-1./3.) - 25.*weight**(-2./3.)))**0.5 #this is in [1/GeV]
@@ -890,7 +843,7 @@ def dRdQf3(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t v_rms, DTYPE_t v_lag, D
         if not GF:
             val_eta = eta(v_min,v_esc,v_rms,v_lag_pass)
         elif GF:
-            val_eta = eta_GF(v_min, time, time_info)
+            val_eta = eta_GF(v_min, time, time_info, v_rms, v_lag, v_esc, delta_v_lag)
         tot = v_independent * (q_squared/(qref**2.))**2. * val_eta * ff
         out[i]=tot
     return out
@@ -908,18 +861,15 @@ def dRdQf3_massless(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t v_rms, DTYPE_t
     cdef int npts = len(Er)
     cdef np.ndarray[DTYPE_t] out = np.empty(npts,dtype=float)
     cdef int i
-    cdef element_name = str(elt.title())
+    cdef str element_name = str(elt.title())
 
     cdef DTYPE_t q, tot, m_reduced_sq, y_harm, b_harm, v_min, val_eta, weight, v_independent
     cdef DTYPE_t ff
-    cdef v_lag_pass
-    cdef mod_amp = 29.8 * 0.49
-    cdef mod_phase = 0.42
+    cdef DTYPE_t v_lag_pass, delta_v_lag=0.
 
-    if time_info and not GF:
-        v_lag_pass = v_lag + mod_amp * cos(2.0 * np.pi * (time - mod_phase))
-    else:
-        v_lag_pass = v_lag
+    if time_info:
+        delta_v_lag = mod_amp * cos(2.0 * pi * (time - mod_phase))
+    v_lag_pass = v_lag + delta_v_lag
 
     weight = eltshort[elt]['weight']
     b_harm = 5.0677*(41.467/(45.*weight**(-1./3.) - 25.*weight**(-2./3.)))**0.5 #this is in [1/GeV]
@@ -933,7 +883,7 @@ def dRdQf3_massless(np.ndarray[DTYPE_t] Er, DTYPE_t time, DTYPE_t v_rms, DTYPE_t
         if not GF:
             val_eta = eta(v_min,v_esc,v_rms,v_lag_pass)
         elif GF:
-            val_eta = eta_GF(v_min, time, time_info)
+            val_eta = eta_GF(v_min, time, time_info, v_rms, v_lag, v_esc, delta_v_lag)
         tot = v_independent * val_eta * ff
         out[i]=tot
     return out
@@ -1091,7 +1041,7 @@ def R(object efficiency_fn, DTYPE_t mass=50.,
          DTYPE_t fnfp_anapole_massless=1., DTYPE_t fnfp_magdip_massless=1., DTYPE_t fnfp_elecdip_massless=1.,
          DTYPE_t fnfp_LS_massless=1., DTYPE_t fnfp_f1_massless=1., DTYPE_t fnfp_f2_massless=1., DTYPE_t fnfp_f3_massless=1.,
          DTYPE_t v_lag=220., DTYPE_t v_rms=220., DTYPE_t v_esc=533., DTYPE_t rho_x=0.3,
-         str element='xenon', DTYPE_t Qmin=2., DTYPE_t Qmax=30., bool GF=False, bool time_info=False):
+         str element='xenon', DTYPE_t Qmin=2., DTYPE_t Qmax=30., bool GF=False):
     """
     Theoretical total integrated recoil-energy rate.
 
@@ -1121,7 +1071,7 @@ def R(object efficiency_fn, DTYPE_t mass=50.,
       
 
     :return:
-      total recoil energy rate in counts/kg/sec
+      total recoil energy rate in counts/kg/sec --- time averaged only! this should be fixed.
     """
     cdef unsigned int npoints = 100
     cdef unsigned int i
@@ -1231,7 +1181,7 @@ def loglikelihood(np.ndarray[DTYPE_t] Q, np.ndarray[DTYPE_t] tim, object efficie
                           sigma_elecdip_massless=sigma_elecdip_massless,
                           sigma_LS_massless=sigma_LS_massless, sigma_f1_massless=sigma_f1_massless,
                           sigma_f2_massless=sigma_f2_massless, sigma_f3_massless=sigma_f3_massless,
-                          GF=GF, Qmin=Qmin, Qmax=Qmax, element=element, time_info=False)
+                          GF=GF, Qmin=Qmin, Qmax=Qmax, element=element)
     Nexp = Rate * Tobs
     if Nevents==0 and Nexp==0.:
         return 0.

@@ -1,6 +1,5 @@
 name: dmdd-am
 dependencies:
-- appnope=0.1.0=py27_0
 - backports=1.0=py27_0
 - cycler=0.10.0=py27_0
 - cython=0.24.1=py27_0
@@ -13,7 +12,6 @@ dependencies:
 - matplotlib=1.5.1=np111py27_0
 - mkl=11.3.3=0
 - numpy=1.11.1=py27_0
-- openssl=1.0.2h=2
 - path.py=8.2.1=py27_0
 - pathlib2=2.1.0=py27_0
 - pexpect=4.0.1=py27_0
@@ -26,7 +24,6 @@ dependencies:
 - pyqt=4.11.4=py27_4
 - python=2.7.12=1
 - python-dateutil=2.5.3=py27_0
-- python.app=1.2=py27_4
 - pytz=2016.6.1=py27_0
 - qt=4.8.7=4
 - readline=6.2=2
@@ -42,9 +39,14 @@ dependencies:
 - wheel=0.29.0=py27_0
 - zlib=1.2.8=3
 - pip:
+  - astropy==0.2.5
   - backports.shutil-get-terminal-size==1.0.0
+  - cosmolopy==0.1.104
+  - dmdd==0.2
   - ipython-genutils==0.1.0
+  - progressbar==2.3
   - prompt-toolkit==1.0.3
-  - pymultinest==0.4
-prefix: /Users/verag/anaconda/envs/dmdd-am
+  - pycamb==0.3
+  - pymultinest==1.3
+prefix: /home/verag/anaconda/envs/dmdd-am
 

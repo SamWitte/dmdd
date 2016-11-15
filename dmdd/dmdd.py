@@ -43,9 +43,8 @@ if not on_rtd:
     from globals import *
 
 try:
-    MAIN_PATH = '/data/verag/Storage'
-    #MAIN_PATH = os.environ['DMDD_AM_MAIN_PATH']
-    #MAIN_PATH = '/Users/SamWitte/Desktop/dmdd/Storage'
+    #MAIN_PATH = '/data/verag/dmdd-am/'#'/data/verag/Storage'
+    MAIN_PATH = os.environ['DMDD_AM_MAIN_PATH']
 except KeyError:
     logging.warning('DMDD_MAIN_PATH environment variable not defined, defaulting to:   ~/.dmdd')
     MAIN_PATH = os.path.expanduser('~/.dmdd') #os.getcwd()
@@ -606,12 +605,13 @@ class Simulation(object):
     just be read in.  (Data is a list of nuclear recoil energies of
     "observed" events.) Initializing :class:`Simulation` with given parameters
     for the first time will produce 3 files, located by default at
-    ``$DMDD_PATH/simulations`` (or ``./simulations`` if ``$DMDD_PATH`` not
+    ``$DMDD_AM_MAIN_PATH/simulations_uv`` (or ``./simulations_uv`` if ``$DMDD_AM_MAIN_PATH`` not
     defined):  
 
       - .dat file with a list of nuclear-recoil energies (keV), drawn from a
       Poisson distribution with an expected number of events given by the
-      underlying scattering model.
+      underlying scattering model, and a list of times in the year when these
+      events were recorded (second column in the file).
       
       - .pkl file with all relevant initialization parameters for record
       
@@ -669,15 +669,14 @@ class Simulation(object):
                  path=SIM_PATH, force_sim=False,
                  asimov=False, nbins_asimov=20,
                  plot_nbins=20, plot_theory=True, 
-                 silent=False, time_info='T', GF=False):
+                 silent=False):
         
-        if path == '/simulations_uv' and not GF:
-            path += '_noGF/'
-        
-        self.GF=GF
         self.silent = silent
         if not set(parvals.keys())==set(model.param_names):
             raise ValueError('Must pass parameter value dictionary corresponding exactly to model.param_names')
+
+        self.time_info = model.time_info
+        self.GF = model.GF
 
         self.model = model #underlying model
         self.experiment = experiment
@@ -699,6 +698,15 @@ class Simulation(object):
         sorted_parvals = np.array(self.param_values)[inds]
         for parname, parval in zip(sorted_parnames, sorted_parvals):
             self.file_basename += '_{}_{:.2f}'.format(parname, parval)
+        if self.GF:
+            self.file_basename += '_withGF'
+        else:
+            self.file_basename += '_noGF'
+
+        if self.time_info:
+            self.file_basename += '_withT'
+        else:
+            self.file_basename += '_noT'
 
         #calculate total expected rate
         dRdQ_params = model.default_rate_parameters.copy()
@@ -711,30 +719,29 @@ class Simulation(object):
         for kw,val in experiment.parameters.iteritems(): #add experiment parameters
             allpars[kw] = val
         dRdQ_params['element'] = experiment.element
-        self.dRdQ_params = dRdQ_params
-       
-        if time_info == 'T':
-            self.time_info = True
-            dRdQ_params['time_info'] = True
-        elif time_info == 'F':
-            self.time_info = False
-            dRdQ_params['time_info'] = False
-               
-        dRdQ_params['GF'] = self.GF
-        allpars['GF'] = self.GF        
+        self.dRdQ_params = dRdQ_params       
 
         self.model_Qgrid = np.logspace(np.log10(experiment.Qmin),
                                        np.log10(experiment.Qmax), 100)
         efficiencies = experiment.efficiency(self.model_Qgrid)
 
-        dRdQ_params['time_info'] = False
-        self.model_dRdQ = self.model.dRdQ(self.model_Qgrid, 0.67, **dRdQ_params)
-        #R_integrand = self.model_dRdQ * efficiencies
-        self.model_R = rate_UV.R(experiment.efficiency, Qmin=experiment.Qmin, Qmax=experiment.Qmax, **dRdQ_params)
-        dRdQ_params['time_info'] = self.time_info
+        
+        dRdQ_params['GF'] = self.GF
+        self.model_R = rate_UV.R(experiment.efficiency,
+                                 Qmin=experiment.Qmin, Qmax=experiment.Qmax,
+                                 **dRdQ_params)
 
-        self.model_N = self.model_R * experiment.exposure * YEAR_IN_S
+        self = self.model_R * experiment.exposure * YEAR_IN_S
         print 'Expected Number of Events: ', self.model_N
+
+        dRdQ_params['time_info'] = self.time_info
+        # this just calculates the time-averaged rate (at t=0.67),
+        # but is only used for plotting:
+        self.model_dRdQ = self.model.dRdQ(self.model_Qgrid, time=0.67, **dRdQ_params)
+
+        
+
+        
         #create dictionary of all parameters relevant to simulation
         self.allpars = allpars
         self.allpars['experiment'] = experiment.name
@@ -757,13 +764,13 @@ class Simulation(object):
             
             ahold1 = copy.copy(self.allpars)
             ahold2 = copy.copy(allpars_old)
-            try:
-                del ahold1['time_info']
-                del ahold2['time_info']
-            except:
-                pass
+            # try:
+            #     del ahold1['time_info']
+            #     del ahold2['time_info']
+            # except:
+            #     pass
 
-            if DictDiffer(ahold1, ahold2).changed():
+            if (ahold1, ahold2).changed():
                 print('Existing simulation does not match current parameters.  Forcing simulation.\n\n')
                 force_sim = True
                 
@@ -1029,7 +1036,8 @@ class Model(object):
                  dRdQ_fn, loglike_fn,
                  default_rate_parameters, tex_names=None,
                  fixed_params=None,
-                 modelname_tex=None):
+                 modelname_tex=None,
+                 GF=True, time_info=True):
         """
             fixed_params: dictionary
             
@@ -1037,10 +1045,14 @@ class Model(object):
         """
         self.name = name
 
+        self.GF = GF
+        self.time_info = time_info
         self.param_names = param_names
         self.dRdQ = dRdQ_fn
         self.loglikelihood = loglike_fn
         self.default_rate_parameters = default_rate_parameters
+        self.default_rate_parameters['GF'] = self.GF
+        self.default_rate_parameters['time_info'] = self.time_info
         if fixed_params is None:
             fixed_params = {}
         self.fixed_params = fixed_params
@@ -1060,7 +1072,7 @@ class UV_Model(Model):
     ``rate_UV`` module.
     
     """
-    def __init__(self,name,param_names,time_info='T',GF=False,**kwargs):
+    def __init__(self, name, param_names, **kwargs):
         default_rate_parameters = dict(mass=50., sigma_si=0., sigma_sd=0., sigma_anapole=0., sigma_magdip=0., sigma_elecdip=0.,
                                     sigma_LS=0., sigma_f1=0., sigma_f2=0., sigma_f3=0.,
                                     sigma_si_massless=0., sigma_sd_massless=0.,
@@ -1072,17 +1084,9 @@ class UV_Model(Model):
                                     fnfp_si_massless=1.,  fnfp_sd_massless=1.,
                                     fnfp_anapole_massless=1.,  fnfp_magdip_massless=1.,  fnfp_elecdip_massless=1.,
                                     fnfp_LS_massless=1.,  fnfp_f1_massless=1.,  fnfp_f2_massless=1.,  fnfp_f3_massless=1.,
-                                    v_lag=220.,  v_rms=220.,  v_esc=533.,  rho_x=0.3, GF=False, time_info=False)
+                                    v_lag=220.,  v_rms=220.,  v_esc=533.,  rho_x=0.3)
         
-        if time_info == 'T':
-            self.time_info=True
-        else:
-            self.time_info = False
         
-        default_rate_parameters['GF'] = GF
-        default_rate_parameters['time_info'] = self.time_info
-        
-
         Model.__init__(self,name,param_names,
                        rate_UV.dRdQ,
                        rate_UV.loglikelihood,
@@ -1410,16 +1414,6 @@ def Nexpected(element, Qmin, Qmax, exposure, efficiency, start_t, end_t,
 
 ############################################
 ############################################
-def dRdQ_time(dRdQ_func, dRdQ_param, Q_vals, t):
-    """
-    Changes v_lag to v_lag + v_earth * (0.49) * Cos(2 pi (t - 0.42))
-    """
-    kwags = dRdQ_param
-    kwags['v_lag'] = 220.0 + 29.8 * 0.49 * np.cos(2.0 * np.pi * (t - 0.42))
-    result = dRdQ_func(Q_vals, 0., **kwags)
-    kwags['v_lag'] = 220.0
-    return result
-
 
 class DictDiffer(object):
     """

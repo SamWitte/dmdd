@@ -7,14 +7,12 @@ usage example (from scripts directory):
 import time
 #start = time.time()
 
-import matplotlib 
+import matplotlib  
 matplotlib.use('agg')
 import argparse
 
 
 import dmdd
-#import eff
-#import rate_Haxton
 from experiment_parameters import *
 from multinest_parameters import *
 
