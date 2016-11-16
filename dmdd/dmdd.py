@@ -178,7 +178,7 @@ class MultinestRun(object):
                  asimov=False, nbins_asimov=20,
                  n_live_points=2000, evidence_tolerance=0.1,
                  sampling_efficiency=0.3, resume=False, basename='1-',
-                 silent=False, empty_run=False, time_info='T', GF=False,
+                 silent=False, empty_run=False,
                  TIMEONLY=False):
 
         if GF:
@@ -734,12 +734,10 @@ class Simulation(object):
         self = self.model_R * experiment.exposure * YEAR_IN_S
         print 'Expected Number of Events: ', self.model_N
 
-        dRdQ_params['time_info'] = self.time_info
         # this just calculates the time-averaged rate (at t=0.67),
         # but is only used for plotting:
-        self.model_dRdQ = self.model.dRdQ(self.model_Qgrid, time=0.67, **dRdQ_params)
-
-        
+        self.plot_model_dRdQ = self.model.dRdQ(self.model_Qgrid, 0.67, time_info=False, **dRdQ_params)
+        dRdQ_params['time_info'] = self.time_info
 
         
         #create dictionary of all parameters relevant to simulation
@@ -761,18 +759,22 @@ class Simulation(object):
             fin = open(self.picklefile,'rb')
             allpars_old = pickle.load(fin)
             fin.close()
-            
-            ahold1 = copy.copy(self.allpars)
-            ahold2 = copy.copy(allpars_old)
-            # try:
-            #     del ahold1['time_info']
-            #     del ahold2['time_info']
-            # except:
-            #     pass
 
-            if (ahold1, ahold2).changed():
+            if not compare_dictionaries(self.allpars,allpars_old):
                 print('Existing simulation does not match current parameters.  Forcing simulation.\n\n')
                 force_sim = True
+            
+            # ahold1 = copy.copy(self.allpars)
+            # ahold2 = copy.copy(allpars_old)
+            # # try:
+            # #     del ahold1['time_info']
+            # #     del ahold2['time_info']
+            # # except:
+            # #     pass
+
+            # if (ahold1, ahold2).changed():
+            #     print('Existing simulation does not match current parameters.  Forcing simulation.\n\n')
+            #     force_sim = True
                 
         else:
             print 'Simulation data and/or pickle file does not exist. Forcing simulation.\n\n'
@@ -782,7 +784,10 @@ class Simulation(object):
             if asimov:
                 raise ValueError('Asimov simulations not yet implemented!')
             else:
-                Q = self.simulate_data_wtime()
+                if self.time_info:
+                    Q = self.simulate_data_wtime()
+                else:
+                    Q = self.simulate_data()
                 np.savetxt(self.datafile,Q)
                 fout = open(self.picklefile,'wb')
                 pickle.dump(self.allpars,fout)
@@ -823,7 +828,7 @@ class Simulation(object):
             Qgrid = np.logspace(np.log10(self.experiment.Qmin), np.log10(self.experiment.Qmax), npts)
             efficiency = self.experiment.efficiency(Qgrid)
             
-            pdf = self.model.dRdQ(Qgrid, 0., **self.dRdQ_params) * efficiency / self.model_R
+            pdf = self.model.dRdQ(Qgrid, 0.67, **self.dRdQ_params) * efficiency / self.model_R
             cdf = pdf.cumsum()
             cdf /= cdf.max()
             u = random.rand(Nevents)
@@ -917,7 +922,7 @@ class Simulation(object):
         xerr = Qwidths
         yerr = Qhist**0.5
 
-        Qhist_theory = self.model_dRdQ*binsize*self.experiment.exposure* \
+        Qhist_theory = self.plot_model_dRdQ*binsize*self.experiment.exposure* \
                        YEAR_IN_S*self.experiment.efficiency(self.model_Qgrid)
         Qbins_theory = self.model_Qgrid
 
