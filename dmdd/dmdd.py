@@ -49,8 +49,8 @@ except KeyError:
     logging.warning('DMDD_MAIN_PATH environment variable not defined, defaulting to:   ~/.dmdd')
     MAIN_PATH = os.path.expanduser('~/.dmdd') #os.getcwd()
 
-SIM_PATH = MAIN_PATH + '/simulations_uv'
-CHAINS_PATH = MAIN_PATH + '/chains_uv'
+SIM_PATH = MAIN_PATH + '/simulations_uv/'
+CHAINS_PATH = MAIN_PATH + '/chains_uv/'
 RESULTS_PATH = MAIN_PATH + '/results_uv/'
 
 
@@ -179,39 +179,45 @@ class MultinestRun(object):
                  n_live_points=2000, evidence_tolerance=0.1,
                  sampling_efficiency=0.3, resume=False, basename='1-',
                  silent=False, empty_run=False,
-                 TIMEONLY=False):
+                 analyze_energy=True):
 
-        if GF:
-            sim_root += '/'
-            chains_root += '/'
-        elif not GF and TIMEONLY:
-            sim_root += '_noGF/'
-            chains_root += '_time'
-        else:
-            sim_root += '_noGF/'
-            chains_root += '_noGF'
-       
+        
+        self.analyze_energy = analyze_energy
+
+        
         if type(experiments) == Experiment:
             experiments = [experiments]
             
         self.silent = silent
-        if time_info == 'T':
-            self.time_info = True
-        else: 
-            self.time_info = False
-        
-        self.GF = GF
-        self.TIMEONLY = TIMEONLY
 
         self.sim_name = sim_name
         self.experiments = experiments
         self.sim_model = sim_model
         self.fit_model = fit_model
-        
-        if not self.time_info:
-            time_tag = 'No_Time'
+
+        if self.sim_model.time_info:
+            time_tag = '_simwithT'
         else:
-            time_tag = 'With_Time'
+            time_tag = '_simnoT'
+
+        if self.sim_model.GF:
+            time_tag += '_simwithGF'
+        else:
+            time_tag += '_simnoGF'
+
+        if self.fit_model.time_info:
+            time_tag += '_fitwithT'
+        else:
+            time_tag += '_fitnoT'
+
+        if self.fit_model.GF:
+            time_tag += '_fitwithGF'
+        else:
+            time_tag += '_fitnoGF'
+
+        if not self.analyze_energy:
+            time_tag += '_noE'
+
     
         self.param_values = param_values
         self.prior_ranges = prior_ranges
@@ -278,7 +284,7 @@ class MultinestRun(object):
                                                    force_sim=force_sim,
                                                    asimov=asimov,
                                                    nbins_asimov=nbins_asimov,
-                                                   silent=self.silent, time_info=time_info, GF=GF))
+                                                   silent=self.silent))
 
     def return_chains_loglike(self):
         """
@@ -316,10 +322,26 @@ class MultinestRun(object):
                 kwargs[kw] = val
             for kw,val in sim.experiment.parameters.iteritems():
                 kwargs[kw] = val
-            kwargs['energy_resolution'] = sim.experiment.energy_resolution
-            kwargs['TIMEONLY'] = self.TIMEONLY
 
-            res += self.fit_model.loglikelihood(sim.Q[:, 0], sim.Q[:, 1], sim.experiment.efficiency, **kwargs)
+            if self.analyze_energy and sim.experiment.energy_resolution
+                kwargs['energy_resolution'] = True
+            else:
+                kwargs['energy_resolution'] = False
+
+            kwargs['GF'] = self.fit_model.GF
+            kwargs['time_info'] = self.fit_model.time_info
+
+
+            if self.sim_model.time_info:
+                energies = sim.Q[:, 0]
+                times = sim.Q[:, 1]
+            else:
+                energies = sim.Q
+                times = np.ones(len(energies)) * 0.67 #this is the mean time when rate is average
+                
+            res += self.fit_model.loglikelihood(energies, times,
+                                                sim.experiment.efficiency,
+                                                **kwargs)
 
         return res
 
@@ -411,6 +433,15 @@ class MultinestRun(object):
         for sim in self.simulations:
             pickle_content['data'][sim.experiment.name] = sim.Q
             pickle_content['sim_folders'][sim.experiment.name] = sim.file_basename
+
+        #VG:
+        pickle_content['time_tags'] = {}
+        pickle_content['time_tags']['sim_time'] = self.sim_model.time_info
+        pickle_content['time_tags']['fit_time'] = self.fit_model.time_info
+        pickle_content['time_tags']['sim_GF'] = self.sim_model.GF
+        pickle_content['time_tags']['fit_GF'] = self.fit_model.GF
+        pickle_content['time_tags']['analyze_energy'] = self.analyze_energy
+
       
 
         #define filename of pickle file:
