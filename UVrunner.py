@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-"""This is setup only to run rate_Haxton models.
+"""This is setup only to run rate_UV models.
 usage example (from scripts directory):
 ./UVrunner.py --simname test --simpars mass sigma_si --parvals 50. 10. -e Ge Xe --fitpars sigma_sd mass --prior logflat --vis
 """
@@ -47,20 +47,13 @@ parser.add_argument('--evtol',type=float, default=evidence_tolerance)
 parser.add_argument('--seff',type=float, default=sampling_efficiency)
 parser.add_argument('--resume', action='store_true')
 parser.add_argument('--base', default=basename)
-parser.add_argument('--time', default='T')
-parser.add_argument('--GF', default='F')
-parser.add_argument('--timeonly', default='F')
+parser.add_argument('--simtime', default=True)
+parser.add_argument('--simGF', default=False)
+parser.add_argument('--fittime', default=True)
+parser.add_argument('--fitGF', default=False)
+parser.add_argument('--analyze_energy', default=True)
 
 args = parser.parse_args()
-
-if args.timeonly == 'T':
-    timeonly = True
-elif args.timeonly == 'F':
-    timeonly = False
-if args.GF == 'T':
-    GF = True
-elif args.GF == 'F':
-    GF = False
 
 experiments = []
 for i,experiment in enumerate(args.exps):
@@ -79,25 +72,25 @@ fixedfit_params = {}
 for i,par in enumerate(args.fixedfitnames):
     fixedfit_params[par] = args.fixedfitvals[i]
 
-simmodel = dmdd.UV_Model(args.simmodelname, args.simpars, fixed_params=fixedsim_params, time_info=args.time, GF=GF)
-fitmodel = dmdd.UV_Model(args.fitmodelname, args.fitpars, fixed_params=fixedfit_params, time_info=args.time, GF=GF)
+simmodel = dmdd.UV_Model(args.simmodelname, args.simpars, fixed_params=fixedsim_params, time_info=args.simtime, GF=args.simGF)
+fitmodel = dmdd.UV_Model(args.fitmodelname, args.fitpars, fixed_params=fixedfit_params, time_info=args.fittime, GF=args.fitGF)
 
 param_values = {}
 for i,par in enumerate(args.simpars):
     param_values[par] = args.parvals[i]
 
 print 'in UVrunner: ', param_values
-Haxton_run = dmdd.MultinestRun(args.simname, experiments, simmodel, param_values, fitmodel,
+new_run = dmdd.MultinestRun(args.simname, experiments, simmodel, param_values, fitmodel,
                                 force_sim=args.forcesim, prior_ranges=prior_ranges, prior=args.prior,
                                 asimov=args.asimov, nbins_asimov=args.nasbin,
                                 n_live_points=args.nlive, evidence_tolerance=args.evtol,
                                 sampling_efficiency=args.seff, resume=args.resume, basename=args.base,
-                                time_info=args.time, GF=GF, TIMEONLY=timeonly)
+                                analyze_energy=args.analyze_energy)
 
 if args.fit:
-    Haxton_run.fit()
+    new_run.fit()
 if args.vis:
-    Haxton_run.visualize()
+    new_run.visualize()
 
 """
 end = time.time()

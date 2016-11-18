@@ -25,9 +25,11 @@ parser.add_argument('--startfit', type=int, default=1)
 parser.add_argument('--prior',default='logflat')
 parser.add_argument('--experiments',nargs='+',default=['Xe'])#['F','Ge', 'Xe','Ge Xe','I','Ge Xe I','Ge Xe F'],['Ilo','Xelo', 'Xehi','Xewide'],['Ar','Ge Xe Ar'],['He', 'Na', 'Ge','Ge He','Ge Na']
 parser.add_argument('--path',default=os.environ['DMDD_AM_MAIN_PATH']+'/../')
-parser.add_argument('--time',default='T')
-parser.add_argument('--GF', default='F')
-parser.add_argument('--timeonly', default='F')
+parser.add_argument('--simtime',default=True)
+parser.add_argument('--simGF', default=False)
+parser.add_argument('--fittime',default=True)
+parser.add_argument('--fitGF', default=False)
+parser.add_argument('--analyze_energy', default=True)
 #'/Users/verag/Research/Repositories/dmdd_2014/scripts/' #macbook
 
 
@@ -57,31 +59,7 @@ DUMP_SIGMA_LIMS = args.dumplims
 LIMFILE = args.limfile            
 
 SI_Higgs = dmdd.UV_Model('SI_Higgs', ['mass', 'sigma_si'], fixed_params={'fnfp_si': 1}, time_info=args.time)
-millicharge = dmdd.UV_Model('Millicharge', ['mass', 'sigma_si_massless'], fixed_params={'fnfp_si_massless': 0}, time_info=args.time)
-
-SD_flavoruniversal = dmdd.UV_Model('SD_fu', ['mass','sigma_sd'], fixed_params={'fnfp_sd': -1.1}, time_info=args.time)
-SD_Zmediated = dmdd.UV_Model('SD_Z-mediated', ['mass','sigma_sd'], fixed_params={'fnfp_sd': -13.2}, time_info=args.time)
-SD_Moira = dmdd.UV_Model('SI_Moira', ['mass','sigma_sd'], fixed_params={'fnfp_sd': 0.}, time_info=args.time)
-
 anapole = dmdd.UV_Model('Anapole', ['mass','sigma_anapole'], time_info=args.time)
-magdip_heavy = dmdd.UV_Model('Mag.dip.heavy', ['mass','sigma_magdip'], time_info=args.time)
-magdip_0 = dmdd.UV_Model('Mag.dip.light', ['mass','sigma_magdip_massless'], time_info=args.time)
-elecdip_heavy = dmdd.UV_Model('Elec.dip.heavy', ['mass','sigma_elecdip'], time_info=args.time)
-elecdip_0 = dmdd.UV_Model('Elec.dip.light', ['mass','sigma_elecdip_massless'], time_info=args.time)
-
-f1 = dmdd.UV_Model('f1', ['mass','sigma_f1'], fixed_params={'fnfp_f1': 1.}, time_info=args.time)
-f2_Higgs = dmdd.UV_Model('f2_Higgs', ['mass','sigma_f2'], fixed_params={'fnfp_f2': -0.05}, time_info=args.time)
-f2_flavoruniversal = dmdd.UV_Model('f2_flavor-universal', ['mass','sigma_f2'], fixed_params={'fnfp_f2': 1.}, time_info=args.time)
-f3_Higgs = dmdd.UV_Model('f3_Higgs', ['mass','sigma_f3'], fixed_params={'fnfp_f3': -0.05}, time_info=args.time)
-f3_flavoruniversal = dmdd.UV_Model('f3_flavor-universal', ['mass','sigma_f3'], fixed_params={'fnfp_f3': 1.}, time_info=args.time)
-
-LS = dmdd.UV_Model('LS', ['mass','sigma_LS'], fixed_params={'fnfp_LS': 0.}, time_info=args.time)
-
-
-
-ALLMODELS = [SI_Higgs, millicharge, SD_flavoruniversal, SD_Zmediated, SD_Moira, anapole, magdip_heavy, magdip_0, elecdip_heavy, elecdip_0, f1, f2_Higgs, f2_flavoruniversal, f3_Higgs, f3_flavoruniversal]
-
-MODELS1 = [SI_Higgs, anapole]
 
 SIMMODELS = [SI_Higgs]
 FITMODELS = [SI_Higgs, anapole]
@@ -150,7 +128,7 @@ if DO_SIM:
                     cmd = SCRIPTS_PATH+'UVrunner.py ' +\
                           '--simname {} --simpars mass {} '.format(simname, sigma_name) +\
                           ' --parvals {} {:.16f} '.format(mass,sigma_vals[mass][simmod.name]) +\
-                          '-e {} --GF {} --timeonly {}'.format(experiment, args.GF, args.timeonly)
+                          '-e {} --simGF {} --simtime {}'.format(experiment, args.simGF, args.simtime)
                           
                     if len(simmod.fixed_params) > 0:
                         cmd += ' --fixedsimnames {} --fixedsimvals {}'.format(simmod.fixed_params.keys()[0], simmod.fixed_params.values()[0])
@@ -195,7 +173,7 @@ if DO_FIT:
                     cmd = SCRIPTS_PATH+'UVrunner.py --fit --vis --simmodelname {} '.format(simmod.name) +\
                             '--simname {} --simpars mass {} '.format(simname,sigma_name) +\
                             '--parvals {} {:.16f} '.format(mass, sigma_vals[mass][simmod.name]) +\
-                            '-e {} --time {} --GF {} --timeonly {}'.format(experiment, args.time, args.GF, args.timeonly)
+                            '-e {} --simtime {} --simGF {} --fittime {} --fitGF {} --analyze_time {}'.format(experiment, args.simtime, args.simGF, args.fittime, args.fitGF, args.analyze_time)
                     if len(simmod.fixed_params) > 0:
                         cmd += ' --fixedsimnames {} --fixedsimvals {}'.format(simmod.fixed_params.keys()[0], simmod.fixed_params.values()[0])
                         
