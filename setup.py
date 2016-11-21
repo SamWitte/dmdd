@@ -37,10 +37,10 @@ ext_modules = [
                Extension('dmdd_efficiencies',['dmdd/dmdd_efficiencies.pyx'],include_dirs=[numpy.get_include()]),
                Extension('helpers',['dmdd/helpers.pyx'],include_dirs=[numpy.get_include()]),
                Extension('formUV',['dmdd/formUV.pyx'],include_dirs=[numpy.get_include()]),
-               Extension('formNR',['dmdd/formNR.pyx'],include_dirs=[numpy.get_include()]),
-               Extension('formgenNR',['dmdd/formgenNR.pyx'],include_dirs=[numpy.get_include()]),
-               Extension('rate_NR',['dmdd/rate_NR.pyx'],include_dirs=[numpy.get_include()]),
-               Extension('rate_genNR',['dmdd/rate_genNR.pyx'],include_dirs=[numpy.get_include()]),
+               #Extension('formNR',['dmdd/formNR.pyx'],include_dirs=[numpy.get_include()]),
+               #Extension('formgenNR',['dmdd/formgenNR.pyx'],include_dirs=[numpy.get_include()]),
+               #Extension('rate_NR',['dmdd/rate_NR.pyx'],include_dirs=[numpy.get_include()]),
+               #Extension('rate_genNR',['dmdd/rate_genNR.pyx'],include_dirs=[numpy.get_include()]),
                Extension('rate_UV',['dmdd/rate_UV.pyx'],include_dirs=[numpy.get_include()])
                ]
 

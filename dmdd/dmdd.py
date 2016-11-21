@@ -3,14 +3,14 @@ try:
     #import rate_genNR  
     import rate_UV 
     import dmdd_efficiencies as eff
-    import helpers
+    #import helpers
 except ImportError:
     pass
 
-try:
-    import emcee
-except ImportError:
-    pass
+# try:
+#     import emcee
+# except ImportError:
+#     pass
     
 import os,os.path,shutil
 import pickle
@@ -535,7 +535,8 @@ class MultinestRun(object):
 
             fitmodel_dRdQ_params['element'] = sim.experiment.element
 
-            fitmodel_dRdQ = self.fit_model.dRdQ(Qbins_theory, 0.67,
+            fitmodel_times = np.zeros(len(Qbins_theory)) + 0.67
+            fitmodel_dRdQ = self.fit_model.dRdQ(Qbins_theory, fitmodel_times,
                                                 GF=self.fit_model.GF,
                                                 time_info=self.fit_model.time_info,
                                                 **fitmodel_dRdQ_params)
@@ -765,12 +766,13 @@ class Simulation(object):
                                  Qmin=experiment.Qmin, Qmax=experiment.Qmax,
                                  **dRdQ_params)
 
-        self = self.model_R * experiment.exposure * YEAR_IN_S
+        self.model_N = self.model_R * experiment.exposure * YEAR_IN_S
         print 'Expected Number of Events: ', self.model_N
 
         # this just calculates the time-averaged rate (at t=0.67),
         # but is only used for plotting:
-        self.plot_model_dRdQ = self.model.dRdQ(self.model_Qgrid, 0.67, time_info=False, **dRdQ_params)
+        self.plot_model_times = np.zeros(len(self.model_Qgrid)) + 0.67
+        self.plot_model_dRdQ = self.model.dRdQ(self.model_Qgrid, self.plot_model_times, time_info=False, **dRdQ_params)
         dRdQ_params['time_info'] = self.time_info
 
         
@@ -861,8 +863,9 @@ class Simulation(object):
       
             Qgrid = np.logspace(np.log10(self.experiment.Qmin), np.log10(self.experiment.Qmax), npts)
             efficiency = self.experiment.efficiency(Qgrid)
-            
-            pdf = self.model.dRdQ(Qgrid, 0.67, **self.dRdQ_params) * efficiency / self.model_R
+
+            Tgrid = np.zeros(len(Qgrid)) + 0.67
+            pdf = self.model.dRdQ(Qgrid, Tgrid, **self.dRdQ_params) * efficiency / self.model_R
             cdf = pdf.cumsum()
             cdf /= cdf.max()
             u = random.rand(Nevents)
@@ -921,7 +924,7 @@ class Simulation(object):
         
     def pdf_fun(self, Q, t):
         efficiency = self.experiment.efficiency(np.array([Q]))
-        res = self.model.dRdQ(np.array([Q]), t, **self.dRdQ_params) * efficiency / self.model_R
+        res = self.model.dRdQ(np.array([Q]), np.array([t]), **self.dRdQ_params) * efficiency / self.model_R
         return res
 
     def plot_data(self, plot_nbins=20, plot_theory=True, save_plot=True,

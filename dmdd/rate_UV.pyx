@@ -106,7 +106,7 @@ def dRdQSI(np.ndarray[DTYPE_t] Er, np.ndarray[DTYPE_t] times, DTYPE_t V0, DTYPE_
     cdef np.ndarray[DTYPE_t] v_lag_pass, delta_v_lag=np.zeros(len(times))
     
     if time_info:
-        delta_v_lag = mod_amp * cos(2.0 * pi * (times - mod_phase))
+        delta_v_lag = mod_amp * np.cos(2.0 * pi * (times - mod_phase))
     v_lag_pass = v_lag + delta_v_lag
 
     weight = eltshort[elt]['weight']
@@ -146,7 +146,7 @@ def dRdQSI_massless(np.ndarray[DTYPE_t] Er, np.ndarray[DTYPE_t] times, DTYPE_t V
     cdef np.ndarray[DTYPE_t] v_lag_pass, delta_v_lag=np.zeros(len(times))
 
     if time_info:
-        delta_v_lag = mod_amp * cos(2.0 * pi * (times - mod_phase))
+        delta_v_lag = mod_amp * np.cos(2.0 * pi * (times - mod_phase))
     v_lag_pass = v_lag + delta_v_lag
 
     weight = eltshort[elt]['weight']
@@ -190,7 +190,7 @@ def dRdQSD(np.ndarray[DTYPE_t] Er, np.ndarray[DTYPE_t] times, DTYPE_t V0, DTYPE_
     cdef np.ndarray[DTYPE_t] v_lag_pass, delta_v_lag=np.zeros(len(times))
 
     if time_info:
-        delta_v_lag = mod_amp * cos(2.0 * pi * (times - mod_phase))
+        delta_v_lag = mod_amp * np.cos(2.0 * pi * (times - mod_phase))
     v_lag_pass = v_lag + delta_v_lag
 
 
@@ -231,7 +231,7 @@ def dRdQSD_neutron(np.ndarray[DTYPE_t] Er, np.ndarray[DTYPE_t] times, DTYPE_t V0
     cdef np.ndarray[DTYPE_t] v_lag_pass, delta_v_lag=np.zeros(len(times))
 
     if time_info:
-        delta_v_lag = mod_amp * cos(2.0 * pi * (times - mod_phase))
+        delta_v_lag = mod_amp * np.cos(2.0 * pi * (times - mod_phase))
     v_lag_pass = v_lag + delta_v_lag
 
     weight = eltshort[elt]['weight']
@@ -272,7 +272,7 @@ def dRdQSD_massless(np.ndarray[DTYPE_t] Er, np.ndarray[DTYPE_t] times, DTYPE_t V
     cdef np.ndarray[DTYPE_t] v_lag_pass, delta_v_lag=np.zeros(len(times))
 
     if time_info:
-        delta_v_lag = mod_amp * cos(2.0 * pi * (times - mod_phase))
+        delta_v_lag = mod_amp * np.cos(2.0 * pi * (times - mod_phase))
     v_lag_pass = v_lag + delta_v_lag
 
     weight = eltshort[elt]['weight']
@@ -316,7 +316,7 @@ def dRdQana(np.ndarray[DTYPE_t] Er, np.ndarray[DTYPE_t] times, DTYPE_t V0, DTYPE
     cdef np.ndarray[DTYPE_t] v_lag_pass, delta_v_lag=np.zeros(len(times))
     
     if time_info:
-        delta_v_lag = mod_amp * cos(2.0 * pi * (times - mod_phase))
+        delta_v_lag = mod_amp * np.cos(2.0 * pi * (times - mod_phase))
     v_lag_pass = v_lag + delta_v_lag
 
     weight = eltshort[elt]['weight']
@@ -361,7 +361,7 @@ def dRdQana_massless(np.ndarray[DTYPE_t] Er, np.ndarray[DTYPE_t] times, DTYPE_t 
     cdef np.ndarray[DTYPE_t] v_lag_pass, delta_v_lag=np.zeros(len(times))
 
     if time_info:
-        delta_v_lag = mod_amp * cos(2.0 * pi * (times - mod_phase))
+        delta_v_lag = mod_amp * np.cos(2.0 * pi * (times - mod_phase))
     v_lag_pass = v_lag + delta_v_lag
 
     weight = eltshort[elt]['weight']
@@ -407,7 +407,7 @@ def dRdQmagdip(np.ndarray[DTYPE_t] Er, np.ndarray[DTYPE_t] times, DTYPE_t V0, DT
     cdef np.ndarray[DTYPE_t] v_lag_pass, delta_v_lag=np.zeros(len(times))
 
     if time_info:
-        delta_v_lag = mod_amp * cos(2.0 * pi * (times - mod_phase))
+        delta_v_lag = mod_amp * np.cos(2.0 * pi * (times - mod_phase))
     v_lag_pass = v_lag + delta_v_lag
 
     weight = eltshort[elt]['weight']
@@ -453,7 +453,7 @@ def dRdQmagdip_massless(np.ndarray[DTYPE_t] Er, np.ndarray[DTYPE_t] times, DTYPE
     cdef np.ndarray[DTYPE_t] v_lag_pass, delta_v_lag=np.zeros(len(times))
 
     if time_info:
-        delta_v_lag = mod_amp * cos(2.0 * pi * (times - mod_phase))
+        delta_v_lag = mod_amp * np.cos(2.0 * pi * (times - mod_phase))
     v_lag_pass = v_lag + delta_v_lag
 
     weight = eltshort[elt]['weight']
@@ -499,7 +499,7 @@ def dRdQelecdip(np.ndarray[DTYPE_t] Er, np.ndarray[DTYPE_t] times, DTYPE_t V0, D
     cdef np.ndarray[DTYPE_t] v_lag_pass, delta_v_lag=np.zeros(len(times))
 
     if time_info:
-        delta_v_lag = mod_amp * cos(2.0 * pi * (times - mod_phase))
+        delta_v_lag = mod_amp * np.cos(2.0 * pi * (times - mod_phase))
     v_lag_pass = v_lag + delta_v_lag
 
     weight = eltshort[elt]['weight']
@@ -542,7 +542,7 @@ def dRdQelecdip_massless(np.ndarray[DTYPE_t] Er, np.ndarray[DTYPE_t] times, DTYP
     cdef np.ndarray[DTYPE_t] v_lag_pass, delta_v_lag=np.zeros(len(times))
 
     if time_info:
-        delta_v_lag = mod_amp * cos(2.0 * pi * (times - mod_phase))
+        delta_v_lag = mod_amp * np.cos(2.0 * pi * (times - mod_phase))
     v_lag_pass = v_lag + delta_v_lag
 
     weight = eltshort[elt]['weight']
@@ -585,7 +585,7 @@ def dRdQLS(np.ndarray[DTYPE_t] Er, np.ndarray[DTYPE_t] times, DTYPE_t V0, DTYPE_
     cdef np.ndarray[DTYPE_t] v_lag_pass, delta_v_lag=np.zeros(len(times))
 
     if time_info:
-        delta_v_lag = mod_amp * cos(2.0 * pi * (times - mod_phase))
+        delta_v_lag = mod_amp * np.cos(2.0 * pi * (times - mod_phase))
     v_lag_pass = v_lag + delta_v_lag
 
     weight = eltshort[elt]['weight']
@@ -631,7 +631,7 @@ def dRdQLS_massless(np.ndarray[DTYPE_t] Er, np.ndarray[DTYPE_t] times, DTYPE_t V
     cdef np.ndarray[DTYPE_t] v_lag_pass, delta_v_lag=np.zeros(len(times))
 
     if time_info:
-        delta_v_lag = mod_amp * cos(2.0 * pi * (times - mod_phase))
+        delta_v_lag = mod_amp * np.cos(2.0 * pi * (times - mod_phase))
     v_lag_pass = v_lag + delta_v_lag
 
     weight = eltshort[elt]['weight']
@@ -673,7 +673,7 @@ def dRdQf1(np.ndarray[DTYPE_t] Er, np.ndarray[DTYPE_t] times, DTYPE_t v_rms, DTY
     cdef np.ndarray[DTYPE_t] v_lag_pass, delta_v_lag=np.zeros(len(times))
 
     if time_info:
-        delta_v_lag = mod_amp * cos(2.0 * pi * (times - mod_phase))
+        delta_v_lag = mod_amp * np.cos(2.0 * pi * (times - mod_phase))
     v_lag_pass = v_lag + delta_v_lag
 
     weight = eltshort[elt]['weight']
@@ -716,7 +716,7 @@ def dRdQf1_massless(np.ndarray[DTYPE_t] Er, np.ndarray[DTYPE_t] times, DTYPE_t v
     cdef np.ndarray[DTYPE_t] v_lag_pass, delta_v_lag=np.zeros(len(times))
 
     if time_info:
-        delta_v_lag = mod_amp * cos(2.0 * pi * (times - mod_phase))
+        delta_v_lag = mod_amp * np.cos(2.0 * pi * (times - mod_phase))
     v_lag_pass = v_lag + delta_v_lag
 
     weight = eltshort[elt]['weight']
@@ -759,7 +759,7 @@ def dRdQf2(np.ndarray[DTYPE_t] Er, np.ndarray[DTYPE_t] times, DTYPE_t v_rms, DTY
     cdef np.ndarray[DTYPE_t] v_lag_pass, delta_v_lag=np.zeros(len(times))
 
     if time_info:
-        delta_v_lag = mod_amp * cos(2.0 * pi * (times - mod_phase))
+        delta_v_lag = mod_amp * np.cos(2.0 * pi * (times - mod_phase))
     v_lag_pass = v_lag + delta_v_lag
 
     weight = eltshort[elt]['weight']
@@ -801,7 +801,7 @@ def dRdQf2_massless(np.ndarray[DTYPE_t] Er, np.ndarray[DTYPE_t] times, DTYPE_t v
     cdef np.ndarray[DTYPE_t] v_lag_pass, delta_v_lag=np.zeros(len(times))
 
     if time_info:
-        delta_v_lag = mod_amp * cos(2.0 * pi * (times - mod_phase))
+        delta_v_lag = mod_amp * np.cos(2.0 * pi * (times - mod_phase))
     v_lag_pass = v_lag + delta_v_lag
 
     weight = eltshort[elt]['weight']
@@ -844,7 +844,7 @@ def dRdQf3(np.ndarray[DTYPE_t] Er, np.ndarray[DTYPE_t] times, DTYPE_t v_rms, DTY
     cdef np.ndarray[DTYPE_t] v_lag_pass, delta_v_lag=np.zeros(len(times))
 
     if time_info:
-        delta_v_lag = mod_amp * cos(2.0 * pi * (times - mod_phase))
+        delta_v_lag = mod_amp * np.cos(2.0 * pi * (times - mod_phase))
     v_lag_pass = v_lag + delta_v_lag
 
     weight = eltshort[elt]['weight']
@@ -887,7 +887,7 @@ def dRdQf3_massless(np.ndarray[DTYPE_t] Er, np.ndarray[DTYPE_t] times, DTYPE_t v
     cdef np.ndarray[DTYPE_t] v_lag_pass, delta_v_lag=np.zeros(len(times))
 
     if time_info:
-        delta_v_lag = mod_amp * cos(2.0 * pi * (times - mod_phase))
+        delta_v_lag = mod_amp * np.cos(2.0 * pi * (times - mod_phase))
     v_lag_pass = v_lag + delta_v_lag
 
     weight = eltshort[elt]['weight']

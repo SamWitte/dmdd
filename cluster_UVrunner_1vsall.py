@@ -25,15 +25,33 @@ parser.add_argument('--startfit', type=int, default=1)
 parser.add_argument('--prior',default='logflat')
 parser.add_argument('--experiments',nargs='+',default=['Xe'])#['F','Ge', 'Xe','Ge Xe','I','Ge Xe I','Ge Xe F'],['Ilo','Xelo', 'Xehi','Xewide'],['Ar','Ge Xe Ar'],['He', 'Na', 'Ge','Ge He','Ge Na']
 parser.add_argument('--path',default=os.environ['DMDD_AM_MAIN_PATH']+'/../')
-parser.add_argument('--simtime',default=True)
-parser.add_argument('--simGF', default=False)
-parser.add_argument('--fittime',default=False)
-parser.add_argument('--fitGF', default=False)
-parser.add_argument('--analyze_energy', default=True)
+parser.add_argument('--simtime', action='store_true')
+parser.add_argument('--simGF', action='store_true')
+parser.add_argument('--fittime', action='store_true')
+parser.add_argument('--fitGF', action='store_true')
+parser.add_argument('--analyze_energy', action='store_true')
 #'/Users/verag/Research/Repositories/dmdd_2014/scripts/' #macbook
 
 
 args = parser.parse_args()
+
+simtime_flag = ''
+fittime_flag = ''
+simGF_flag = ''
+fitGF_flag = ''
+analyze_energy_flag = ''
+
+if args.simtime:
+    simtime_flag = '--simtime'
+if args.fittime:
+    fittime_flag = '--fittime'
+if args.simGF:
+    simGF_flag = '--simGF'
+if args.fitGF:
+    fitGF_flag = '--fitGF'
+if args.analyze_energy:
+    analyze_energy_flag = '--analyze_energy'
+
 DO_FIT = not args.nofit
 DO_SIM = args.dosim
 TAG = args.tag
@@ -130,7 +148,7 @@ if DO_SIM:
                     cmd = SCRIPTS_PATH+'UVrunner.py ' +\
                           '--simname {} --simpars mass {} '.format(simname, sigma_name) +\
                           ' --parvals {} {:.16f} '.format(mass,sigma_vals[mass][simmod.name]) +\
-                          '-e {} --simGF {} --simtime {}'.format(experiment, args.simGF, args.simtime)
+                          '-e {} {} {}'.format(experiment, simGF_flag, simtime_flag)
                           
                     if len(simmod.fixed_params) > 0:
                         cmd += ' --fixedsimnames {} --fixedsimvals {}'.format(simmod.fixed_params.keys()[0], simmod.fixed_params.values()[0])
@@ -175,7 +193,7 @@ if DO_FIT:
                     cmd = SCRIPTS_PATH+'UVrunner.py --fit --vis --simmodelname {} '.format(simmod.name) +\
                             '--simname {} --simpars mass {} '.format(simname,sigma_name) +\
                             '--parvals {} {:.16f} '.format(mass, sigma_vals[mass][simmod.name]) +\
-                            '-e {} --simtime {} --simGF {} --fittime {} --fitGF {} --analyze_energy {}'.format(experiment, args.simtime, args.simGF, args.fittime, args.fitGF, args.analyze_energy)
+                            '-e {} {} {} {} {} {}'.format(experiment, simtime_flag, simGF_flag, fittime_flag, fitGF_flag, analyze_energy_flag)
                     if len(simmod.fixed_params) > 0:
                         cmd += ' --fixedsimnames {} --fixedsimvals {}'.format(simmod.fixed_params.keys()[0], simmod.fixed_params.values()[0])
                         
