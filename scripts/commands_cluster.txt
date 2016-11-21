@@ -1,0 +1,7 @@
+./cluster_UVrunner_1vsall.py --tag timeXe --nsim 30 --dosim --nfit 30
+./cluster_UVrunner_1vsall.py --tag NOtimeXe --nsim 30 --dosim --nfit 30 —-time F
+
+
+single command:
+
+/home/verag/Projects/Repositories/dmdd-AM/UVrunner.py --simname simtest1 --simpars mass sigma_si  --parvals 20 55.4784565324258665 -e Xe --simGF False --simtime True --fixedsimnames fnfp_si --fixedsimvals 1

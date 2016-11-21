@@ -27,7 +27,7 @@ parser.add_argument('--experiments',nargs='+',default=['Xe'])#['F','Ge', 'Xe','G
 parser.add_argument('--path',default=os.environ['DMDD_AM_MAIN_PATH']+'/../')
 parser.add_argument('--simtime',default=True)
 parser.add_argument('--simGF', default=False)
-parser.add_argument('--fittime',default=True)
+parser.add_argument('--fittime',default=False)
 parser.add_argument('--fitGF', default=False)
 parser.add_argument('--analyze_energy', default=True)
 #'/Users/verag/Research/Repositories/dmdd_2014/scripts/' #macbook
@@ -58,11 +58,13 @@ print SINGLE_EXPERIMENTS
 DUMP_SIGMA_LIMS = args.dumplims
 LIMFILE = args.limfile            
 
-SI_Higgs = dmdd.UV_Model('SI_Higgs', ['mass', 'sigma_si'], fixed_params={'fnfp_si': 1}, time_info=args.time)
-anapole = dmdd.UV_Model('Anapole', ['mass','sigma_anapole'], time_info=args.time)
+SI_Higgs_sim = dmdd.UV_Model('SI_Higgs', ['mass', 'sigma_si'], fixed_params={'fnfp_si': 1}, time_info=args.simtime)
+anapole_sim = dmdd.UV_Model('Anapole', ['mass','sigma_anapole'], time_info=args.simtime)
+SI_Higgs_fit = dmdd.UV_Model('SI_Higgs', ['mass', 'sigma_si'], fixed_params={'fnfp_si': 1}, time_info=args.fittime)
+anapole_fit = dmdd.UV_Model('Anapole', ['mass','sigma_anapole'], time_info=args.fittime)
 
-SIMMODELS = [SI_Higgs]
-FITMODELS = [SI_Higgs, anapole]
+SIMMODELS = [SI_Higgs_sim]
+FITMODELS = [SI_Higgs_fit, anapole_fit]
 
 
 ##get upper limits for a given mass:
@@ -173,7 +175,7 @@ if DO_FIT:
                     cmd = SCRIPTS_PATH+'UVrunner.py --fit --vis --simmodelname {} '.format(simmod.name) +\
                             '--simname {} --simpars mass {} '.format(simname,sigma_name) +\
                             '--parvals {} {:.16f} '.format(mass, sigma_vals[mass][simmod.name]) +\
-                            '-e {} --simtime {} --simGF {} --fittime {} --fitGF {} --analyze_time {}'.format(experiment, args.simtime, args.simGF, args.fittime, args.fitGF, args.analyze_time)
+                            '-e {} --simtime {} --simGF {} --fittime {} --fitGF {} --analyze_energy {}'.format(experiment, args.simtime, args.simGF, args.fittime, args.fitGF, args.analyze_energy)
                     if len(simmod.fixed_params) > 0:
                         cmd += ' --fixedsimnames {} --fixedsimvals {}'.format(simmod.fixed_params.keys()[0], simmod.fixed_params.values()[0])
                         
