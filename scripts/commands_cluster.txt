@@ -1,5 +1,5 @@
-./cluster_UVrunner_1vsall.py --tag timeXe --nsim 30 --dosim --nfit 30 --fittime --simtime
-./cluster_UVrunner_1vsall.py --tag timeXe --nsim 30 --dosim --nfit 30 --fittime --simtime --experiments 'Xe10x'
+./cluster_UVrunner_1vsall.py --tag timeXe --nsim 30 --dosim --nfit 30 --fittime --simtime --analyze_energy  --dumplims --limfile 'lims_test.pkl'
+./cluster_UVrunner_1vsall.py --tag timeXe --nsim 30 --dosim --nfit 30 --fittime --simtime --experiments 'Xe10x' --analyze_energy  --dumplims --limfile 'lims_test.pkl'
 
 
 
