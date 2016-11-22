@@ -46,7 +46,7 @@ try:
     #MAIN_PATH = '/data/verag/dmdd-am/'#'/data/verag/Storage'
     MAIN_PATH = os.environ['DMDD_AM_MAIN_PATH']
 except KeyError:
-    logging.warning('DMDD_MAIN_PATH environment variable not defined, defaulting to:   ~/.dmdd')
+    logging.warning('DMDD_AM_MAIN_PATH environment variable not defined, defaulting to:   ~/.dmdd')
     MAIN_PATH = os.path.expanduser('~/.dmdd') #os.getcwd()
 
 SIM_PATH = MAIN_PATH + '/simulations_uv/'
@@ -527,7 +527,7 @@ class MultinestRun(object):
 
         for sim in self.simulations:
             filename = self.chainspath + '/{}_theoryfitdata_{}.pdf'.format(self.sim_name, sim.experiment.name)
-            if self.time_info:
+            if sim.time_info:
                 Qbins, Qhist, xerr, yerr, Qbins_theory, Qhist_theory, binsize, time_bins, Thist, txerr, tyerr, \
                 Tbins_theory, Thist_theory, t_binsize, tbinsizetheory = sim.plot_data(make_plot=False, return_plot_items=True)
             else:
@@ -1000,8 +1000,7 @@ class Simulation(object):
             tbinsizetheory = Tbins_theory[1] - Tbins_theory[0]
             
             for i in range(0, len(Tbins_theory)):
-                Thist_theory[i] = ((np.trapz(self.experiment.efficiency(self.model_Qgrid) * self.model.dRdQ(self.model_Qgrid, Tbins_theory[i],
-                                    **self.dRdQ_params), self.model_Qgrid)) * t_binsize * self.experiment.exposure * YEAR_IN_S)
+                Thist_theory[i] = ((np.trapz(self.experiment.efficiency(self.model_Qgrid) * self.model.dRdQ(self.model_Qgrid, np.array(Tbins_theory[i]), **self.dRdQ_params), self.model_Qgrid)) * t_binsize * self.experiment.exposure * YEAR_IN_S)
                     
             if make_plot:
                 plt.figure()
