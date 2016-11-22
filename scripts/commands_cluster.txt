@@ -1,4 +1,5 @@
-./cluster_UVrunner_1vsall.py --tag timeXe --nsim 30 --dosim --nfit 30 —-fittime —simtime
+./cluster_UVrunner_1vsall.py --tag timeXe --nsim 30 --dosim --nfit 30 --fittime --simtime
+./cluster_UVrunner_1vsall.py --tag timeXe --nsim 30 --dosim --nfit 30 --fittime --simtime --experiments 'Xe10x'
 
 
 

@@ -190,7 +190,7 @@ if DO_FIT:
 
                 for i in range(STARTFIT,NFIT+STARTFIT):
                     simname='sim%d' % i
-                    cmd = SCRIPTS_PATH+'UVrunner.py --fit --vis --simmodelname {} '.format(simmod.name) +\
+                    cmd = SCRIPTS_PATH+'UVrunner.py --fit --simmodelname {} '.format(simmod.name) +\
                             '--simname {} --simpars mass {} '.format(simname,sigma_name) +\
                             '--parvals {} {:.16f} '.format(mass, sigma_vals[mass][simmod.name]) +\
                             '-e {} {} {} {} {} {}'.format(experiment, simtime_flag, simGF_flag, fittime_flag, fitGF_flag, analyze_energy_flag)

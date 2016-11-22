@@ -37,10 +37,10 @@ ext_modules = [
                Extension('dmdd_efficiencies',['dmdd/dmdd_efficiencies.pyx'],include_dirs=[numpy.get_include()],extra_compile_args=["-Ofast"],extra_link_args=["-Ofast"]),
                Extension('helpers',['dmdd/helpers.pyx'],include_dirs=[numpy.get_include()],extra_compile_args=["-Ofast"],extra_link_args=["-Ofast"]),
                Extension('formUV',['dmdd/formUV.pyx'],include_dirs=[numpy.get_include()],extra_compile_args=["-Ofast"],extra_link_args=["-Ofast"]),
-               Extension('formNR',['dmdd/formNR.pyx'],include_dirs=[numpy.get_include()],extra_compile_args=["-Ofast"],extra_link_args=["-Ofast"]),
-               Extension('formgenNR',['dmdd/formgenNR.pyx'],include_dirs=[numpy.get_include()],extra_compile_args=["-Ofast"],extra_link_args=["-Ofast"]),
-               Extension('rate_NR',['dmdd/rate_NR.pyx'],include_dirs=[numpy.get_include()],extra_compile_args=["-Ofast"],extra_link_args=["-Ofast"]),
-               Extension('rate_genNR',['dmdd/rate_genNR.pyx'],include_dirs=[numpy.get_include()],extra_compile_args=["-Ofast"],extra_link_args=["-Ofast"]),
+               #Extension('formNR',['dmdd/formNR.pyx'],include_dirs=[numpy.get_include()],extra_compile_args=["-Ofast"],extra_link_args=["-Ofast"]),
+               #Extension('formgenNR',['dmdd/formgenNR.pyx'],include_dirs=[numpy.get_include()],extra_compile_args=["-Ofast"],extra_link_args=["-Ofast"]),
+               #Extension('rate_NR',['dmdd/rate_NR.pyx'],include_dirs=[numpy.get_include()],extra_compile_args=["-Ofast"],extra_link_args=["-Ofast"]),
+               #Extension('rate_genNR',['dmdd/rate_genNR.pyx'],include_dirs=[numpy.get_include()],extra_compile_args=["-Ofast"],extra_link_args=["-Ofast"]),
                Extension('rate_UV',['dmdd/rate_UV.pyx'],include_dirs=[numpy.get_include()],extra_compile_args=["-Ofast"],extra_link_args=["-Ofast"])
                ]
 
