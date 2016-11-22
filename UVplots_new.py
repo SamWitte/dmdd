@@ -48,8 +48,8 @@ if not os.path.exists(RESULTS_PATH):
 ###############################################
 
 SI_Higgs = UV_Model('SI_Higgs', ['mass', 'sigma_si'],
-                    fixed_params={'fnfp_si': 1}, time_info=True)
-anapole = UV_Model('Anapole', ['mass','sigma_anapole'], time_info=True)
+                    fixed_params={'fnfp_si': 1}, time_info=True,GF=True)
+anapole = UV_Model('Anapole', ['mass','sigma_anapole'], time_info=True,GF=True)
 ALLMODELS = [SI_Higgs, anapole]
 
 
@@ -58,7 +58,8 @@ ALLMODELS = [SI_Higgs, anapole]
 experiment = 'Xe'
 xe = dmdd.Experiment(experiment,Target[experiment],
                      Qmin[experiment], Qmax[experiment],
-                     Exposure[experiment], eff.efficiency_Xe)
+                     Exposure[experiment], eff.efficiency_Xe,
+                     Start[experiment], End[experiment])
 
 experiment = 'Xe10x'
 xe10x = dmdd.Experiment(experiment,Target[experiment],
@@ -97,14 +98,13 @@ MASSES=np.logspace(np.log10(mmin),np.log10(mmax),100)
 ################################################################################################
 
 def line_plots_1vsall(sigma_lim_file,
-                      nsim=1, startsim=1, masses=[50.],
-                      experiment_names=['Xe'],
+                      nsim=1, startsim=1, masses=[20.],
+                      experiment_names=['Xe10x'],
                       simmodels=[SI_Higgs], models=[SI_Higgs,anapole],
-                      filelabel='', allverbose=False, verbose=False,
-                      results_root='/data/verag/dmdd_2014/results_uv/',
+                      filelabel='withT_withGF', allverbose=False, verbose=False,
+                      results_root='/data/verag/dmdd-am/results_uv/',
                       saveplots=True, alpha=0.3, xoffset=0.1,
                       fs=20, fs2=18,
-                      simtime=True,fittime=True,simGF=False,fitGF=False,
                       analyze_energy=True):
   
     if len(filelabel)>0:
@@ -151,8 +151,6 @@ def line_plots_1vsall(sigma_lim_file,
                                              pardic,fitm, prior_ranges=prior_ranges,
                                             force_sim=False,n_live_points=n_live_points,
                                             silent=True,empty_run=True,
-                                            simtime=simtime,fittime=fittime,
-                                            simGF=simGF, fitGF=fitGF,
                                             analyze_energy=analyze_energy)
                         if allverbose:
                             print ''

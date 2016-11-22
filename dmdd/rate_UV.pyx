@@ -122,7 +122,7 @@ def dRdQSI(np.ndarray[DTYPE_t] Er, np.ndarray[DTYPE_t] times, DTYPE_t V0, DTYPE_
         if not GF:
             val_eta = eta(v_min, v_esc, V0, v_lag_pass[i])
         elif GF:
-            val_eta = eta_GF(v_min, time, time_info, V0, v_lag, v_esc, delta_v_lag)
+            val_eta = eta_GF(v_min, time, time_info, V0, v_lag, v_esc, delta_v_lag[i])
         tot = v_independent * val_eta * ff
         out[i] = tot
     return out
@@ -164,7 +164,7 @@ def dRdQSI_massless(np.ndarray[DTYPE_t] Er, np.ndarray[DTYPE_t] times, DTYPE_t V
         if not GF:
             val_eta = eta(v_min,v_esc,V0,v_lag_pass[i])
         elif GF:
-            val_eta = eta_GF(v_min, time, time_info, V0, v_lag, v_esc, delta_v_lag)
+            val_eta = eta_GF(v_min, time, time_info, V0, v_lag, v_esc, delta_v_lag[i])
         tot = v_independent * (qref**2./q_squared)**2. * val_eta * ff
         out[i] = tot
     return out
@@ -207,7 +207,7 @@ def dRdQSD(np.ndarray[DTYPE_t] Er, np.ndarray[DTYPE_t] times, DTYPE_t V0, DTYPE_
         if not GF:
             val_eta = eta(v_min,v_esc,V0,v_lag_pass[i])
         elif GF:
-            val_eta = eta_GF(v_min, time, time_info, V0, v_lag, v_esc, delta_v_lag)
+            val_eta = eta_GF(v_min, time, time_info, V0, v_lag, v_esc, delta_v_lag[i])
         tot = v_independent * val_eta * ff
         out[i]=tot
     return out
