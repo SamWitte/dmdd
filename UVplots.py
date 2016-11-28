@@ -751,15 +751,15 @@ def SingleKDE(nsim=50, startsim=1, masses=[50.],
                         ymax_list[i] = np.max(probdistr) + 0.1
                         ax.plot(10 ** (2. * xlinspace), probdistr, ls, linewidth=2,
                                                color=colors_list[ii], dashes=(10, 10))
-                        lab1.append('(Dashed) No Time: ' + r'[Success: {:.0f}$\%$]'.format(success))
+                        lab1 = '(Dashed) No Time: ' + r'[Success: {:.0f}$\%$]'.format(success)
                         ax.axes.get_yaxis().set_ticks([])
                     else:
                         ymax_list[i] = np.max([ymax_list[i], np.max(probdistr) + 0.1])
 
                         ax.plot(10 ** (2. * xlinspace), probdistr, linewidth=2, color=colors_list[ii])
-                        lab2.append('\n (Solid) Time: ' + r'[Success: {:.0f}$\%$]'.format(success))
+                        lab2 = '(Solid) Time: ' + r'[Success: {:.0f}$\%$]'.format(success)
                         leg_top[i] = 0.7 * ymax_list[i]
-                        ax.text(95, leg_top[i], lab1, color=colors_list[i-1], fontsize=18, ha='right')
+                        ax.text(95, leg_top[i], lab1, color=colors_list[2*i+1], fontsize=18, ha='right')
                         ax.text(95, leg_top[i] - .1 * ymax_list[i], lab2, color=colors_list[i], fontsize=18, ha='right')
                         ax.text(95, 0.85 * ymax_list[i], experiment_labels[2 * ii], color='k',
                                 fontsize=20, ha='right')
