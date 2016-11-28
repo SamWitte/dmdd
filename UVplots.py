@@ -588,12 +588,13 @@ def SingleKDE(nsim=50, startsim=1, masses=[50.],
               hspace = (1.06 * 50. ** (-1. / 5.)), filelabel='', allverbose=True, verbose=True,
               results_root=os.environ['DMDD_AM_MAIN_PATH']+'/results_uv/', timeonly=False,
               saveplots=True, alpha=0.3, xoffset=0.1, fs=18, fs2=18, sigma_lim_file=None,
-              colors_list=['Black','Black']):
+              colors_list=['Red','Purple']):
 
     xlinspace = np.linspace(0, 1, 200)
     ymax_list = np.zeros(2)
     leg_top = np.zeros(2)
-    lab = []
+    lab1 = []
+    lab2 = []
 
     if colors_list == None:
         for i,experiment in enumerate(experiments):
@@ -738,36 +739,34 @@ def SingleKDE(nsim=50, startsim=1, masses=[50.],
 
                     if tval == 'F':
                         ax.set_xlim([6.3, 100.])
-                        ticks = np.power(10., 2 * np.array([.4, .7, .8, .9, .95]))
+                        ticks = np.power(10., 2 * np.array([.4, .7, .8, .9, .95, 1.]))
                         ax.axes.get_xaxis().set_ticks(ticks)
                         ax.axes.get_xaxis().set_ticklabels(['{:.0f}'.format(40),
                                                             '{:.0f}'.format(70),
                                                             '{:.0f}'.format(80),
                                                             '{:.0f}'.format(90),
-                                                            '{:.0f}'.format(95)])
+                                                            '{:.0f}'.format(95),
+                                                            '{:.0f}'.format(100)])
                         ls = '--'
                         ymax_list[i] = np.max(probdistr) + 0.1
                         ax.plot(10 ** (2. * xlinspace), probdistr, ls, linewidth=2,
                                                color=colors_list[ii], dashes=(10, 10))
-                        lab.append('(Dashed) No Time: ' + r'[Success: {:.0f}$\%$]'.format(success))
+                        lab1.append('(Dashed) No Time: ' + r'[Success: {:.0f}$\%$]'.format(success))
                         ax.axes.get_yaxis().set_ticks([])
                     else:
                         ymax_list[i] = np.max([ymax_list[i], np.max(probdistr) + 0.1])
 
                         ax.plot(10 ** (2. * xlinspace), probdistr, linewidth=2, color=colors_list[ii])
-                        lab[i] += ('\n (Solid) Time: ' + r'[Success: {:.0f}$\%$]'.format(success))
-                        if i > 1:
-                            leg_top[i] = 0.7 * ymax_list[i]
-                        else:
-                            leg_top[i] = 0.7 * ymax_list[i]
-                        ax.text(95, leg_top[i], lab[i], color=colors_list[i], fontsize=10, ha='right')
+                        lab2.append('\n (Solid) Time: ' + r'[Success: {:.0f}$\%$]'.format(success))
+                        leg_top[i] = 0.7 * ymax_list[i]
+                        ax.text(95, leg_top[i], lab1, color=colors_list[i-1], fontsize=18, ha='right')
+                        ax.text(95, leg_top[i] - .1 * ymax_list[i], lab2, color=colors_list[i], fontsize=18, ha='right')
                         ax.text(95, 0.85 * ymax_list[i], experiment_labels[2 * ii], color='k',
-                                fontsize=16, ha='right')
+                                fontsize=20, ha='right')
                         ax.set_ylim([0., ymax_list[i]])
 
             ax.set_title('True model: {} (mass: {:.0f} GeV)'.format(MODELNAME_TEX[m.name], mass), fontsize=fs)
-            plt.text(0.5, .05, r'Probability of True Model   [$\%$]', ha='center', va='center', fontsize=fs)
-
+            pl.xlabel(r'Probability of True Model   [$\%$]', fontsize=fs)
             figname = results_root + 'PDF_Single_{:.0f}GeV_{}_{}sims{}.pdf'.format(mass, m.name, nsim, filelabel)
             if saveplots:
                 pl.savefig(figname)
