@@ -771,10 +771,10 @@ def OneDhistogram(nsim=50, startsim=1, masses=[50.],
                         ax_y = 1
                     ii = i
                     if tval == 'F':
-                        axarr[ax_x, ax_y].set_xlim([10., 100.])
-                        ticks = np.power(10., 2 * np.array([.5, .7, .8, .9, .95]))
+                        axarr[ax_x, ax_y].set_xlim([6.3, 100.])
+                        ticks = np.power(10., 2 * np.array([.4, .7, .8, .9, .95]))
                         axarr[ax_x, ax_y].axes.get_xaxis().set_ticks(ticks)
-                        axarr[ax_x, ax_y].axes.get_xaxis().set_ticklabels(['{:.0f}'.format(50),
+                        axarr[ax_x, ax_y].axes.get_xaxis().set_ticklabels(['{:.0f}'.format(40),
                                                                            '{:.0f}'.format(70),
                                                                            '{:.0f}'.format(80),
                                                                            '{:.0f}'.format(90),
