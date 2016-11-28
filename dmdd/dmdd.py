@@ -787,7 +787,10 @@ class Simulation(object):
             if asimov:
                 raise ValueError('Asimov simulations not yet implemented!')
             else:
-                Q = np.loadtxt(self.datafile)
+                try:
+                    Q = np.loadtxt(self.datafile)
+                except:
+                    Q = np.array([])
                 self.Q = np.atleast_1d(Q)
                 self.N = len(self.Q)
 
