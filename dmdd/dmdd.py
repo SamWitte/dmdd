@@ -409,9 +409,11 @@ class MultinestRun(object):
         pickle_content['data'] = {}
         pickle_content['sim_folders'] = {}
         for sim in self.simulations:
-            pickle_content['data'][sim.experiment.name] = sim.Q
-            pickle_content['sim_folders'][sim.experiment.name] = sim.file_basename
-      
+            try:
+                pickle_content['data'][sim.experiment.name] = sim.Q
+                pickle_content['sim_folders'][sim.experiment.name] = sim.file_basename
+            except:
+                pass
 
         #define filename of pickle file:
         pickle_file = self.chainspath + 'run_parameters.pkl'
@@ -1059,7 +1061,7 @@ class UV_Model(Model):
     ``rate_UV`` module.
     
     """
-    def __init__(self,name,param_names,time_info='T',GF=False,**kwargs):
+    def __init__(self, name, param_names, time_info='T', GF=False, **kwargs):
         default_rate_parameters = dict(mass=50., sigma_si=0., sigma_sd=0., sigma_anapole=0., sigma_magdip=0., sigma_elecdip=0.,
                                     sigma_LS=0., sigma_f1=0., sigma_f2=0., sigma_f3=0.,
                                     sigma_si_massless=0., sigma_sd_massless=0.,

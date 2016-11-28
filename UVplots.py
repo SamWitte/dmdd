@@ -751,8 +751,8 @@ def OneDhistogram(nsim=50, startsim=1, masses=[50.],
                     for x in range(0, xlinspace.size):
                         probdistr[x] = (1. / (nsim * hspace)) * norm.pdf((xlinspace[x] - ys) / hspace).sum()
 
-                    success = float(np.sum(ys > 0.9)) / len(ys) * 100.
-                    probdistr = probdistr
+                    success = float(np.sum(probdistr > 0.9)) / float(np.sum(probdistr > 0.)) * 100.
+                    #probdistr = probdistr
                     #success_list.append(success)
                     #label = experiment_labels[ii]
                     #label_list.append(experiment_labels[ii])
