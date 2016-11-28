@@ -319,9 +319,9 @@ class MultinestRun(object):
                     kwargs[kw] = val
                 kwargs['energy_resolution'] = sim.experiment.energy_resolution
                 kwargs['TIMEONLY'] = self.TIMEONLY
-                if len(sim.Q) > 1.:
+                try:
                     res += self.fit_model.loglikelihood(sim.Q[:, 0], sim.Q[:, 1], sim.experiment.efficiency, **kwargs)
-                else:
+                except IndexError:
                     res += self.fit_model.loglikelihood(sim.Q[0], sim.Q[1], sim.experiment.efficiency, **kwargs)
 
         return res
