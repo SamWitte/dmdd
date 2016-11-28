@@ -588,7 +588,7 @@ def SingleKDE(nsim=50, startsim=1, masses=[50.],
               hspace = (1.06 * 50. ** (-1. / 5.)), filelabel='', allverbose=True, verbose=True,
               results_root=os.environ['DMDD_AM_MAIN_PATH']+'/results_uv/', timeonly=False,
               saveplots=True, alpha=0.3, xoffset=0.1, fs=18, fs2=18, sigma_lim_file=None,
-              colors_list=['black']):
+              colors_list=['Black','Black']):
 
     xlinspace = np.linspace(0, 1, 200)
     ymax_list = np.zeros(2)
@@ -766,7 +766,7 @@ def SingleKDE(nsim=50, startsim=1, masses=[50.],
                         ax.set_ylim([0., ymax_list[i]])
 
             ax.set_title('True model: {} (mass: {:.0f} GeV)'.format(MODELNAME_TEX[m.name], mass), fontsize=fs)
-            f.text(0.5, .05, r'Probability of True Model   [$\%$]', ha='center', va='center', fontsize=fs)
+            plt.text(0.5, .05, r'Probability of True Model   [$\%$]', ha='center', va='center', fontsize=fs)
 
             figname = results_root + 'PDF_Single_{:.0f}GeV_{}_{}sims{}.pdf'.format(mass, m.name, nsim, filelabel)
             if saveplots:
