@@ -322,7 +322,8 @@ class MultinestRun(object):
                 try:
                     res += self.fit_model.loglikelihood(sim.Q[:, 0], sim.Q[:, 1], sim.experiment.efficiency, **kwargs)
                 except IndexError:
-                    res += self.fit_model.loglikelihood(sim.Q[0], sim.Q[1], sim.experiment.efficiency, **kwargs)
+                    res += self.fit_model.loglikelihood(np.array([sim.Q[0]]), np.array([sim.Q[1]]),
+                                                        sim.experiment.efficiency, **kwargs)
 
         return res
 
