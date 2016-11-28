@@ -311,15 +311,16 @@ class MultinestRun(object):
             fit_paramvals[par] = cube[i]
     
         for sim in self.simulations:
-            kwargs = self.fit_model.default_rate_parameters.copy()
-            for kw,val in fit_paramvals.iteritems():
-                kwargs[kw] = val
-            for kw,val in sim.experiment.parameters.iteritems():
-                kwargs[kw] = val
-            kwargs['energy_resolution'] = sim.experiment.energy_resolution
-            kwargs['TIMEONLY'] = self.TIMEONLY
+            if len(sim.Q) > 0.:
+                kwargs = self.fit_model.default_rate_parameters.copy()
+                for kw,val in fit_paramvals.iteritems():
+                    kwargs[kw] = val
+                for kw,val in sim.experiment.parameters.iteritems():
+                    kwargs[kw] = val
+                kwargs['energy_resolution'] = sim.experiment.energy_resolution
+                kwargs['TIMEONLY'] = self.TIMEONLY
 
-            res += self.fit_model.loglikelihood(sim.Q[:, 0], sim.Q[:, 1], sim.experiment.efficiency, **kwargs)
+                res += self.fit_model.loglikelihood(sim.Q[:, 0], sim.Q[:, 1], sim.experiment.efficiency, **kwargs)
 
         return res
 
