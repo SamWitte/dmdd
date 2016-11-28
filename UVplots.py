@@ -794,8 +794,9 @@ def OneDhistogram(nsim=50, startsim=1, masses=[50.],
                             leg_top[i] = 0.7 * ymax_list[i]
                         else:
                             leg_top[i] = 0.1 * ymax_list[i]
-                        axarr[ax_x, ax_y].text(12, leg_top[i], lab[i], color=colors_list[i], fontsize=10)
-                        axarr[ax_x, ax_y].text(12, 0.85 * ymax_list[i], experiment_labels[2 * ii], color='k', fontsize=16)
+                        axarr[ax_x, ax_y].text(95, leg_top[i], lab[i], color=colors_list[i], fontsize=10, ha='right')
+                        axarr[ax_x, ax_y].text(95, 0.85 * ymax_list[i], experiment_labels[2 * ii], color='k',
+                                               fontsize=16, ha='right')
                         axarr[ax_x, ax_y].set_ylim([0., ymax_list[i]])
 
             #axarr[1, 1].text(10, 0.5 * ymax, 'Solid: Time \n Dashed: No Time', color='k', fontsize=10)
