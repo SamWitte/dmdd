@@ -743,14 +743,17 @@ def SingleKDE(nsim=50, startsim=1, masses=[50.],
                                                             '{:.0f}'.format(95),
                                                             '{:.0f}'.format(100)])
                         ls = '--'
-                        ymax_list[i] = np.max(probdistr) + 0.1
+
+                        ymax_list[2*i] = np.max(probdistr) + 0.1
+
                         lab1 = experiment_labels[2*i] + '\n No Time \n' + r'[Success: {:.0f}$\%$]'.format(success)
                         ax.plot(10 ** (2. * xlinspace), probdistr, ls, linewidth=2,
-                                               color=colors_list[i], dashes=(10, 10), label=lab1)
+                                color=colors_list[i], dashes=(10, 10), label=lab1)
 
                         ax.axes.get_yaxis().set_ticks([])
                     else:
-                        ymax_list[i] = np.max([ymax_list[i], np.max(probdistr) + 0.1])
+                        ymax_list[2*i+1] = np.max(probdistr) + 0.1
+
                         lab2 = experiment_labels[2*i] + '\n Time \n' + r'[Success: {:.0f}$\%$]'.format(success)
                         ax.plot(10 ** (2. * xlinspace), probdistr, linewidth=2, color=colors_list[i], label=lab2)
 
@@ -759,8 +762,9 @@ def SingleKDE(nsim=50, startsim=1, masses=[50.],
                         #ax.text(95, leg_top[i] - .1 * ymax_list[i], lab2, color=colors_list[i], fontsize=18, ha='right')
                         #ax.text(95, 0.85 * ymax_list[i], experiment_labels[i], color='k',
                         #        fontsize=20, ha='right')
-                        ax.set_ylim([0., ymax_list[i]])
-            plt.legend(loc=3, frameon=True, framealpha=0.5, fontsize=12, ncol=2, fancybox=True,
+            ymax = np.max([ymax_list])
+            ax.set_ylim([0., ymax_list[i]])
+            plt.legend(loc=1, frameon=True, framealpha=0.5, fontsize=12, ncol=2, fancybox=True,
                        handlelength=3)
             ax.set_title('True model: {} (mass: {:.0f} GeV)'.format(MODELNAME_TEX[m.name], mass), fontsize=fs)
             pl.xlabel(r'Probability of True Model   [$\%$]', fontsize=fs)
@@ -1647,8 +1651,8 @@ def plot_2d_posterior(x, y,xlabel='', ylabel='',
 #############
 ############
 ##########
-def make_Nexpected_latextable(masses=[15,50,500],experiments=[xe,ge,iod,flu],filename=None,
-                              models=MODELS_UV1+MODELS_UV2,
+def make_Nexpected_latextable(masses=[20,125,500],experiments=[xe,ge,flu],filename=None,
+                              models=MODELS_UV1,
                               results_root='/Users/SamWitte/Desktop/dmdd/Storage/results_uv/'):
     if filename is None:
         filename = results_root + 'latextable_Nexpected.txt'
@@ -1678,7 +1682,8 @@ def make_Nexpected_latextable(masses=[15,50,500],experiments=[xe,ge,iod,flu],fil
                                             experiment.Qmax,
                                             experiment.exposure,
                                             experiment.efficiency,
-                                            experiment.Start, experiment.End,
+                                            experiment.start_t,
+                                            experiment.end_t,
                                             sigma_names[m.name],
                                             f_sigma_lims(m.name,mass),
                                             mass=mass,
