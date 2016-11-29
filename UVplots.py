@@ -743,8 +743,8 @@ def SingleKDE(nsim=50, startsim=1, masses=[50.],
                                                             '{:.0f}'.format(95),
                                                             '{:.0f}'.format(100)])
                         ls = '--'
-
-                        ymax_list[2*i] = np.max(probdistr) + 0.1
+                        if success < 100.:
+                            ymax_list[2*i] = np.max(probdistr) + 0.1
 
                         lab1 = experiment_labels[2*i] + '\n No Time \n' + r'[Success: {:.0f}$\%$]'.format(success)
                         ax.plot(10 ** (2. * xlinspace), probdistr, ls, linewidth=2,
@@ -752,8 +752,8 @@ def SingleKDE(nsim=50, startsim=1, masses=[50.],
 
                         ax.axes.get_yaxis().set_ticks([])
                     else:
-                        ymax_list[2*i+1] = np.max(probdistr) + 0.1
-
+                        if success < 100.:
+                            ymax_list[2*i+1] = np.max(probdistr) + 0.1
                         lab2 = experiment_labels[2*i] + '\n Time \n' + r'[Success: {:.0f}$\%$]'.format(success)
                         ax.plot(10 ** (2. * xlinspace), probdistr, linewidth=2, color=colors_list[i], label=lab2)
 
@@ -1672,8 +1672,27 @@ def make_Nexpected_latextable(masses=[20,125,500],experiments=[xe,ge,flu],filena
     fout.write('\\hline\\hline\\\\\n')
 
     for m in models:
-
         fout.write(MODELNAME_TEX[m.name])
+        for mass in masses:
+            sigma_lux[mass][m.name] = lux.sigma_limit(mass=mass, sigma_name=sigma_names[m.name],
+                                                      fnfp_name=fnfp_names[m.name], fnfp_val=fnfp_vals[m.name],
+                                                      Nbackground=Nbg[lux.name])
+            sigma_pandax[mass][m.name] = pandax.sigma_limit(mass=mass, sigma_name=sigma_names[m.name],
+                                                            fnfp_name=fnfp_names[m.name], fnfp_val=fnfp_vals[m.name],
+                                                            Nbackground=Nbg[pandax.name])
+            sigma_cdmslite[mass][m.name] = cdmslite.sigma_limit(mass=mass, sigma_name=sigma_names[m.name],
+                                                                fnfp_name=fnfp_names[m.name],
+                                                                fnfp_val=fnfp_vals[m.name],
+                                                                Nbackground=Nbg[cdmslite.name])
+            sigma_supercdms[mass][m.name] = supercdms.sigma_limit(mass=mass, sigma_name=sigma_names[m.name],
+                                                                  fnfp_name=fnfp_names[m.name],
+                                                                  fnfp_val=fnfp_vals[m.name],
+                                                                  Nbackground=Nbg[supercdms.name])
+            sigma_limvals[mass][m.name] = min(sigma_supercdms[mass][m.name],
+                                              sigma_cdmslite[mass][m.name],
+                                              sigma_lux[mass][m.name],
+                                              sigma_pandax[mass][m.name])
+
         for experiment in experiments:
             entry = '& ('
             for mass in masses:
@@ -1682,14 +1701,14 @@ def make_Nexpected_latextable(masses=[20,125,500],experiments=[xe,ge,flu],filena
                                             experiment.Qmax,
                                             experiment.exposure,
                                             experiment.efficiency,
-                                            experiment.Start,
-                                            experiment.End,
+                                            experiment.start_t,
+                                            experiment.end_t,
                                             sigma_names[m.name],
-                                            f_sigma_lims(m.name,mass),
+                                            sigma_limvals[mass][m.name],
                                             mass=mass,
                                             fnfp_name=fnfp_names[m.name],
                                             fnfp_val=fnfp_vals[m.name])
-                print experiment.element, experiment.Qmin, experiment.Qmax,
+
                 if mass == masses[0]:
                     entry += '{:.0f}'.format( Nexps )
                 else:

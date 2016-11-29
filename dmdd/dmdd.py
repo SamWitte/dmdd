@@ -1398,7 +1398,6 @@ def Nexpected(element, Qmin, Qmax, exposure, efficiency, start_t, end_t,
     """
     NOTE: This is only set up for models in rate_UV.
     """
-              
 
     kwargs = {
         'mass': mass,
@@ -1409,9 +1408,10 @@ def Nexpected(element, Qmin, Qmax, exposure, efficiency, start_t, end_t,
         'rho_x': rho_x,
         'element': element,
         'Qmin': Qmin,
-        'Qmax': Qmax
+        'Qmax': Qmax,
+        'GF': True
         }
-    if (fnfp_val is not None) and  (fnfp_name is not None):
+    if (fnfp_val is not None) and (fnfp_name is not None):
         kwargs[fnfp_name] = fnfp_val
 
     res = rate_UV.R(efficiency, **kwargs) * YEAR_IN_S * exposure
