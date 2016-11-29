@@ -763,7 +763,7 @@ def SingleKDE(nsim=50, startsim=1, masses=[50.],
                         #ax.text(95, 0.85 * ymax_list[i], experiment_labels[i], color='k',
                         #        fontsize=20, ha='right')
             ymax = np.max([ymax_list])
-            ax.set_ylim([0., ymax_list[i]])
+            ax.set_ylim([0., ymax_list])
             plt.legend(loc=1, frameon=True, framealpha=0.5, fontsize=12, ncol=2, fancybox=True,
                        handlelength=3)
             ax.set_title('True model: {} (mass: {:.0f} GeV)'.format(MODELNAME_TEX[m.name], mass), fontsize=fs)
@@ -1689,6 +1689,7 @@ def make_Nexpected_latextable(masses=[20,125,500],experiments=[xe,ge,flu],filena
                                             mass=mass,
                                             fnfp_name=fnfp_names[m.name],
                                             fnfp_val=fnfp_vals[m.name])
+                print Nexps
                 if mass == masses[0]:
                     entry += '{:.0f}'.format( Nexps )
                 else:
