@@ -591,8 +591,8 @@ def SingleKDE(nsim=50, startsim=1, masses=[50.],
               colors_list=['Red','Purple']):
 
     xlinspace = np.linspace(0, 1, 200)
-    ymax_list = np.zeros(2)
-    leg_top = np.zeros(2)
+    ymax_list = np.zeros(4)
+    leg_top = np.zeros(4)
     lab1 = []
     lab2 = []
 
@@ -624,7 +624,7 @@ def SingleKDE(nsim=50, startsim=1, masses=[50.],
 
     indexchange = 0
     for x in range(0, len(experiment_labels)):
-        experiment_labels = np.append(experiment_labels, experiment_labels[x] + '\n No Time')
+        experiment_labels = np.append(experiment_labels, experiment_labels[x])
         indexchange += 1
 
     holdarray = copy.copy(experiment_labels)
@@ -724,11 +724,6 @@ def SingleKDE(nsim=50, startsim=1, masses=[50.],
                         if ev_sum == np.inf:
                             print 'yikes. evidence is infinity.'
 
-                    if tval == 'F':
-                        ii = 2*i + 1
-                    else:
-                        ii= 2*i
-
                     probdistr = np.zeros_like(xlinspace)
                     std_dev = np.std(ys)
                     hspace = 1.06 * std_dev * nsim ** (-1. / 5.)
@@ -749,22 +744,24 @@ def SingleKDE(nsim=50, startsim=1, masses=[50.],
                                                             '{:.0f}'.format(100)])
                         ls = '--'
                         ymax_list[i] = np.max(probdistr) + 0.1
+                        lab1 = experiment_labels[2*i] + '\n No Time \n' + r'[Success: {:.0f}$\%$]'.format(success)
                         ax.plot(10 ** (2. * xlinspace), probdistr, ls, linewidth=2,
-                                               color=colors_list[ii], dashes=(10, 10))
-                        lab1 = '(Dashed) No Time: ' + r'[Success: {:.0f}$\%$]'.format(success)
+                                               color=colors_list[i], dashes=(10, 10), label=lab1)
+
                         ax.axes.get_yaxis().set_ticks([])
                     else:
                         ymax_list[i] = np.max([ymax_list[i], np.max(probdistr) + 0.1])
+                        lab2 = experiment_labels[2*i] + '\n Time \n' + r'[Success: {:.0f}$\%$]'.format(success)
+                        ax.plot(10 ** (2. * xlinspace), probdistr, linewidth=2, color=colors_list[i], label=lab2)
 
-                        ax.plot(10 ** (2. * xlinspace), probdistr, linewidth=2, color=colors_list[ii])
-                        lab2 = '(Solid) Time: ' + r'[Success: {:.0f}$\%$]'.format(success)
-                        leg_top[i] = 0.7 * ymax_list[i]
-                        ax.text(95, leg_top[i], lab1, color=colors_list[2*i+1], fontsize=18, ha='right')
-                        ax.text(95, leg_top[i] - .1 * ymax_list[i], lab2, color=colors_list[i], fontsize=18, ha='right')
-                        ax.text(95, 0.85 * ymax_list[i], experiment_labels[2 * ii], color='k',
-                                fontsize=20, ha='right')
+                        #leg_top[i] = 0.7 * ymax_list[i]
+                        #ax.text(95, leg_top[i], lab1, color=colors_list[2*i+1], fontsize=18, ha='right')
+                        #ax.text(95, leg_top[i] - .1 * ymax_list[i], lab2, color=colors_list[i], fontsize=18, ha='right')
+                        #ax.text(95, 0.85 * ymax_list[i], experiment_labels[i], color='k',
+                        #        fontsize=20, ha='right')
                         ax.set_ylim([0., ymax_list[i]])
-
+            plt.legend(loc=3, frameon=True, framealpha=0.5, fontsize=12, ncol=2, fancybox=True,
+                       handlelength=3)
             ax.set_title('True model: {} (mass: {:.0f} GeV)'.format(MODELNAME_TEX[m.name], mass), fontsize=fs)
             pl.xlabel(r'Probability of True Model   [$\%$]', fontsize=fs)
             figname = results_root + 'PDF_Single_{:.0f}GeV_{}_{}sims{}.pdf'.format(mass, m.name, nsim, filelabel)
@@ -929,11 +926,6 @@ def OneDhistogram(nsim=50, startsim=1, masses=[50.],
                         if ev_sum == np.inf:
                             print 'yikes. evidence is infinity.'
 
-                    if tval == 'F':
-                        ii = 2*i + 1
-                    else:
-                        ii=2*i
-
                     probdistr = np.zeros_like(xlinspace)
                     std_dev = np.std(ys)
                     hspace = 1.06 * std_dev * nsim ** (-1. / 5.)
@@ -941,11 +933,7 @@ def OneDhistogram(nsim=50, startsim=1, masses=[50.],
                         probdistr[x] = (1. / (nsim * hspace)) * norm.pdf((xlinspace[x] - ys) / hspace).sum()
 
                     success = float(np.sum(probdistr[xlinspace > 0.9])) / float(np.sum(probdistr)) * 100.
-                    #probdistr = probdistr
-                    #success_list.append(success)
-                    #label = experiment_labels[ii]
-                    #label_list.append(experiment_labels[ii])
-                    #c_list.append(colors_list[ii])
+
                     if i == 0:
                         ax_x = 0
                         ax_y = 0
@@ -961,32 +949,36 @@ def OneDhistogram(nsim=50, startsim=1, masses=[50.],
                     ii = i
                     if tval == 'F':
                         axarr[ax_x, ax_y].set_xlim([6.3, 100.])
-                        ticks = np.power(10., 2 * np.array([.4, .7, .8, .9, .95]))
+                        ticks = np.power(10., 2 * np.array([.5, .7, .8, .9, .95]))
                         axarr[ax_x, ax_y].axes.get_xaxis().set_ticks(ticks)
-                        axarr[ax_x, ax_y].axes.get_xaxis().set_ticklabels(['{:.0f}'.format(40),
+                        axarr[ax_x, ax_y].axes.get_xaxis().set_ticklabels(['{:.0f}'.format(50),
                                                                            '{:.0f}'.format(70),
                                                                            '{:.0f}'.format(80),
                                                                            '{:.0f}'.format(90),
                                                                            '{:.0f}'.format(95)])
                         ls = '--'
                         ymax_list[i] = np.max(probdistr) + 0.1
+                        label = 'No Time ' + r'[Success: {:.0f}$\%$]'.format(success)
                         axarr[ax_x, ax_y].plot(10 ** (2. * xlinspace), probdistr, ls, linewidth=2,
-                                               color=colors_list[ii], dashes=(10, 10))
-                        lab.append('(Dashed) No Time: ' + r'[Success: {:.0f}$\%$]'.format(success))
+                                               color=colors_list[ii], dashes=(10, 10), label=label)
                         axarr[ax_x, ax_y].axes.get_yaxis().set_ticks([])
                     else:
                         ymax_list[i] = np.max([ymax_list[i], np.max(probdistr) + 0.1])
-
-                        axarr[ax_x, ax_y].plot(10 ** (2. * xlinspace), probdistr, linewidth=2, color=colors_list[ii])
-                        lab[i] += ('\n (Solid) Time: ' + r'[Success: {:.0f}$\%$]'.format(success))
+                        label = 'Time ' + r'[Success: {:.0f}$\%$]'.format(success)
+                        axarr[ax_x, ax_y].plot(10 ** (2. * xlinspace), probdistr, linewidth=2,
+                                               color=colors_list[ii], label=label)
                         if i > 1:
                             leg_top[i] = 0.7 * ymax_list[i]
                         else:
                             leg_top[i] = 0.7 * ymax_list[i]
-                        axarr[ax_x, ax_y].text(95, leg_top[i], lab[i], color=colors_list[i], fontsize=10, ha='right')
+
                         axarr[ax_x, ax_y].text(95, 0.85 * ymax_list[i], experiment_labels[2 * ii], color='k',
                                                fontsize=16, ha='right')
                         axarr[ax_x, ax_y].set_ylim([0., ymax_list[i]])
+                        #  axarr[ax_x, ax_y].axhline(y=0, xmin=0, xmax=1, lw=2, color='k')
+                        axarr[ax_x, ax_y].legend(loc=3, frameon=True, framealpha=0.5,
+                                                 fontsize=10, ncol=1, fancybox=True, handlelength=3)
+
 
             #axarr[1, 1].text(10, 0.5 * ymax, 'Solid: Time \n Dashed: No Time', color='k', fontsize=10)
             pl.suptitle('True model: {} (mass: {:.0f} GeV)'.format(MODELNAME_TEX[m.name], mass), fontsize=fs)
