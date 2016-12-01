@@ -109,7 +109,7 @@ MODELNAME_COLOR = {
 
     
 MODELNAME_TEX = { 
-    'SI_Higgs': 'SI Higgs',
+    'SI_Higgs': 'SI',
     'Millicharge': 'Millicharge',
     'SD_fu': 'SD flavor-univ.',
     'Anapole': 'Anapole',
