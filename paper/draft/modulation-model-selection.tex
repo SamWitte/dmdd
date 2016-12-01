@@ -1,7 +1,9 @@
 %\documentclass[aps,prd,nofootinbib,amsmath,notitlepage]{revtex4-1}
 \documentclass[11pt]{article}
-\usepackage{jcappub}
-\usepackage{amssymb,esvect,amsmath,graphicx,latexsym,amsthm,slashed,eso-pic,fullpage}
+\usepackage{jcappub,graphicx,array,multirow,dcolumn,hyperref,bm,pbox,color,verbatim, slashed}
+\usepackage[T1]{fontenc}
+\usepackage[usenames]{xcolor}
+\usepackage[section]{placeins} % Keep floats within the relevant section
 \usepackage[final]{pdfpages}
 \DeclareMathOperator{\ev}{eV} \DeclareMathOperator{\kev}{KeV} \DeclareMathOperator{\mev}{MeV} \DeclareMathOperator{\gev}{GeV} \DeclareMathOperator{\tev}{TeV} \DeclareMathOperator{\cm}{cm} \DeclareMathOperator{\barn}{barn} \DeclareMathOperator{\g}{g} \DeclareMathOperator{\km}{km} \DeclareMathOperator{\pb}{pb} \DeclareMathOperator{\s}{s} \DeclareMathOperator{\yr}{yr}\DeclareMathOperator{\gyr}{Gyr} \DeclareMathOperator{\kg}{kg} \DeclareMathOperator{\mpc}{Mpc} \DeclareMathOperator{\few}{few} \DeclareMathOperator{\kel}{K}
 \newcommand{\cA}{{\cal A}} \newcommand{\cC}{{\cal C}} \newcommand{\cD}{{\cal D}} \newcommand{\cE}{{\cal E}} \newcommand{\cF}{{ \cal F}} \newcommand{\cH}{{\cal H}} \newcommand{\cJ}{{\cal J}} \newcommand{\cL}{{\cal L}} \newcommand{\cM}{{\cal M}} \newcommand{\cN}{{\cal N}} \newcommand{\cO}{{\cal O}} \newcommand{\cP}{{ \cal P}} \newcommand{\tp}{{ \tilde p}} \newcommand{\cR}{{\cal R}} \newcommand{\cS}{{\cal S}}
@@ -20,6 +22,28 @@
 \newcommand{\Tab}[1]{Tab.~\ref{#1}}
 \newcommand{\App}[1]{App.~\ref{#1}}
 \DeclareMathOperator{\br}{Br} \DeclareMathOperator{\tr}{Tr}
+%%%%% Particle Physics %%%%%
+\def\lag{\mathcal{L}}
+\def\lagint{\lag_\text{int}}
+\def\op{\mathcal{O}}
+\def\oprel{\mathcal{O}^\text{rel}}
+\def\chibar{\bar{\chi}}
+\def\Nbar{\bar{N}}
+%%%%% Nuclear Response Function, quantities %%%%%
+\def\W{\widetilde{W}}
+%% for consistency with particle physics literature, don't use bold face
+\def\sp{\langle {S}_p \rangle }
+\def\sn{\langle {S}_n \rangle }
+\def\sN{\langle {S}_N \rangle }
+\def\Lp{\langle {L}_p \rangle }
+\def\Ln{\langle {L}_n \rangle }
+\def\LN{\langle {L}_N \rangle }
+%%%%% momentum short-hand %%%%%
+\def\qsq{\vec{q}^{\,2}}
+\def\absq{|\vec{q}|}
+\def\qbar{\bar{q}}
+\def\vqsq{\vec{q}^{\,2}}
+\def\mag{\tilde{\mu}}
 \newcommand{\arxiv}[1]{{\href{http://arxiv.org/abs/#1}{\tt #1}}}
 
 \newcommand{\sdm}[1]{\textcolor{blue}{\textbf{(#1 -- SDM)}}}
@@ -56,6 +80,9 @@ In this work, we will be interested in a different route to the dynamics of the 
 
 The rest of the paper is laid out like \sdm{every other good paper you've read, and totally unlike all the bad papers that you usually read}.
 
+
+
+
 \section{Dark Matter Direct Detection: Energy and Time Dependence}
 
 The observed recoil energy spectrum is the number count of nuclear recoil events observed per recoil energy $E_R$, per unit time, per unit target mass,
@@ -70,7 +97,7 @@ where:
 \item $v_{\mathrm{esc, lab}}$ is the escape velocity from the Galactic halo in the lab frame
 \item $v$ is the velocity of the dark matter in the lab frame
 \item $f(\mathrm{\mbox{\bf{v}}}|t)$ is the observed dark matter velocity distribution, which is generically time-dependent
-\item and $d\sigma_T/dE_R=m_T \sigma_T /2\mu_T^2 v^2$ is the differential cross section for dark matter scattering off a target; in this work, we focus on nuclear recoils.
+\item and $d\sigma_T/dE_R=m_T \sigma_T /2\mu_T^2 v^2$ is the differential cross section for dark matter scattering off a target; in this work, we focus on nuclear recoils, and we focus on the physics of $d\sigma_T/dE_R=m_T \sigma_T /2\mu_T^2 v^2$ in the next section.
 \end{itemize}
 The differential rate in \Eq{eq:dRdEr_general} is determined by the experimental setup, the dark matter astrophysics, the particle properties of dark matter, the nuclear properties of the target material $T$ (throughout this paper we use $T$ to denote the nuclear target and we reserve $N$ to denote a nucleon, either $n$ or $p$), and the type of interaction between the dark matter and the target. For the purposes of this study, we set the astrophysical parameters to the following values \cite{Bovy:2013raa}: $\rho_\chi=0.3$ GeV/cm$^3$; $v_{\mathrm{esc}} = 544$ km/sec in the Galactic frame; we assume that $f(\mathrm{\mbox{\bf{v}}})$ is a Maxwellian distribution in the Galactic frame, with an rms speed of $155$ km/sec, and a mean speed equal to the Sun's rotational velocity around the Galactic center, $v_\textrm{lag}=220$ km/sec. The underlying particle physics model determines the calculation of the recoil rate through the differential scattering cross section ${d\sigma_T}/{dE_R}$, as discussed in \cite{Gluscevic:2015sqa,Gresham:2014vja}: this has a free normalization with units of cm${}^2$ as well as a discrete set of functional dependences on $E_R$ and $v$.
 
@@ -82,13 +109,72 @@ The total number of events and the differential rate for a given energy and time
 
 As is clear in \Eq{eq:dRdEr_general}, the differential rate of nuclear recoils depends on time. This arises from the motion of the earth about the sun. In the galactic rest frame, the dark matter is well approximated as a virialized fluid with a Maxwell-Boltzmann velocity distribution whose most probable speed is a function of radius. However, a terrestrial laboratory experiences additional motion relative to such a reference frame. The consequence of this motion is that on earth we appear to be moving harmonically with respect to a galactic ``wind'' of dark matter particles. In prior work this harmonic motion was effectively averaged over, such that time information was simply accounted for as an overall scaling of the total exposure. Here, instead of integrating over the time we instead examine what it tells us about the underlying interaction.
 
-\section{Effective Field Theory and Nonstandard Scattering}
 
-Spin-independent scattering involves coherent contributions from an entire nucleus, such that the cross section scales quadratically with nucleon number. This is to be contrasted with the spin-dependent rate, since the total nuclear spin is typically concentrated in a single nucleon and does not scale with nuclear size. However, ``spin-independent'' need not imply a large rate: this is shorthand for a broad category of possible responses that encompass a diversity of nuclear ``charges'' and ``currents'' \cite{Fitzpatrick:2012ix}, some of which are suppressed by small kinematic factors. Consistently tracking small factors requires a proper effective field theory expansion. The effective field theory of dark matter direct detection \cite{Fitzpatrick:2012ix, Anand:2013yka} is an expansion in the spin and two small kinematic variables\footnote{For additional details of the implementation of the effective theory in the context of model selection, we refer to the treatment of \cite{Gluscevic:2015sqa}.}: $|\vec q|/m_N$, where $\vec q$ is the change in momentum of the dark matter particle during the scattering, and $v_\perp$, the (orthogonal component of the) relative velocity of the initial state particles. Despite the fact that these expansion parameters are of the same order of magnitude, they scale differently in the observables of the scattering. In particular, responses that enter at higher order in $|\vec q|/m_N$ deliver a vanishing rate at both small and large momentum transfer, with a maximum rate at some intermediate recoil energy. On the other hand, higher order terms in $v_\perp$ monotonically decrease with energy, qualitatively similar to standard scattering, but multiplied by a different velocity integral in \Eq{eq:dRdEr_general} \cite{Fitzpatrick:2010br}, which provides a novel dependence on laboratory velocity (as well as the astrophysical parameters) in the differential rate. Because the laboratory velocity is changing with time, the different dependence on this velocity implicitly leads to a {\it nonstandard time dependence} for the interactions whose scattering cross sections include a factor of $v_\perp^2$. For large enough dark matter mass, this nonstandard time dependence can manifest as having the opposite phase compared to the standard rate! Thus despite producing qualitatively similar energy spectra, nonstandard velocity integrals can induce qualitatively different differential rates as a function of time.
 
-Distinguishing between rates with different momentum dependence is easy to do even when limiting to energy spectrum information from a single detector target element \cite{Gluscevic:2015sqa}. However, extracting the particle physics from two rates with the same momentum dependence requires additional information. This is true because interactions with different momentum dependence have qualitatively different energy spectra, whereas those with the same momentum dependence (even if the $v_\perp$ dependence differs) have energy spectra whose differences can be swamped by Poisson noise. The additional power needed for positive model selection can come from simultaneously examining spectra from detectors with complementary nuclear physics properties \cite{Gluscevic:2015sqa}. Alternately, a different route to this model discrimination is provided by the different time dependence noted here.
+
+\section{Effective Field Theory and Dark Matter Scattering}
+
+The function $d\sigma_T/dE_R=m_T \sigma_T /2\mu_T^2 v^2$ defined above contains the interesting particle physics of the dark matter scattering. In this section, we discuss that this scattering can take only a limited number of forms which are catalogued by an effective field theory. We highlight several particularly interesting examples of this scattering, which we will subsequently use to test the effects of time dependence on model selection.
+
+\subsection{Momentum and Velocity Suppression: Scaling in Energy and Time}
+
+Spin-independent scattering involves coherent contributions from an entire nucleus, such that the cross section scales quadratically with nucleon number. This is to be contrasted with the spin-dependent rate, since the total nuclear spin is typically concentrated in a single nucleon and does not scale with nuclear size. However, ``spin-independent'' only refers to the dependence on nuclear spin and need not imply a large rate. Many responses sensitive to a several nuclear ``charges'' and ``currents'' \cite{Fitzpatrick:2012ix}, some of which are suppressed by small kinematic factors, can be classified as ``spin-independent.'' Consistently counting the pertinent small factors requires a proper effective field theory expansion. The effective field theory of dark matter direct detection \cite{Fitzpatrick:2012ix, Anand:2013yka} is an expansion in two small kinematic variables: $|\vec q|/m_N$, where $\vec q$ is the change in momentum of the dark matter particle during the scattering, and $v_\perp$, the (orthogonal component of the) relative velocity of the initial state particles. For an incoming (outgoing) dark matter three-momentum $\vec p(\vec p')$, incoming (outgoing) target three-momentum $\vec k(\vec k')$, and reduced mass $\mu_{\chi N} = m_\chi m_N/(m_\chi +m_N)$, we define these kinematic factors as \cite{Fitzpatrick:2012ix}
+\beq \label{eq:kinematic-definitions}
+\vec q=\vec p'-\vec p=\vec k-\vec k', \qquad v_\perp=\frac{\vec p}{m_\chi}-\frac{\vec k}{m_N}+\frac{\vec q}{2\mu_{\chi N}}.
+\eeq
+The three momentum is directly related to the nuclear recoil energy $E_R$ via $\qsq=2m_TE_R$.
+
+These expansion parameters are of the same order of magnitude, but they manifest differently in the observables of the scattering. In particular, responses that enter at higher order in $|\vec q|/m_N$ deliver a vanishing rate at both small and large momentum transfer, with a maximum rate at some intermediate recoil energy. On the other hand, higher order terms in $v_\perp$ monotonically decrease with energy, qualitatively similar to standard scattering. The novelty of the responses with $v_\perp$ dependence, therefore, is not easy to assess given a single energy spectrum. One solution is to leverage ``target complementarity'' by using a different nucleus with incommensurate nuclear charges \cite{Gluscevic:2015sqa}. We take a different approach here, starting from the observation that rates with a response proportional to $v_\perp^2$ include a nonstandard velocity integral in \Eq{eq:dRdEr_general}, leading to a novel dependence on laboratory velocity (as well as the astrophysical parameters) in the differential rate \cite{Fitzpatrick:2010br}. Because the laboratory velocity is changing with time, the different dependence on this velocity implicitly leads to a nonstandard time dependence for the interactions whose scattering cross sections include a factor of $v_\perp^2$. For large enough dark matter mass, this nonstandard time dependence can provide the {\it opposite phase} compared to the standard rate! Thus, a new observable can reveal the novelty of the responses with $v_\perp$ dependence: we can use phase information from rates with nonstandard velocity integrals to distinguish these from the standard rates.
+
+%Distinguishing between rates with different momentum dependence is easy to do even when limiting to energy spectrum information from a single detector target element \cite{Gluscevic:2015sqa}. However, extracting the particle physics from two rates with the same momentum dependence requires additional information. This is true because interactions with different momentum dependence have qualitatively different energy spectra, whereas those with the same momentum dependence (even if the $v_\perp$ dependence differs) have energy spectra whose differences can be swamped by Poisson noise. The additional power needed for positive model selection can come from simultaneously examining spectra from detectors with complementary nuclear physics properties \cite{Gluscevic:2015sqa}. Alternately, a different route to this model discrimination is provided by the different time dependence noted here.
 
 As an example, we show in \Fig{} how the different momentum and velocity dependences enter the energy and time spectra for different operators. \sdm{Here I think we should show one plot of $dR/dE_R dt$ vs $E_R$ spectrum for regular SI, ED-heavy, and anapole (taken on the equinox, for example); then another plot with the same interactions but $dR/dE_R dt$ vs $t$ for some reasonable energy deposition well above threshold. Use Xe detector \& 500 GeV particle, or whatever looks best} The energy spectra for the SI and ED-heavy interactions are visually distinguishable in a way that the SI and anapole interactions are not: it does not take an arbitrarily large exposure to collect a sufficient number of events to distinguish between the SI and ED-heavy hypotheses using the energy spectrum alone, although doing the same with the SI and anapole hypotheses is quite challenging, given realistic Poisson errors \cite{Gluscevic:2015sqa}. However, as a function of time it is clear that the anapole and SI rates have different phases as functions of time. This difference, expected to be a few percent given standard calculations for the modulation power fraction, is not sufficiently powerful on its own to differentiate two models with similar energy spectra. Nonetheless, we will show below that this small effect can be leveraged to supplement the energy spectrum information to allow for successful model selection with a smaller number of total events than would be required using energy spectrum information alone.
+
+\subsection{Summary of Models}
+
+With this physics motivation in mind, we examine the ability to perform model selection on models of new physics with a heavy gauge boson of mass $M$ that kinetically mixes with the Standard Model photon. At high energies, the Lagrangian contains
+\beq \label{eq:UV-model}
+\cL \supset -  m_X \bar X X + i \bar X \slashed D X  - \frac12 M^2 A'_\mu A'^\mu  - \frac14 F'_{\mu \nu} F'^{\mu \nu} - \frac\epsilon2 F'_{\mu \nu} F^{\mu \nu}
+\eeq
+for a fermion (or family of fermions, or charged supermultiplet) $X$ charged under a $U(1)'$ with vector $A'_\mu$ and gauge boson field strength $F'_{\mu \nu}$. At low energies, the dark matter couples to the Standard Model nucleon current \cite{Gresham:2014vja},
+\beq \label{eq:current}
+\cJ_\mu = \partial^\alpha F_{\alpha \mu} = e \sum_{n,p} \bar N \pL Q_N \frac{K_\mu}{2m_N} -\widetilde \mu_N \frac{i \sigma_{\mu \nu}q^\nu}{2m_N} \pR N,
+\eeq 
+where $Q_{p(n)}=1(0)$ are the nucleon charges in units of the electron charge $e$, $K_\mu/2 = (k_\mu + k'_\mu)/2$ is the average nucleon momentum, and $\tilde{\mu}_N = {\text{magnetic moment} \over \text{nuclear magneton}}$ is the dimensionless nucleon magnetic moment. At low energies, the model in \Eq{eq:UV-model} can give rise to several electromagnetic currents. These are determined by the charges and low-energy dynamics of the fermion dark matter particle, with candidate operators \cite{Gresham:2014vja, Gluscevic:2015sqa}
+\begin{eqnarray} \label{eq:photon-DM-ops}
+\cO_{\rm \chi, Anapole}^\mu & = & g^{\rm Anapole}\bar \chi \gamma^\mu \gamma_5 \chi, \\
+\cO_{\rm \chi, MD}^\mu & = & \frac{g^{\rm MD}}{\Lambda}\bar \chi i \sigma^{\mu \nu} q_\nu \chi ,\\
+\cO_{\rm \chi, ED}^\mu & = & \frac{g^{\rm ED}}{\Lambda} \bar \chi i \sigma^{\mu \nu} \gamma_5 q_\nu \chi.
+\end{eqnarray}
+The correct interaction operator for the low-energy interacting state $\chi$ is determined by the dynamics of the $X$ fermion(s) introduced above. The anapole current in \Eq{eq:photon-DM-ops} can arise if charged $X$ states condense to form a neutral Majorana state $\chi$ \cite{Bagnasco:1993st}, or the dipole currents form if an electromagnetically neutral $X^0$ couples to an electromagnetically charged pair of partner $X^\pm$ particles (of appropriate spin) \cite{Weiner:2012gm}. The scale at which the charged $X$ states are integrated out is $\Lambda$.
+
+The simplicity of the model building notwithstanding, a rich assortment of momentum and velocity dependence appears in the EFT responses. We list the EFT classification of these operators in \Tab{tab:operators}. (This is an abbreviated version of the more exhaustive table that appeared in \cite{Gluscevic:2015sqa}, using results of \cite{Gresham:2014vja, Gluscevic:2015sqa}.% For additional details of the implementation of the effective theory in the context of model selection, we refer to the discussion in \cite{Gluscevic:2015sqa}.
+)
+
+
+
+\begin{table}[tb]
+\begin{centering}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{c |>{$}c<{$}| >{$}c<{$} >{$}c<{$} c } \hline
+ Model name & {\rm Lagrangian} & \text{$\vec q$, $v$ Dependence} &  {\rm Response}  
+\\ \hline 
+ SI & \frac g{M^2}\bar \chi \chi \bar N N & 1 & M
+\\ \hline 
+ \multirow{2}{*}{Anapole} & \multirow{2}{*}{$\frac g{M^2}\chibar \gamma^\mu \gamma_5 \chi \, \cJ_\mu $} & v_\perp^2 & M \\  
+ & & \qsq/m_N^2 & \Delta + \Sigma' 
+\\ \hline
+\multirow{2}{*}{\pbox{20cm}{Magnetic Dipole}} & \multirow{2}{*}{$\frac g{\Lambda M^2} \chibar \sigma^{\mu \nu} \chi  \, q_\nu \cJ_\mu $} & \frac{\vec q^{\,4}}{\Lambda^4}+ \frac{\qsq v_\perp^2 }{\Lambda^2} & M \\
+ & & \vec q^{\,4}/\Lambda^4 & \Delta + \Sigma' 
+\\ \hline
+Electric Dipole & \frac g{\Lambda M^2} \chibar \sigma^{\mu \nu} \gamma_5 \chi \, q_\nu \cJ_\mu  & \qsq /\Lambda^2 & M 
+\\ \hline 
+\end{tabular}
+\caption{Selection of operators along with their EFT dependences, adapted from \cite{Gluscevic:2015sqa}. For the dipole models, we assume the mediator mass is large compared to the characteristic momentum transfer. The nucleon electromagnetic current $\cJ_\mu$ is defined in \Eq{eq:current}; the transverse velocity $v_\perp$ and three--momentum transfer $\vec q$ are defined in terms of the collision momenta in \Eq{eq:kinematic-definitions}; and $\Lambda$ is a heavy mass or compositeness scale appearing in the dipole models. The parametric momentum and velocity dependences (third column) schematically multiply the adjacent EFT response (fourth column).}
+\label{tab:operators} 
+\end{centering}
+\end{table}
+
 
 
 \section{Model Selection}
@@ -136,6 +222,7 @@ We simulate the following experimental set ups...
 \includegraphics[width=0.7\textwidth]{plots/PDF_500GeV_SI_Higgs_50sims_Xe_Xe3x_Xe10x_XeG3_GF_TNT.pdf}
 \caption{\label{fig:500gev_anapole_XeFull_TNT_GF}}
 \end{figure*}
+
 
 
 

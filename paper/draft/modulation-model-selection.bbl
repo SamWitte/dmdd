@@ -115,6 +115,16 @@ S.~K. Lee, M.~Lisanti, and B.~R. Safdi, {\it {Dark-Matter Harmonics Beyond
   Annual Modulation}},  {\em JCAP} {\bf 1311} (2013) 033,
   [\href{http://www.arxiv.org/abs/1307.5323}{{\tt arXiv:1307.5323}}].
 
+\bibitem{Green:2000ga}
+A.~M. Green, {\it {A Potential WIMP signature for the caustic ring halo
+  model}},  {\em Phys. Rev.} {\bf D63} (2001) 103003,
+  [\href{http://www.arxiv.org/abs/astro-ph/0012393}{{\tt astro-ph/0012393}}].
+
+\bibitem{Gelmini:2000dm}
+G.~Gelmini and P.~Gondolo, {\it {WIMP annual modulation with opposite phase in
+  Late-Infall halo models}},  {\em Phys. Rev.} {\bf D64} (2001) 023504,
+  [\href{http://www.arxiv.org/abs/hep-ph/0012315}{{\tt hep-ph/0012315}}].
+
 \bibitem{Lee:2013wza}
 S.~K. Lee, M.~Lisanti, A.~H.~G. Peter, and B.~R. Safdi, {\it {Effect of
   Gravitational Focusing on Annual Modulation in Dark-Matter Direct-Detection
@@ -139,16 +149,6 @@ E.~Del~Nobile, G.~B. Gelmini, and S.~J. Witte, {\it {Prospects for detection of
   JCAP} {\bf 1602} (2016), no.~02 009,
   [\href{http://www.arxiv.org/abs/1512.03961}{{\tt arXiv:1512.03961}}].
 
-\bibitem{Green:2000ga}
-A.~M. Green, {\it {A Potential WIMP signature for the caustic ring halo
-  model}},  {\em Phys. Rev.} {\bf D63} (2001) 103003,
-  [\href{http://www.arxiv.org/abs/astro-ph/0012393}{{\tt astro-ph/0012393}}].
-
-\bibitem{Gelmini:2000dm}
-G.~Gelmini and P.~Gondolo, {\it {WIMP annual modulation with opposite phase in
-  Late-Infall halo models}},  {\em Phys. Rev.} {\bf D64} (2001) 023504,
-  [\href{http://www.arxiv.org/abs/hep-ph/0012315}{{\tt hep-ph/0012315}}].
-
 \bibitem{Bovy:2013raa}
 J.~Bovy and H.-W. Rix, {\it {A Direct Dynamical Measurement of the Milky Way's
   Disk Surface Density Profile, Disk Scale Length, and Dark Matter Profile at 4
@@ -160,5 +160,16 @@ J.~Bovy and H.-W. Rix, {\it {A Direct Dynamical Measurement of the Milky Way's
 A.~L. Fitzpatrick and K.~M. Zurek, {\it {Dark Moments and the DAMA-CoGeNT
   Puzzle}},  {\em Phys. Rev.} {\bf D82} (2010) 075004,
   [\href{http://www.arxiv.org/abs/1007.5325}{{\tt arXiv:1007.5325}}].
+
+\bibitem{Bagnasco:1993st}
+J.~Bagnasco, M.~Dine, and S.~D. Thomas, {\it {Detecting technibaryon dark
+  matter}},  {\em Phys. Lett.} {\bf B320} (1994) 99--104,
+  [\href{http://www.arxiv.org/abs/hep-ph/9310290}{{\tt hep-ph/9310290}}].
+
+\bibitem{Weiner:2012gm}
+N.~Weiner and I.~Yavin, {\it {UV completions of magnetic inelastic and Rayleigh
+  dark matter for the Fermi Line(s)}},  {\em Phys. Rev.} {\bf D87} (2013),
+  no.~2 023523, [\href{http://www.arxiv.org/abs/1209.1093}{{\tt
+  arXiv:1209.1093}}].
 
 \end{thebibliography}\endgroup
