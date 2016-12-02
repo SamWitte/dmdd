@@ -212,6 +212,7 @@ ALL_EXPERIMENTS['XeTriple'] = xetrips
 ALL_EXPERIMENTS['Xe10x'] = xe10x
 ALL_EXPERIMENTS['XeT'] = xeT
 ALL_EXPERIMENTS['I++Xe10x'] = [iodp, xe10x]
+ALL_EXPERIMENTS['Ar+Xe10x'] = [ar, xe10x]
 
 
 
