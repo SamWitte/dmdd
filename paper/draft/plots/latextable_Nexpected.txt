@@ -1,0 +1,20 @@
+\begin{table*}[t]
+\setlength{\extrarowheight}{3pt}
+\setlength{\tabcolsep}{12pt}
+\begin{center}
+\begin{tabular}{c|m{3cm}m{3cm}m{3cm}}
+Interaction [$\sigma_p$] /target& Xe& Ge& F\\
+\hline\hline\\
+SI Higgs& (103, 99, 98)& (9, 4, 4)& (5, 1, 2)\\
+Millicharge& (103, 103, 102)& (834, 203, 189)& (334, 107, 103)\\
+SD flavor-univ.& (103, 97, 95)& (11, 4, 4)& (2318, 708, 725)\\
+Anapole& (103, 97, 96)& (11, 5, 5)& (36, 3, 3)\\
+Mag. dip. heavy& (103, 89, 87)& (3, 4, 5)& (4, 1, 1)\\
+Mag. dip. light& (103, 101, 101)& (34, 14, 14)& (86, 16, 15)\\
+Elec. dip. heavy& (103, 91, 88)& (4, 4, 4)& (1, 0, 0)\\
+Elec. dip. light& (103, 102, 101)& (61, 15, 14)& (40, 12, 12)\\
+\end{tabular}
+\end{center}
+\caption{}
+\label{}
+\end{table*}
