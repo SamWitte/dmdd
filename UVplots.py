@@ -12,6 +12,7 @@ from scipy.integrate import quad
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import matplotlib as mpl
 from scipy.stats import gaussian_kde, norm
+from scipy.interpolate import interp1d
 import copy
 
 
@@ -135,6 +136,7 @@ iod = dmdd.Experiment(experiment,Target[experiment],
                      Exposure[experiment], dmdd.eff.efficiency_Xe,
                       Start[experiment], End[experiment])
 
+
 experiment = 'Ar'
 ar = dmdd.Experiment(experiment,Target[experiment],
                      Qmin[experiment], Qmax[experiment],
@@ -173,6 +175,8 @@ xe10x = dmdd.Experiment(experiment,Target[experiment],
                        Exposure[experiment], dmdd.eff.efficiency_Xe,
                        Start[experiment], End[experiment])
 
+
+
 experiment = 'XeT'
 xeT = dmdd.Experiment(experiment,Target[experiment],
                       Qmin[experiment], Qmax[experiment],
@@ -207,6 +211,8 @@ ALL_EXPERIMENTS['XeDouble'] = xeplus
 ALL_EXPERIMENTS['XeTriple'] = xetrips
 ALL_EXPERIMENTS['Xe10x'] = xe10x
 ALL_EXPERIMENTS['XeT'] = xeT
+ALL_EXPERIMENTS['I++Xe10x'] = [iodp, xe10x]
+
 
 
 pandax=dmdd.Experiment('PandaX','xenon', 4., 30., 188., dmdd.eff.efficiency_Xe, 0., 1., energy_resolution=True)
@@ -372,7 +378,8 @@ for i,mass in enumerate(MASSES):
 f_sigma_lims = {}
 any_sigma_lims = {}
 for m in MODELS_UV1 + MODELS_UV2:
-    any_sigma_lims[m.name] = interpolate(np.log10(MASSES), np.log10(sigma_lims[m.name]),s=0)
+    #any_sigma_lims[m.name] = interpolate(np.log10(MASSES), np.log10(sigma_lims[m.name]), s=0)
+    any_sigma_lims[m.name] = interp1d(np.log10(MASSES), np.log10(sigma_lims[m.name]))
 def f_sigma_lims(modelname, mass):
     return 10**any_sigma_lims[modelname](np.log10(mass))
 
@@ -1673,25 +1680,6 @@ def make_Nexpected_latextable(masses=[20,125,500],experiments=[xe,ge,flu],filena
 
     for m in models:
         fout.write(MODELNAME_TEX[m.name])
-        for mass in masses:
-            sigma_lux[mass][m.name] = lux.sigma_limit(mass=mass, sigma_name=sigma_names[m.name],
-                                                      fnfp_name=fnfp_names[m.name], fnfp_val=fnfp_vals[m.name],
-                                                      Nbackground=Nbg[lux.name])
-            sigma_pandax[mass][m.name] = pandax.sigma_limit(mass=mass, sigma_name=sigma_names[m.name],
-                                                            fnfp_name=fnfp_names[m.name], fnfp_val=fnfp_vals[m.name],
-                                                            Nbackground=Nbg[pandax.name])
-            sigma_cdmslite[mass][m.name] = cdmslite.sigma_limit(mass=mass, sigma_name=sigma_names[m.name],
-                                                                fnfp_name=fnfp_names[m.name],
-                                                                fnfp_val=fnfp_vals[m.name],
-                                                                Nbackground=Nbg[cdmslite.name])
-            sigma_supercdms[mass][m.name] = supercdms.sigma_limit(mass=mass, sigma_name=sigma_names[m.name],
-                                                                  fnfp_name=fnfp_names[m.name],
-                                                                  fnfp_val=fnfp_vals[m.name],
-                                                                  Nbackground=Nbg[supercdms.name])
-            sigma_limvals[mass][m.name] = min(sigma_supercdms[mass][m.name],
-                                              sigma_cdmslite[mass][m.name],
-                                              sigma_lux[mass][m.name],
-                                              sigma_pandax[mass][m.name])
 
         for experiment in experiments:
             entry = '& ('
@@ -1704,7 +1692,7 @@ def make_Nexpected_latextable(masses=[20,125,500],experiments=[xe,ge,flu],filena
                                             experiment.start_t,
                                             experiment.end_t,
                                             sigma_names[m.name],
-                                            sigma_limvals[mass][m.name],
+                                            f_sigma_lims(m.name, mass),
                                             mass=mass,
                                             fnfp_name=fnfp_names[m.name],
                                             fnfp_val=fnfp_vals[m.name])
