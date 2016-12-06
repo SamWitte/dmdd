@@ -770,7 +770,7 @@ def SingleKDE(nsim=50, startsim=1, masses=[50.],
                         #ax.text(95, leg_top[i] - .1 * ymax_list[i], lab2, color=colors_list[i], fontsize=18, ha='right')
                         #ax.text(95, 0.85 * ymax_list[i], experiment_labels[i], color='k',
                         #        fontsize=20, ha='right')
-            pl.axvline(95, ls='--', color='k', lw=2)
+            pl.axvline(10 ** (2. * 0.9), ls='--', color='k', lw=2)
             ymax = np.max([ymax_list])
             ax.set_ylim([0., ymax])
             plt.legend(loc=1, frameon=True, framealpha=0.5, fontsize=12, ncol=2, fancybox=True,
@@ -992,7 +992,7 @@ def OneDhistogram(nsim=50, startsim=1, masses=[50.],
                         axarr[ax_x, ax_y].legend(loc=3, frameon=True, framealpha=0.5,
                                                  fontsize=10, ncol=1, fancybox=True, handlelength=3)
 
-                        axarr[ax_x, ax_y].axvline(95, ls='--', color='k', lw=2)
+                        axarr[ax_x, ax_y].axvline(10 ** (2 * 0.9), ls='--', color='k', lw=2)
             #axarr[1, 1].text(10, 0.5 * ymax, 'Solid: Time \n Dashed: No Time', color='k', fontsize=10)
             pl.suptitle('True model: {} (mass: {:.0f} GeV)'.format(MODELNAME_TEX[m.name], mass), fontsize=fs)
             f.text(0.5, .05, r'Probability of True Model   [$\%$]', ha='center', va='center', fontsize=fs)
