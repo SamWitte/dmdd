@@ -36,7 +36,7 @@
 \newcommand{\sjwtt}[1]{{\color{\sjwColor}\tt #1}} 
 
 \begin{document}
-\title{Leveraging Annual Modulation to Distinguish Direct Detection Signals}
+\title{Distinguishing Dark Matter Models With Annual Modulation Signal in Direct Detection Experiments}
 \author[a,b]{Samuel J.~Witte,}
 \author[c]{Vera Gluscevic,}
 \author[d]{and Samuel D.~McDermott}
@@ -60,29 +60,39 @@ Astrophysics, Batavia, IL 60510}
 
 \section{Introduction} \setcounter{page}{2}
 
-Experimental evidence from a vast array of independent sources conclusively demonstrates the existence of a non-baryonic form of matter in the universe. This so-called dark matter is the dominant source of the gravitational potential wells that have determined the large scale structure of the universe, but dark matter particles have yet to be observed in a laboratory setting. Despite an experimental direct detection program that has now been mature for several decades, all evidence in favor of the existence of dark matter is instead furnished by indirect observations of cosmological and astrophysical settings \cite{Bauer:2013ihz}.
+A vast array of independent astrophysical and cosmological observations testifyes to the existence of a non-baryonic form of matter in the universe. This so-called dark matter (DM) is the dominant source of the gravitational potential wells that dictate the dynamics and structure of the universe, but dark matter particles have yet to be observed in a laboratory setting. Despite an experimental direct detection program that has now been mature for several decades, all evidence in favor of the existence of dark matter still comes from its gravitational interactions with baryons \cite{Bauer:2013ihz}.
 
-There are good reasons to be optimistic that direct detection may be on the cusp of important discoveries, however. As next-generation experiments that incorporate increasingly precise detection technologies come online, we will be pushing through the final parameter space before encountering the astrophysical neutrino background \sjwtt{Add citations. Projections for future DD.} \cite{Cushman:2013zza,Billard:2013qya,Ruppin:2014bra,Davis:2014ama,Dent:2016iht}. Luckily, many interesting theories of dark matter predict scattering cross sections in this range. For example, heavy $SU(2)$-doublet and -triplet fermions, such as the Higgsinos and the wino of supersymmetry, are expected to have cross sections of order $\sigma_{\rm SI} \sim \cO(\few\tenx{-48})\cm^2$, fixed by their Standard Model gauge quantum numbers alone \cite{Hill:2011be,Hill:2013hoa,Hill:2014yxa}, while a heavy $SU(2)$-singlet fermion, like the bino, is around an order of magnitude lower depending on its coannihilation partner \cite{Berlin:2015njh}. Models with kinematically suppressed tree-level scattering may also be embedded in more complete dark sectors that have loop-level cross sections in this same range \cite{Ipek:2014gua,McDermott:2014rqa,Appelquist:2015yfa,Appelquist:2015zfa}.
+As the next--generation direct detection experiments that incorporate increasingly sensitive detection technologies come online, they will start to probe the final portions of DM parameter space before encountering the irreducible neutrino backgrounds \sjwtt{Add citations. Projections for future DD.} \cite{Cushman:2013zza,Billard:2013qya,Ruppin:2014bra,Davis:2014ama,Dent:2016iht}. Generation 2 (G2) experiments that are currently taking data \cite{} may well be on the cusp of important discoveries, as many interesting theories of DM predict scattering cross sections that live in these portions of paramters space. For example, heavy $SU(2)$--doublet and --triplet fermions, such as the Higgsinos and the wino of supersymmetry, are expected to have cross sections of order $\sigma_{\rm SI} \sim \cO(\few\tenx{-48})\cm^2$ (just about an order of magnitude below the current limits \cite{}), fixed by their Standard Model gauge quantum numbers alone \cite{Hill:2011be,Hill:2013hoa,Hill:2014yxa}, while a heavy $SU(2)$-singlet fermion, like the bino, is around an order of magnitude lower depending on its coannihilation partner \cite{Berlin:2015njh}. Models with kinematically suppressed tree--level scattering may also be embedded in more complete dark sectors that have loop--level cross sections in this same range \cite{Ipek:2014gua,McDermott:2014rqa,Appelquist:2015yfa,Appelquist:2015zfa}.
 
-Because so many theories can be accommodated in the parameter space that we will imminently probe, we must plan for the science opportunities associated with the first detection of dark matter particles. The ``inverse problem'' that we will confront upon successful detection of dark matter particles is that of understanding the (high-energy) dark sector dynamics solely by examining (low-energy) recoils of detector elements. \sjwrm{In collider physics terms, the luminosity is fixed by the dark matter astrophysics, making measurements of dark matter properties possible only at a single energy scale.} \sjwtt{I don't really know what this adds... I find its presence rather confusing} \sdm{I was motivating the problem this way: we want to learn about the dynamics (= scattering operators) at energies $E_{\rm UV} \gg m_X$ but only have access to energy deposits of $E_{\rm NR} \ll m_X$. Contrast with if we find a hint of something at a collider: we would just build a bigger collider and learn more that way; but we don't have that option in DD.} \sjwtt{But this is not collider luminosity -- the luminosity is just the total number of events (per unit time), i.e. changing luminosity does not imply a different energy scale. Maybe say something like: Unlike at colliders, the energy scale dark matter-nuclei scattering is predetermined by astrophysical processes. } We will need to reconstruct the interesting physics of the dark sector at all scales from nuclear recoils alone, despite the fact that the details of the dynamics that link the dark sector to the Standard Model are most likely integrated well above the low energies probed in direct detection experiments. On the other hand, because the dynamics are coarse grained at the energies of direct detection experiments, the nuclear responses are compactly described by an easily exhaustible list of interactions. These are collected as a nonrelativistic effective field theory \cite{Fitzpatrick:2012ix, Anand:2013yka}. This ``effective field theory of dark matter direct detection'' reproduces the nontrivial nuclear physics induced by some of the best-motivated UV-complete theories of dark matter \cite{Gresham:2014vja, Gluscevic:2015sqa}. %As described presently, we can look for clues to the nature of the dark sector along two orthogonal axes with the help of this effective theory.
-All of the characteristic information about the dark sector interactions is contained in the coefficients of the effective theory. The key to accessing this information and unlocking the secrets of the dark matter interactions lies in the careful study of the scattering data in the event of a detection.
+Because so many theories can be accommodated in the parameter space that will be imminently probed by a variety of experiments, it is timely to plan for the science opportunities associated with the first detection of DM particles. Most notably, in case of a confirmed detection, understanding the high--energy dark sector dynamics will solely rely on examining low--energy recoils of detector elements and solving the ``inverse problem'' to identify the right underlying description of DM--baryon interactions from the experimental measurements. On the other hand, all the information about the dark sector interactions accessible to these measurements is contained within the coefficients of the ``effective field theory of dark matter direct detection'' \cite{Fitzpatrick:2012ix, Anand:2013yka}. This effective description also captures the nontrivial nuclear physics induced by some of the best--motivated UV--complete theories of dark matter \cite{Gresham:2014vja, Gluscevic:2015sqa} through an exhaustable list of nuclear responses. It thus provides a systematic framework for calssifying and describing a wide variety of DM interaction theories, and we will rely on it in this work. 
+ 
 
-Much of the information one might hope to access from a direct detection experiment is contained in the energy spectra of nuclear or electronic recoils. Due to Poisson noise and degeneracies in the spectra of different interactions, model selection using spectral information alone is difficult with a single target material. However, recent studies show it is possible to discriminate between interactions by leveraging the energy spectra from nuclei with sufficiently diverse nuclear physics characteristics. Thus, energy spectra of experiments with different nuclei can break degeneracies in the dark matter model space, as long as the target nuclei have ``complementary'' nuclear physics characteristics \cite{McDermott:2011hx,Peter:2013aha,Gluscevic:2014vga,Catena:2014epa,Catena:2014hla,Dent:2015zpa,Gluscevic:2015sqa,Ruppin:2014bra}.
+Traditionally, DM--induced nuclear reacoil energy spectra are taken to contain most of the information one might hope to reconstruct from a direct detection experiment. Due to Poisson noise and degeneracies in the shape of the recoil spectra amongst different interactions, DM model selection has been shown to present a difficult task for a single target material \cite{}. Recent studies have shown that discriminating between interactions is possible only for strong signals (with hundreds of observed recoil events), when measurements on targets with sufficiently diverse nuclear physics characteristics are jointly analyzed \cite{}. Thus, using energy spectra to break degeneracies in the dark matter modeling space crucially relies on ``complementary'' nuclear physics characteristics of available target materials \cite{McDermott:2011hx,Peter:2013aha,Gluscevic:2014vga,Catena:2014epa,Catena:2014hla,Dent:2015zpa,Gluscevic:2015sqa,Ruppin:2014bra}, but even so does not guarantee successful model selection in case signal is marginally detected.
 
-The energy spectrum of the scattering is not the only piece of information that direct detection experiments will provide. In this work, we will consider the time distribution of scattering events. Almost since the dawn of the study of direct detection experiments, the annual modulation of the rate \cite{Freese:1987wu} arising from the motion of Earth relative to dark matter bound in the galactic halo has been appreciated to provide a distinctive dark matter signature, as have its higher harmonics (see e.g. \cite{Freese:2012xd,Lee:2013xxa,Britto:2014wga,DelNobile:2015nua,Kouvaris:2015xga}). \sjw{Earth's velocity with respect to the dark matter `wind' is at a maximum around June $1^{\rm st}$ and a minimum around December $1^{\rm st}$. For a fixed low energy threshold experiment, conventional wisdom would suggest that increasing the relative velocity between Earth and the dark matter `wind' should enhance the number of dark matter particles which can produce an observable recoil above threshold, and thus the of maximum of the scattering rate should occur around June $1^{\rm st}$. While this is true at large energies, standard differential cross sections (\ie those satisfying $d\sigma/d\ER \propto v^{-2}$) actually produce a phase flip, such that at low energies the rate is maximized in December. This feature occurs because the differential cross section is enhanced by low velocity scattering. }
+On the other hand, almost since the dawn of direct--detection--related DM studies, the motion of the Earth relative to DM bound in the galactic halo has been predicted to provide a distinctive DM signature \cite{Freese:1987wu, Freese:2012xd,Lee:2013xxa,Britto:2014wga,DelNobile:2015nua,Kouvaris:2015xga} through characteristic annual modulation of the expected event rate of nuclear recoils. Recent work \cite{DelNobile:2015tza,DelNobile:2015rmp} pointed out that non--standard interaction cross sections containing a non--factorizable velocity dependence could produce a modulation signal that is unique to each target element. More generally, a non--trivial velocity dependence in the cross section effectively changes the velocity integral that governs the total event rate in any given experiment, and produces a characteristic modulation signal. It may thus be expected that interaction models that differ solely by the power of velocity of their corresponding cross sections may differ by the phase and/or amplityde of the annual modulation signal they display. 
 
-The aforementioned arguments, however, only hold for conventional virialized velocity distributions and standard differential cross sections. The disturbance of phase space from dark matter substructure \cite{Green:2000ga,Gelmini:2000dm,DelNobile:2015nua} and the gravitational influence of the solar system \cite{Lee:2013wza,DelNobile:2015nua} have been shown to a non-negligible impact on the annual modulation, in particular modifying the phase of the modulation. Additionally, it was recently pointed out in~\cite{DelNobile:2015tza,DelNobile:2015rmp} that differential cross sections with higher order dark matter velocity dependence produce a phase at low energies that is roughly $5$ months out of phase with conventionally considered interactions. Furthermore, \cite{DelNobile:2015tza,DelNobile:2015rmp} emphasized that differential cross sections containing a non-factorizable velocity and target dependence can produce a modulation that is unique to each target element. A proper analysis of direct detection data including the time information of nuclear recoils may therefore have the potential to elucidate unique astrophysical processes and atypical dark matter-nuclei interactions. \sjwtt{Note to self, add more citations to the above section}  
+Motivated by this argument, here we propose that analysis of time dependence of scattering events can help discriminate between interaction models whose recoil energy spectra are otherwise degenerate on a single target material. Using the method of \cite{}, we evaluate the ehancement in prospects for accurate model selection when the annual modulation signal is analysed in combination with recoil--energy measurements in the next--generation direct detection experiments. 
 
 
-Since the local distribution of dark matter is at this moment poorly understood, we will focus in this work on quantitatively understanding the extent to which including information on the modulation of the rate can enhance the ability of future direct detection experiments to correctly differentiate dark matter-nuclei interactions with approximately degenerate recoil spectrum but distinct time behavior. Interestingly, we find that the additional discrimination power from timing information will allow some of the most popular detector designs to go beyond detection and significantly improve model identification, even for models with approximately degenerate recoil spectra.  This is possible because, as previously mentioned, additional factors of $v^2$ appearing in the differential cross section alters the phase of the modulation. %Factors of $v^2$ affect the rate because the rate involves integrating a differential cross section over a dark matter velocity distribution. This integral can be done analytically for idealized astrophysical distributions of dark matter, with or without an additional power of $v^2$ \cite{Fitzpatrick:2010br}. The velocity integral then furnishes a scattering rate, the time dependence of which is determined by the powers of $v^2$ in the cross section. 
-\sjwtt{Sam, I changed these last two paragraphs significantly, let me know if you like this better or if you prefer to revert.}
+%Almost since the dawn of the study of direct detection experiments, the annual modulation of the rate \cite{Freese:1987wu} arising from the motion of Earth relative to dark matter bound in the galactic halo has been appreciated to provide a distinctive dark matter signature, as have its higher harmonics (see e.g. \cite{Freese:2012xd,Lee:2013xxa,Britto:2014wga,DelNobile:2015nua,Kouvaris:2015xga}). \sjw{Earth's velocity with respect to the dark matter `wind' is at a maximum around June $1^{\rm st}$ and a minimum around December $1^{\rm st}$. For a fixed low energy threshold experiment, conventional wisdom would suggest that increasing the relative velocity between Earth and the dark matter `wind' should enhance the number of dark matter particles which can produce an observable recoil above threshold, and thus the of maximum of the scattering rate should occur around June $1^{\rm st}$. While this is true at large energies, standard differential cross sections (\ie those satisfying $d\sigma/d\ER \propto v^{-2}$) actually produce a phase flip, such that at low energies the rate is maximized in December. This feature occurs because the differential cross section is enhanced by low velocity scattering. }
+
+%The aforementioned arguments, however, only hold for conventional virialized velocity distributions and standard differential cross sections. The disturbance of phase space from dark matter substructure \cite{Green:2000ga,Gelmini:2000dm,DelNobile:2015nua} and the gravitational influence of the solar system \cite{Lee:2013wza,DelNobile:2015nua} have been shown to a non-negligible impact on the annual modulation, in particular modifying the phase of the modulation. Additionally, it was recently pointed out in~\cite{DelNobile:2015tza,DelNobile:2015rmp} that differential cross sections with higher order dark matter velocity dependence produce a phase at low energies that is roughly $5$ months out of phase with conventionally considered interactions. Furthermore, \cite{DelNobile:2015tza,DelNobile:2015rmp} emphasized that differential cross sections containing a non-factorizable velocity and target dependence can produce a modulation that is unique to each target element. A proper analysis of direct detection data including the time information of nuclear recoils may therefore have the potential to elucidate unique astrophysical processes and atypical dark matter-nuclei interactions. \sjwtt{Note to self, add more citations to the above section}  
+
+%Since the local distribution of dark matter is at this moment poorly understood, we will focus in this work on quantitatively understanding the extent to which including information on the modulation of the rate can enhance the ability of future direct detection experiments to correctly differentiate dark matter-nuclei interactions with approximately degenerate recoil spectrum but distinct time behavior. Interestingly, we find that the additional discrimination power from timing information will allow some of the most popular detector designs to go beyond detection and significantly improve model identification, even for models with approximately degenerate recoil spectra.  This is possible because, as previously mentioned, additional factors of $v^2$ appearing in the differential cross section alters the phase of the modulation. 
+
+
+
+
+
 
 In \Sec{sec:dd} we review the calculation of the direct detection scattering rate. \Sec{sec:eft} introduces the concept of dark matter effective field theory, discusses how momentum and velocity dependent cross sections can result in nonstandard scattering, and reviews dark matter models which have nearly degenerate recoil spectra but distinguishing time dependence. We introduce our analysis procedure in \Sec{sec:procedure} and present our results in \Sec{sec:results}. We conclude in \Sec{sec:conclusion}.
 
 
   
 
-\section{Dark Matter Direct Detection: Energy and Time Dependence}\label{sec:dd}
+\section{Scattering in Direct Detection Experiments}\label{sec:dd}
+
+\subsection{Basics}
 
 The observed recoil energy spectrum is the number count of nuclear recoil events observed per recoil energy $E_R$, per unit time, per unit target mass,
 \begin{equation}
@@ -116,7 +126,7 @@ As is clear in \Eq{eq:dRdEr_general}, the differential rate of nuclear recoils d
 
 
 
-\section{Momentum and Velocity Suppression: Scaling in Energy and Time}
+\subsection{Momentum and Velocity Dependendence}
 
 The function $\sigma_T$ in \Eq{eq:dRdEr_general} contains the interesting particle physics of the dark matter scattering and determines the energy and time dependence of the rate. In this section, we summarize the effective field theory that catalogues the possible interactions probed by direct detection experiments. In the following section, we highlight several well-motivated examples of interesting scattering, and we subsequently use these models to quantify the extent to which including the time information of nuclear recoils can enhance model identification.
 
@@ -139,9 +149,9 @@ As an example, we show in \Fig{fig:diff_rate_comp} how different momentum and ve
 
 
 
+\section{Distinguishing Scattering Models}\label{sec:procedure}
 
-
-\section{Summary of Models}
+\subsection{Summary of Models}
 
 
 \begin{figure*}
@@ -229,14 +239,10 @@ Elec. dip. light& (103, 102, 101)& (61, 15, 14)& (40, 12, 12)\\ \hline \hline
 \label{tab:pred_events}
 \end{table*}
 
+%\section{Model Selection} \label{sec:procedure}
+%In the following, we apply Bayesian model selection to assess the extent to which analyzing the time dependence of nuclear recoils can improve the ability of future direct detection experiments to properly identify the true dark matter-nuclei interaction. 
 
-
-
-
-\section{Model Selection} \label{sec:procedure}
-
-In the following, we apply Bayesian model selection to assess the extent to which analyzing the time dependence of nuclear recoils can improve the ability of future direct detection experiments to properly identify the true dark matter-nuclei interaction. 
-   
+\subsection{Simulations\label{sec:sims}}
 
 \begin{table*}[tbp]
   \setlength{\extrarowheight}{3pt}
@@ -265,7 +271,7 @@ In the following, we apply Bayesian model selection to assess the extent to whic
 \label{tab:experiments}
 \end{table*}
 
-\subsection{Simulations \label{sec:sims}}
+
 
 To simulate future datasets, we assume the dark matter-nuclei interaction is given by one of the models in the left column of Table~\ref{tab:pred_events}, and that the dark matter mass is either $20$ GeV, $125$ GeV, or $500$ GeV. We then optimistically assume that direct detection experiments are on the verge of of detecting dark matter, and set the cross section to be the value maximally allowed by LUX~\cite{Akerib:2016vxi}. The predicted number of events in various Gen2 experiments (see Table~\ref{tab:experiments}) using this cross section for each interaction and mass are shown in Table~\ref{tab:pred_events}. 
 
@@ -290,7 +296,7 @@ Model selection prospects with complimentary Gen2 targets. The normalized probab
 
 
 
-\subsection{Analysis}
+\subsection{Analysis method}
 
 Within the Bayesian inference framework, the probability that the data $\vec{X}$ assigns to a given model $\cM_j$ is given by
 \begin{equation}\label{eq:probs}
