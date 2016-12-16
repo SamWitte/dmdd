@@ -595,7 +595,7 @@ def SingleKDE(nsim=50, startsim=1, masses=[50.],
               simmodels=[SI_Higgs], models=[SI_Higgs, anapole], time_info='Both', GF=True,
               hspace = (1.06 * 50. ** (-1. / 5.)), filelabel='', allverbose=True, verbose=True,
               results_root=os.environ['DMDD_AM_MAIN_PATH']+'/results_uv/', timeonly=False,
-              saveplots=True, alpha=0.3, xoffset=0.1, fs=22, fs2=18, sigma_lim_file=None,
+              saveplots=True, alpha=0.3, xoffset=0.1, fs=26, fs2=18, sigma_lim_file=None,
               colors_list=['#a6611a','#018571']):
 
 
@@ -774,7 +774,7 @@ def SingleKDE(nsim=50, startsim=1, masses=[50.],
             pl.axvline(10 ** (2. * 0.9), ls='--', color='k', lw=2)
             ymax = np.max([ymax_list])
             ax.set_ylim([0., ymax])
-            plt.legend(loc=1, frameon=True, framealpha=0.5, fontsize=12, ncol=2, fancybox=True,
+            plt.legend(loc=1, frameon=True, framealpha=0.5, fontsize=16, ncol=2, fancybox=True,
                        handlelength=3)
             ax.set_title('True model: {} (mass: {:.0f} GeV)'.format(MODELNAME_TEX[m.name], mass), fontsize=fs)
             pl.xlabel(r'Probability of True Model   [$\%$]', fontsize=fs)
