@@ -595,8 +595,9 @@ def SingleKDE(nsim=50, startsim=1, masses=[50.],
               simmodels=[SI_Higgs], models=[SI_Higgs, anapole], time_info='Both', GF=True,
               hspace = (1.06 * 50. ** (-1. / 5.)), filelabel='', allverbose=True, verbose=True,
               results_root=os.environ['DMDD_AM_MAIN_PATH']+'/results_uv/', timeonly=False,
-              saveplots=True, alpha=0.3, xoffset=0.1, fs=18, fs2=18, sigma_lim_file=None,
-              colors_list=['Red','Purple']):
+              saveplots=True, alpha=0.3, xoffset=0.1, fs=22, fs2=18, sigma_lim_file=None,
+              colors_list=['#a6611a','#018571']):
+
 
     xlinspace = np.linspace(0, 1, 200)
     ymax_list = np.zeros(4)
@@ -788,7 +789,7 @@ def OneDhistogram(nsim=50, startsim=1, masses=[50.],
                   hspace = (1.06 * 50. ** (-1. / 5.)), filelabel='', allverbose=True, verbose=True,
                   results_root=os.environ['DMDD_AM_MAIN_PATH']+'/results_uv/', timeonly=False,
                   saveplots=True, alpha=0.3, xoffset=0.1, fs=18, fs2=18, sigma_lim_file=None,
-                  colors_list=['Blue','Red','Green','Magenta','Orange']):
+                  colors_list=['#a6611a','#dfc27d','#80cdc1','#018571']):
 
     xlinspace = np.linspace(0, 1, 200)
     leg_top = 0.
