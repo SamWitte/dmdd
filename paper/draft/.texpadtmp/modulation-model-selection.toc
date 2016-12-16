@@ -1,0 +1,12 @@
+\contentsline {section}{\numberline {1}Introduction}{2}{section.1}
+\contentsline {section}{\numberline {2}Scattering in Direct Detection Experiments}{4}{section.2}
+\contentsline {subsection}{\numberline {2.1}Direct Detection Observables}{4}{subsection.2.1}
+\contentsline {subsection}{\numberline {2.2}Momentum and Velocity Dependence}{5}{subsection.2.2}
+\contentsline {subsection}{\numberline {2.3}Time Dependendence}{5}{subsection.2.3}
+\contentsline {section}{\numberline {3}Distinguishing Scattering Models}{7}{section.3}
+\contentsline {subsection}{\numberline {3.1}Summary of Models}{7}{subsection.3.1}
+\contentsline {subsection}{\numberline {3.2}Simulations}{8}{subsection.3.2}
+\contentsline {subsection}{\numberline {3.3}Analysis method}{10}{subsection.3.3}
+\contentsline {section}{\numberline {4}Results}{11}{section.4}
+\contentsline {section}{\numberline {5}Conclusions}{16}{section.5}
+\contentsline {section}{\numberline {A}Model Selection Prospects in Xenon (SI Interaction)}{17}{appendix.A}

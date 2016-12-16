@@ -1,0 +1,52 @@
+This is BibTeX, Version 0.99d (TeX Live 2015)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: modulation-model-selection.aux
+The style file: ../JHEP.bst
+Database file #1: ../mod-sel.bib
+Repeated entry---line 819 of file ../mod-sel.bib
+ : @article{Akerib:2016vxi
+ :                        ,
+I'm skipping whatever remains of this entry
+Warning--I didn't find a database entry for ""
+You've used 49 entries,
+            2188 wiz_defined-function locations,
+            954 strings with 14739 characters,
+and the built_in function-call counts, 15666 in all, are:
+= -- 1616
+> -- 621
+< -- 0
++ -- 181
+- -- 132
+* -- 1392
+:= -- 2143
+add.period$ -- 50
+call.type$ -- 49
+change.case$ -- 49
+chr.to.int$ -- 0
+cite$ -- 49
+duplicate$ -- 834
+empty$ -- 1356
+format.name$ -- 132
+if$ -- 4145
+int.to.chr$ -- 0
+int.to.str$ -- 49
+missing$ -- 190
+newline$ -- 151
+num.names$ -- 49
+pop$ -- 92
+preamble$ -- 1
+purify$ -- 0
+quote$ -- 0
+skip$ -- 683
+stack$ -- 0
+substring$ -- 573
+swap$ -- 448
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 0
+warning$ -- 0
+while$ -- 102
+width$ -- 51
+write$ -- 528
+(There was 1 error message)
