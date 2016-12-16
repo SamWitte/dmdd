@@ -40,7 +40,7 @@
 \newcommand{\vg}[1]{{\color{\vgColor} #1}}
 
 \begin{document}
-\title{Distinguishing Dark Matter Models Using Annual Modulation Signal}
+\title{Prospects for Distinguishing Dark Matter Models Using Annual Modulation}
 \author[a,b]{Samuel J.~Witte,}
 \author[c]{Vera Gluscevic,}
 \author[d]{and Samuel D.~McDermott}
@@ -286,103 +286,77 @@ Instead of plotting the individual probabilities of each simulation, we apply ke
 \includegraphics[width=0.45\textwidth]{plots/PDF_Single_20GeV_Anapole_50sims_Xe_vs_FGeXe_GF_TNT.pdf}
 \includegraphics[width=0.45\textwidth]{plots/PDF_Single_20GeV_SI_Higgs_50sims_Xe_vs_FGeXe_GF_TNT.pdf}
 \caption{\label{fig:gen2}
-Model selection prospects with complimentary Gen2 targets. The normalized probability distribution functions for the probability of correctly identifying the true model are shown for the anapole (left) and SI (right) interactions, assuming a $500$ GeV (top), $125$ GeV (middle), and $20$ GeV (bottom) dark matter particle. Results are shown for a xenon experiment (red), and a combined analysis of xenon, germanium, and fluorine experiments (purple), including (solid) and neglecting (dashed) information on the modulation of the rate. Success rate is defined to be the fraction of realizations which produce correct model identification at the level of $ \geq 90\%$}
+Model selection prospects with complimentary Gen2 targets. The reconstructed probability distribution functions for the probability of correctly identifying the right underlying interaction model are shown for the anapole (left column) and SI (right column) interactions, for a $500$ GeV (top row), $125$ GeV (middle row), and $20$ GeV (bottom row) DM particle mass. Cross sections are set to current upper limits, and the PDFs are all normalized to unity between 0 and 100$\%$. Results are shown for likelihood analyses of simulated data from a xenon experiment, and for a combined likelihood analyses of xenon, germanium, and fluorine experiments. Solid lines are the results obtained including time information for recoil events, and dashed lines are the results obtained when ignoring the modulation of the recoil rate. Success rate is defined to be the fraction of simulations for which the correct model was assigned $ \geq 90\%$ probability as compared to the wrong model.}
 \end{figure}
+We first examine the extent to which including time information in the analysis of Gen2 experiments can help break degeneracy between models with the same velocity dependence, using a study case of the SI and anapole interactions. Specifically, we simulate future data for the SI and anapole interactions and fit each simulation with these two models. We then compare compare Bayesian evidence of the two models to compute probability of the true underlying model (used to create a given simulation ensable), as described in \S\ref{}. We then derive the posterior probability distribution function (PDF) of the true underlying model from 50 simulations that all used the same input model with the same input parameter values.\footnote{Note that, since we only consider two compeeting models, a PDF peaked at around $50\%$ means that the data is most likely to be agnostic between the two models--they both are most likely to provide comparably good fits, and this is the most pessimistic outcome possible. A tail of the distribution at high true--model probabilities, or a PDF shift in that direction is an improvement over that case.} \Fig{fig:gen2} shows the results of this exercise for the anapole (left column) and SI (right column) interactions, for likelihood analysis only for xenon simulations, or for a joint likelihood analysis performed on a combination of data obtained on xenon, germanium, and fluorine experiments. Test DM particle masses used for the simulations are: $500$ GeV (top panels), $125$ GeV (middle panels), and $20$ GeV (bottom panels), and the input cross sections are always set to their respective current upper limits. We show the results obtained both without taking into account time dependence of the signals (dashed lines), and including (solid lines) the modulation analysis. 
+
+Consistent with the results of~\cite{Gluscevic:2015sqa}, we find that the two models can be confidently distinguished for a signal close to the current detection threshold, provided Gen2--level exposure on xenon and a detection with a fluorine experiment, but only if data from these experiments are jointly analyzed (xenon and germanium experiments are not complementary in the same sense and their combination does not significantly improve prospects for model selection, and thus we do not display results for this case). For a low--mass DM particle (20 GeV), the improvement upon combining these two types of experiment is drastic: the PDF of possible model--selection outcomes entirely shifts to a delta--function at 100$\%$ probability in favor of the right model. For intermediate and high masses, the prospects are still visibly improved, but not very optimistic (at best on the level of $\sim$20$\%$ success rate), mostly due to the reduced scattering rate on fluorine.  
 
 \begin{figure*}
 \centering
 \includegraphics[width=0.7\textwidth]{plots/PDF_20GeV_Anapole_50sims_Xe_Xe3x_Xe10x_XeG3_GF_TNT.pdf}
 \caption{\label{fig:20gev_anapole_XeFull_TNT_GF}
-Model selection prospects for a single target (xenon), including (solid) and neglecting (dashed) information on the modulation of the rate. The normalized probability distribution functions are plotted for the probability associated with correcting identifying a 20 GeV dark matter particle scattering through the anapole interaction. Panels from left to right, top to bottom, correspond to exposure of 2 ton-years (blue), 6 ton-years (red), 20 ton-years (green), and 40 ton-years (magenta). Calculations are performed assuming the true cross section is sitting at the current $90\%$ upper limit. Successful model identification, defined as having $\geq 90 \%$ probability, are provided in the legend of each analysis.}
+Model selection prospects for a single target (xenon), including (solid lines) and neglecting (dashed lines) time information in likelihood analysis. The normalized probability distribution functions are plotted for the posterior probability of the right underlying model--the anapole interaction of a 20 GeV DM particle. Panels from left to right, top to bottom, correspond to experimental exposures of 2, 6, 20, and 40 ton--years, respectively. Simulations used to obtaine these results all use input cross sections at their current upper limit. Percent chance for successful model identification (defined here as having $\geq 90 \%$ probability assigned to the anapole model) is provided in the legend.}
 \end{figure*}
-
-
-
-
-We begin by considering the extent to which including time information in the analysis of Gen2 experiments can assist in breaking degeneracy between the SI and anapole interactions. Specifically, in \Fig{fig:gen2} we consider the probability of correctly identifying the anapole (left) and SI (right) interactions, assuming a putative signal is detected in either a xenon experiment (red) or in a combination of xenon, germanium, and fluorine experiments (purple). Analysis is shown for a $500$ GeV dark matter particle (top), $125$ GeV dark matter particle (middle), and a $20$ GeV dark matter particle (bottom), including (solid) and neglecting (dashed) information on the modulation. 
-
-Consistent with the results of~\cite{Gluscevic:2015sqa}, we find that both models can be correctly identified in Gen2 experiments for a $20$ GeV dark matter particle, but only if detections are made in both xenon and fluorine based experiments (note that Xe+Ge analyses do not break the degeneracy and have no model discrimination). Should detections be made in both xenon and fluorine experiments, time information would not be needed to differentiate the two models.  
-
-
-
-Correct model identification is slightly more complicated for heavier dark matter candidates due to the reduced scattering rate in fluorine. For the anapole model, detection in Xe leads to a model discrimination of a few percent. If however, detections are made in xenon, germanium, and fluorine experiments, model selection could be as high as $\simeq 20 \%$. Including time information only negligibly increases model selection in both cases. Model selection for the SI interaction is significantly reduced relative to that of the anapole interaction. Xenon experiments are completely unable to break this degeneracy if massive dark matter interacts through a SI interaction, regardless of whether or not time information is included in the analysis. Should detections be made in xenon, germanium, and fluorine experiments, correct model identification is still only at the level of a few percent. As with the anapole interaction, including time information in the analysis does not impact the ability of these experiments to correctly identify the underlying model. 
-
 \begin{figure*}
 \centering
 \includegraphics[width=0.7\textwidth]{plots/PDF_125GeV_Anapole_50sims_Xe_Xe3x_Xe10x_XeG3_GF_TNT.pdf}
 \caption{\label{fig:125gev_anapole_XeFull_TNT_GF}
 Same as Fig.~\ref{fig:20gev_anapole_XeFull_TNT_GF} but for $125$ GeV dark matter.}
 \end{figure*}
-
-Given that Gen2 experiments will optimistically detect $\simeq 100$ events for the SI and anapole interaction, it is not surprising that analyzing Gen2 data with time has a minimal effect on model selection (see \eg Sec.~4 of \cite{DelNobile:2015nua} for an estimation of the number of events needed for phase discrimination). Perhaps the more interesting question is: how many events are needed before the inclusion of time information can significantly effect model selection? We address this question in the context of the breaking the SI and anapole degeneracy in xenon based experiments in Figs.~\ref{fig:20gev_anapole_XeFull_TNT_GF}-\ref{fig:500gev_anapole_XeFull_TNT_GF}. For 20, 125, and 500 GeV anapole dark matter, we plot the probability of correctly identifying the true model in a 2 ton-year (blue), 6 ton-year (red), 20 ton-year (green), and 40 ton-year (magenta) xenon experiment, neglecting (dashed) and including (solid) time information. Since results for the SI interaction are qualitatively similar to that of the anapole, we defer the SI analogues of Figs.~\ref{fig:20gev_anapole_XeFull_TNT_GF}-\ref{fig:500gev_anapole_XeFull_TNT_GF} to Appendix A. 
-
-\Fig{fig:diff_rate_comp} clearly shows that the recoil spectrum observed in xenon arising from light anapole and SI dark matter is more degenerate than that of heavy anapole and SI dark matter. Unfortunately the phase of light dark matter is also degenerate for conventional velocity dependent cross sections (\ie $d\sigma/d\ER \propto v^{-2}, v^0, v^2, ...$)~\cite{DelNobile:2015tza,DelNobile:2015rmp}, suggesting that the inclusion of time information in the analysis may not be sufficient to fully differentiate these models. Indeed \Fig{fig:20gev_anapole_XeFull_TNT_GF} shows that even in a Gen3 xenon experiment, the SI and anapole interaction can only be correctly identified in $\simeq 15\%$ of our simulations (assuming time is included). Perhaps surprisingly, however, is that the inclusion of time in the analysis improves model discrimination by $\simeq 15\%$. This improvement arises not from differences in the phase, but rather from the amplitude of the modulation, which as shown in \Fig{fig:diff_rate_comp} differs by $\simeq 5\%$.
-
-
-
-As the dark matter mass increases the recoil spectrum become less degenerate, allowing for better model discrimination at fixed exposure. Additionally, heavier dark matter allows these experiments to probe regions of parameter space where the anapole and SI interaction are out of phase (see \Fig{fig:diff_rate_comp}). Figs.~\ref{fig:125gev_anapole_XeFull_TNT_GF} and \ref{fig:500gev_anapole_XeFull_TNT_GF} confirm that heavier dark matter candidates allow for better model discrimination of these models, particularly when time is included in the analysis. We emphasize that including time in the analysis can potentially improve model selection in Gen3 experiments by as much as $\simeq 30\%$ for heavy dark matter candidates, where the phase of these interactions may be misaligned by as much as $\simeq 5$ months. Despite this improvement, Gen3 experiments will likely also need to exploit target complimentarily to in order to fully break the SI-anapole degeneracy. 
-
-To briefly summarize the conclusions of Figs.~\ref{fig:20gev_anapole_XeFull_TNT_GF}-\ref{fig:500gev_anapole_XeFull_TNT_GF}, including time information in the analysis of future xenon direct detection experiments begins to significantly enhance model selection after $\simeq \cO(1000)$ ($ \cO(300)$) events have been observed, assuming a 20 (500) GeV dark matter particle. Gen3 xenon experiments can perhaps expect an enhancement in model selection as large as $30\%$ (for the SI this enhancement can be as large as $\simeq 40\%$) for the most optimistic of circumstances, but will still require target complementarity to definitely identify the correct model.  
-
 \begin{figure*}
 \centering
 \includegraphics[width=0.7\textwidth]{plots/PDF_500GeV_Anapole_50sims_Xe_Xe3x_Xe10x_XeG3_GF_TNT.pdf}
 \caption{\label{fig:500gev_anapole_XeFull_TNT_GF}
 Same as Fig.~\ref{fig:20gev_anapole_XeFull_TNT_GF} but for $500$ GeV dark matter.}
 \end{figure*}
-
-We would like to emphasize that the purpose of this paper is not of a comparison of the SI and anapole interactions, but rather a quantitative assessment of whether time information can be exploited in future direct detection analyses to break degeneracies in the recoil spectrum. The SI and anapole interactions provide one particularly illuminating example of this because they contain different dependencies on the dark matter velocity (and consequently have a different modulation). Despite also having an approximately degenerate recoil spectrum in xenon, the same cannot be said for the SI and SD interactions which have the same dark matter velocity dependence. There do exist, however, other illustrative examples which we briefly consider below.
-
-In \Figs{fig:125gev_Mag.dip.heavy_XeFull_TNT_GF}{fig:125gev_Mag.dip.light_XeFull_TNT_GF} we consider a comparison of the magnetic dipole and electric dipole interactions for a $125$ GeV dark matter particle, assuming a heavy (\Fig{fig:125gev_Mag.dip.heavy_XeFull_TNT_GF}) and light (\Fig{fig:125gev_Mag.dip.light_XeFull_TNT_GF}) mediator. As before we consider putative detections in future xenon experiments with exposures varying from 2 ton-years to 40 ton-years. The results are rather similar to the SI and anapole comparison in that Gen3 experiments can expect a $\simeq 20\%$ improvement in model selection when time is included in the analysis, but again necessitate target complementarity to fully differentiate these models.
-
-
-
-
-
-
-
-
-\section{Conclusions}\label{sec:conclusion}
-We have considered here the potential impact of using time information in the analysis of future direct detection experiments to break approximate degeneracies that may appear between the recoil spectrum of different interactions. Specifically, we have applied Bayesian model selection to simulated data sets that include the impact of Poisson fluctuations to quantitively assess future ability of xenon experiments to successfully identify approximately degenerate models, assuming analyses include and neglect the time information of detected recoils.
-
- 
- \begin{figure*}
+\begin{figure*}
 \centering
 \includegraphics[width=0.7\textwidth]{plots/PDF_125GeV_Magdipheavy_50sims_Xe_Xe3x_Xe10x_XeG3_GF_TNT.pdf}
 \caption{\label{fig:125gev_Mag.dip.heavy_XeFull_TNT_GF}
-Same as Fig.~\ref{fig:20gev_anapole_XeFull_TNT_GF}, but now assessing the ability of xenon experiments to break the degeneracy of the magnetic dipole (heavy mediator) and electric dipole (heavy mediator). Results are shown for a $125$ GeV dark matter and and assuming the magnetic dipole is the true model.}
+Same as Fig.~\ref{fig:20gev_anapole_XeFull_TNT_GF}, but now assessing the ability of xenon experiments to break the degeneracy of the magnetic dipole (heavy mediator) and electric dipole (heavy mediator) interactions, instead of SI and anapole interactions. Simulations assume a $125$ GeV DM particle and and a magnetic--dipole interaction.}
 \end{figure*}
-
-
-In a comparison of the SI and anapole interactions, we have found that even under the most optimistic of circumstances, including time information in the analysis of Gen2 direct detection does not impact model selection. Rather, correct model identification in Gen2 experiments requires observations in multiple target elements. We have shown that for the inclusion of time information to significantly increase model selection ($\simeq \cO(10)\%$) between these two interactions for a single target element, $\simeq \cO(1000)$ ($\cO(300)$) events must be observed for a 20 (500) GeV dark matter particle. Furthermore, even if time is exploited in Gen3 xenon experiments, target complementarity must also be exploited to unequivocally differentiate these two models.
-
-In addition to the aforementioned example, we have also provided an illustration of this analysis for a comparison of the magnetic dipole and electric dipole interactions. Quantitatively these results are quite similar to those of the SI and anapole interactions.
-
-In the event of a putative signal, future direct detection experiments will be charged with the difficult task of illuminating the high energy behavior of dark matter solely from the observed low energy recoils. This is a particular daunting task in light of the fact that many feasible dark matter models produce nearly degenerate recoil spectra. Exploiting all of the information available, including the time information of nuclear recoils and detections in multiple experiments, will likely be required to make definitive statements regarding the true nature of dark matter.
-
 \begin{figure*}
 \centering
 \includegraphics[width=0.7\textwidth]{plots/PDF_125GeV_Magdiplight_50sims_Xe_Xe3x_Xe10x_XeG3_GF_TNT.pdf}
 \caption{\label{fig:125gev_Mag.dip.light_XeFull_TNT_GF}
-Same as \Fig{fig:125gev_Mag.dip.heavy_XeFull_TNT_GF} but for a light mediator. }
+Same as \Fig{fig:125gev_Mag.dip.heavy_XeFull_TNT_GF} but for a light mediator case. }
 \end{figure*}
+On the other hand, comparison of PDF displayed in solid and dashed lines demostrates that inclusion of time information only negligibly changes model--selection prospects for Gen2 level of exposures. Given that Gen2 experiments will optimistically detect on the order of $\simeq 100$ events, the statistical sample will be insufficient to clearly detect differences in the modulation signal that would otherwise aid differentiation between the two interactions. It is thus not surprising that analyzing Gen2 data with time has a minimal effect on model selection (see \eg Sec.~4 of \cite{DelNobile:2015nua} for an estimation of the number of events needed for phase measurement).
 
+The question than arises of how many events are needed before the inclusion of time information can significantly help model selection prospects--and we address it in the context of xenon--based experiments in Figs.~\ref{fig:20gev_anapole_XeFull_TNT_GF}--\ref{fig:500gev_anapole_XeFull_TNT_GF}. In this Figure, we show the prospects (PDF of possible analysis outcomes) of successful model selection, given different exposures in the same experiment: a 2, 6, 20, and 40 ton--year. Simulations used for this Figure are all assuming anapole interaction (the results for the SI interaction are qualitatively similar and we defer the SI analogues of these Figures to Appendix A), and a DM mass of 20, 125, and 500 GeV DM particle mass, respectively. We show results for likelihood analyses that neglect to account for the time dependence (dashed lines), and for those that include it (solid lines). 
+
+From these Figures, we see that the addition of time information drastically improves prospects for successful model selection in case of light DM particle (the solid--line PDFs are substantially shifted to the right in \Fig{fig:20gev_anapole_XeFull_TNT_GF}). But in spite of this, even with a Gen3 xenon experiment, there is only about $\simeq 16\%$ chance that data will be able to tell apart these two interactions with confidence. \Fig{fig:diff_rate_comp} gives an intuition for interpreting this outcome: not only are the recoil spectra from the SI and anapole interactions (measured with a xenon experiment) more degenerate for light than for heavy DM particles, but the modulation phase follows the same trend in mass (for conventional velocity dependent cross sections, see ~\cite{DelNobile:2015tza,DelNobile:2015rmp}); thus, even when including time information into the analysis, a single target still requires large even number counts in order to successfully enable model selection between these models.
+
+At larger DM particle masses, however, the recoil energy spectra are less degenerate, allowing for better model discrimination at fixed exposure. This is, in part, because a heavier DM particle allows probing regions of parameter space where the anapole and SI interaction are out of phase (see again \Fig{fig:diff_rate_comp}). Figs.~\ref{fig:125gev_anapole_XeFull_TNT_GF} and \ref{fig:500gev_anapole_XeFull_TNT_GF} indeed confirm that heavier DM candidates allow for better model discrimination of these models, particularly when time is included in the analysis. From these Figures, we see that including time in the analysis can improve model selection in Gen3 experiments by as much as $\simeq 30\%$ for heavy DM, where the phases of the modulation signal for these two interactions may be misaligned by as much as $\simeq 5$ months. Finally, it is important to keep in mind that all the results displayed in these Figures assume the most optimistic number of observed recoil events. In light of this, in spite the improvement obrained through inclusion of time information in the analysis demonstrated in these Figures, it is likely that model selection with Gen3 experiments will still be challenging using a single target; most likely, the experiments will need to exploit target complimentarily and perform joint likelihood analyses in order to fully break the SI--anapole type of degeneracy and ensure the highest chance of correctly identifying the interaction at hand. 
+
+The goal of this work was primarily a quantitative assessment of whether time information can be exploited in future direct--detection analyses to break degeneracies in the recoil spectra of different interaction models---and SI and anapole interactions provided a particularly illuminating study case for this purpose. However, the main conclusions presented in this Section hold for other sets of interaction models as well, and we now briefly illustrate this point. In \Figs{fig:125gev_Mag.dip.heavy_XeFull_TNT_GF}{fig:125gev_Mag.dip.light_XeFull_TNT_GF} we consider a comparison of the magnetic dipole and electric dipole interactions for a $125$ GeV DM particle, assuming a heavy (\Fig{fig:125gev_Mag.dip.heavy_XeFull_TNT_GF}) and light (\Fig{fig:125gev_Mag.dip.light_XeFull_TNT_GF}) mediator. As before, we consider putative detections in future xenon experiments with exposures varying from 2 to 40 ton--years. The results are rather similar to the SI and anapole comparison in that Gen3 experiments can expect a $\simeq 20\%$ improvement in model selection when time is included in the analysis, but again necessitate target complementarity to have a high chance of confidently differentiating between these interactions.
+
+%%%%%%%%%%%%%%%%%%
+\section{Summary and Discussion}\label{sec:conclusion}
+We have considered here the potential impact of using time information in the likelihood analysis of data from future direct detection experiments in order to break degeneracies between the recoil energy spectra of different DM--baryon interaction models. Specifically, we performed a statistical assessment of the prospects for successful Bayesian model selection between different interaction models, using an ensamble of simulations that account for the impact of Poisson fluctuations on possible analysis outcomes. 
+
+As a study case, we used comparison betwee the standard spin--independent interaction and anapole dark matter, but also demonstrated that the main findings hold for other degenerate interaction models as well. We explored three different test dark--matter masses, and focused specifically on the most optimistic case where the cross sections for all interactions saturate current upper limits. 
+
+We found that even under the most optimistic of circumstances, including time information in the analysis of Gen2 direct detection does not significantly improve prospects for successul interaction--model selection. Rather, correct model identification in Gen2 experiments will almost certainly require measurements and combined analyses on multiple target elements. We found that for the inclusion of time information to significantly increase chances for successul model selection (by $\simeq \cO(10)\%$), given a single target element, $\simeq \cO(1000)$ events must be observed for a 20 GeV, and $\cO(300)$ for a 500 GeV dark matter particle. \vg{check previous statement. lets also discuss this mode on skype. also, is this consistent finding with previous-work oom guesses? if so, we should say it.} Furthermore, even if time is exploited in Gen3 xenon experiments, target complementarity must also be exploited to unequivocally differentiate between different models. \vg{a few words of discussion should be added here to mention that this is esp true if the signal is NOT as large as possible, and what happens in that case.}
+
+In the event of a putative signal, direct detection experiments will be charged with the difficult task of illuminating the high energy behavior of dark matter solely from the observed low--energy recoils. This is a particularly daunting task in light of the fact that many feasible dark matter models produce nearly degenerate recoil spectra. Exploiting all of the information available, including the time information of nuclear recoils in a manner demonstrated in the analyses we employ in this work, will be necessary to make definitive statements regarding the true particle nature of dark matter.
 
 \bigskip
 
-\textbf{Acknowledgments.} SW is supported under the University Research Association (URA) Visiting Scholars Award Program, and by a UCLA Dissertation Year Fellowship. %Fermilab is operated by Fermi Research Alliance, LLC, under Contract No. DE-AC02-07CH11359 with the US Department of Energy. 
+\textbf{Acknowledgments.} SW is supported under the University Research Association (URA) Visiting Scholars Award Program, and by a UCLA Dissertation Year Fellowship. VG gratefully acknowledges the support of the Schmidt Fellowship at the Institute of Advanced Study. %Fermilab is operated by Fermi Research Alliance, LLC, under Contract No. DE-AC02-07CH11359 with the US Department of Energy. 
 
 \appendix
 
 \section{Model Selection Prospects in Xenon (SI Interaction)}
-We present in Figs.~\ref{fig:20gev_SI_Higgs_XeFull_TNT_GF}-\ref{fig:500gev_SI_Higgs_XeFull_TNT_GF} the model selection prospects for various exposure xenon experiments, including (solid) and neglecting (dashed) information on the modulation of the rate, and assuming the SI interaction is the true model. Results are shown for $20$ GeV (\Fig{fig:20gev_SI_Higgs_XeFull_TNT_GF}), $125$ GeV (\Fig{fig:125gev_SI_Higgs_XeFull_TNT_GF}), and $500$ GeV (\Fig{fig:500gev_SI_Higgs_XeFull_TNT_GF}) dark matter. Results are similar to those presented in \Sec{sec:results} for the anapole interaction. 
+We present in Figs.~\ref{fig:20gev_SI_Higgs_XeFull_TNT_GF}--\ref{fig:500gev_SI_Higgs_XeFull_TNT_GF} the model selection prospects for various exposures on a xenon experiment, including (solid lines) and neglecting (dashed lines) information on the modulation of the recoil rate, and assuming the SI interaction is the true model. Results are shown for $20$ GeV (\Fig{fig:20gev_SI_Higgs_XeFull_TNT_GF}), $125$ GeV (\Fig{fig:125gev_SI_Higgs_XeFull_TNT_GF}), and $500$ GeV (\Fig{fig:500gev_SI_Higgs_XeFull_TNT_GF}) DM particle. Results are similar to those presented in \Sec{sec:results} for the case of the anapole interaction. 
 
 
 \begin{figure*}
 \centering
 \includegraphics[width=0.7\textwidth]{plots/PDF_20GeV_SI_Higgs_50sims_Xe_Xe3x_Xe10x_XeG3_GF_TNT.pdf}
 \caption{\label{fig:20gev_SI_Higgs_XeFull_TNT_GF}
-Same as Fig.~\ref{fig:20gev_anapole_XeFull_TNT_GF} but for the SI interaction.}
+Same as Fig.~\ref{fig:20gev_anapole_XeFull_TNT_GF} but for the SI interaction as the true model.}
 \end{figure*}
 
 
@@ -390,7 +364,7 @@ Same as Fig.~\ref{fig:20gev_anapole_XeFull_TNT_GF} but for the SI interaction.}
 \centering
 \includegraphics[width=0.7\textwidth]{plots/PDF_125GeV_SI_Higgs_50sims_Xe_Xe3x_Xe10x_XeG3_GF_TNT.pdf}
 \caption{\label{fig:125gev_SI_Higgs_XeFull_TNT_GF}
-Same as Fig.~\ref{fig:20gev_anapole_XeFull_TNT_GF} but for a $125$ GeV dark matter and the SI interaction.}
+Same as Fig.~\ref{fig:20gev_anapole_XeFull_TNT_GF} but for a $125$ GeV DM and the SI interaction as the true model.}
 \end{figure*}
 
 
@@ -398,7 +372,7 @@ Same as Fig.~\ref{fig:20gev_anapole_XeFull_TNT_GF} but for a $125$ GeV dark matt
 \centering
 \includegraphics[width=0.7\textwidth]{plots/PDF_500GeV_SI_Higgs_50sims_Xe_Xe3x_Xe10x_XeG3_GF_TNT.pdf}
 \caption{\label{fig:500gev_SI_Higgs_XeFull_TNT_GF}
-Same as Fig.~\ref{fig:20gev_anapole_XeFull_TNT_GF} but for a $500$ GeV dark matter and the SI interaction.}
+Same as Fig.~\ref{fig:20gev_anapole_XeFull_TNT_GF} but for a $500$ GeV DM and the SI interaction as the true model.}
 \end{figure*}
 
 \bibliographystyle{JHEP}
