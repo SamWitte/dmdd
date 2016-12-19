@@ -8,6 +8,30 @@
   {\bf 7-8} (2015) 16--23}, [\href{https://arxiv.org/abs/1305.1605}{{\tt
   1305.1605}}].
 
+\bibitem{Aprile:2015uzo}
+{\scshape XENON} collaboration, E.~Aprile et~al., \emph{{Physics reach of the
+  XENON1T dark matter experiment}},
+  \href{http://dx.doi.org/10.1088/1475-7516/2016/04/027}{\emph{JCAP} {\bf 1604}
+  (2016) 027}, [\href{https://arxiv.org/abs/1512.07501}{{\tt 1512.07501}}].
+
+\bibitem{Agnese:2016cpb}
+{\scshape SuperCDMS} collaboration, R.~Agnese et~al., \emph{{Projected
+  Sensitivity of the SuperCDMS SNOLAB experiment}}, {\emph{Submitted to: Phys.
+  Rev. D} (2016) }, [\href{https://arxiv.org/abs/1610.00006}{{\tt
+  1610.00006}}].
+
+\bibitem{Malling:2011va}
+D.~C. Malling et~al., \emph{{After LUX: The LZ Program}},
+  \href{https://arxiv.org/abs/1110.0103}{{\tt 1110.0103}}.
+
+\bibitem{Newstead:2013pea}
+J.~L. Newstead, T.~D. Jacques, L.~M. Krauss, J.~B. Dent and F.~Ferrer,
+  \emph{{Scientific reach of multiton-scale dark matter direct detection
+  experiments}},
+  \href{http://dx.doi.org/10.1103/PhysRevD.88.076011}{\emph{Phys. Rev.} {\bf
+  D88} (2013) 076011}, [\href{https://arxiv.org/abs/1306.3244}{{\tt
+  1306.3244}}].
+
 \bibitem{Cushman:2013zza}
 P.~Cushman et~al., \emph{{Working Group Report: WIMP Dark Matter Direct
   Detection}},  in \emph{{Proceedings, 2013 Community Summer Study on the
@@ -227,6 +251,19 @@ T.~Piffl et~al., \emph{{The RAVE survey: the Galactic escape speed and the mass
   Astrophys.} {\bf 562} (2014) A91},
   [\href{https://arxiv.org/abs/1309.4293}{{\tt 1309.4293}}].
 
+\bibitem{Green:2000ga}
+A.~M. Green, \emph{{A Potential WIMP signature for the caustic ring halo
+  model}}, \href{http://dx.doi.org/10.1103/PhysRevD.63.103003}{\emph{Phys.
+  Rev.} {\bf D63} (2001) 103003},
+  [\href{https://arxiv.org/abs/astro-ph/0012393}{{\tt astro-ph/0012393}}].
+
+\bibitem{Gelmini:2000dm}
+G.~Gelmini and P.~Gondolo, \emph{{WIMP annual modulation with opposite phase in
+  Late-Infall halo models}},
+  \href{http://dx.doi.org/10.1103/PhysRevD.64.023504}{\emph{Phys. Rev.} {\bf
+  D64} (2001) 023504}, [\href{https://arxiv.org/abs/hep-ph/0012315}{{\tt
+  hep-ph/0012315}}].
+
 \bibitem{Danby01021957}
 J.~M.~A. Danby and G.~L. Camm, \emph{Statistical dynamics and accretion},
   \href{http://dx.doi.org/10.1093/mnras/117.1.50}{\emph{Monthly Notices of the
@@ -261,6 +298,11 @@ S.~K. Lee, M.~Lisanti, A.~H.~G. Peter and B.~R. Safdi, \emph{{Effect of
   Lett.} {\bf 112} (2014) 011301}, [\href{https://arxiv.org/abs/1308.1953}{{\tt
   1308.1953}}].
 
+\bibitem{Akerib:2016vxi}
+D.~S. Akerib et~al., \emph{{Results from a search for dark matter in the
+  complete LUX exposure}},  \href{https://arxiv.org/abs/1608.07648}{{\tt
+  1608.07648}}.
+
 \bibitem{Bagnasco:1993st}
 J.~Bagnasco, M.~Dine and S.~D. Thomas, \emph{{Detecting technibaryon dark
   matter}}, \href{http://dx.doi.org/10.1016/0370-2693(94)90830-3}{\emph{Phys.
@@ -274,10 +316,12 @@ N.~Weiner and I.~Yavin, \emph{{UV completions of magnetic inelastic and
   D87} (2013) 023523}, [\href{https://arxiv.org/abs/1209.1093}{{\tt
   1209.1093}}].
 
-\bibitem{Akerib:2016vxi}
-D.~S. Akerib et~al., \emph{{Results from a search for dark matter in the
-  complete LUX exposure}},  \href{https://arxiv.org/abs/1608.07648}{{\tt
-  1608.07648}}.
+\bibitem{Tan:2016zwf}
+{\scshape PandaX-II} collaboration, A.~Tan et~al., \emph{{Dark Matter Results
+  from First 98.7 Days of Data from the PandaX-II Experiment}},
+  \href{http://dx.doi.org/10.1103/PhysRevLett.117.121303}{\emph{Phys. Rev.
+  Lett.} {\bf 117} (2016) 121303},
+  [\href{https://arxiv.org/abs/1607.07400}{{\tt 1607.07400}}].
 
 \bibitem{pymultinest}
 {Buchner, J.}, {Georgakakis, A.}, {Nandra, K.}, {Hsu, L.}, {Rangel, C.},
