@@ -794,7 +794,7 @@ def OneDhistogram(nsim=50, startsim=1, masses=[50.],
                   hspace = (1.06 * 50. ** (-1. / 5.)), filelabel='', allverbose=True, verbose=True,
                   results_root=os.environ['DMDD_AM_MAIN_PATH']+'/results_uv/', timeonly=False,
                   saveplots=True, alpha=0.3, xoffset=0.1, fs=18, fs2=18, sigma_lim_file=None,
-                  colors_list=['#b3cde3','#8c96c6','#8856a7','#810f7c']):
+                  colors_list=['#8c96c6','#8c6bb1','#88419d','#6e016b']):
 
     xlinspace = np.linspace(0, 1, 200)
     leg_top = 0.
@@ -1692,6 +1692,10 @@ def make_Nexpected_latextable(masses=[20,125,500],experiments=[xe,ge,flu],filena
         for experiment in experiments:
             entry = '& ('
             for mass in masses:
+                print 'Model', m
+                print 'Experiment: ',experiment.element
+                print 'Mass: ', mass
+                print 'Limit: ', f_sigma_lims(m.name, mass)
                 Nexps = dmdd.Nexpected(experiment.element,
                                             experiment.Qmin,
                                             experiment.Qmax,
