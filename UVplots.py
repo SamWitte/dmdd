@@ -596,7 +596,7 @@ def SingleKDE(nsim=50, startsim=1, masses=[50.],
               hspace = (1.06 * 50. ** (-1. / 5.)), filelabel='', allverbose=True, verbose=True,
               results_root=os.environ['DMDD_AM_MAIN_PATH']+'/results_uv/', timeonly=False,
               saveplots=True, alpha=0.3, xoffset=0.1, fs=26, fs2=18, sigma_lim_file=None,
-              colors_list=['#a6611a','#018571']):
+              colors_list=['#a6611a','#018571'], leg_show=False):
 
 
     xlinspace = np.linspace(0, 1, 200)
@@ -754,17 +754,22 @@ def SingleKDE(nsim=50, startsim=1, masses=[50.],
                         ls = '--'
                         if success < 100.:
                             ymax_list[2*i] = np.max(probdistr) + 0.1
-
-                        lab1 = experiment_labels[2*i] + '\n No Time \n' + r'[Success: {:.0f}$\%$]'.format(success)
-                        ax.plot(10 ** (2. * xlinspace), probdistr, ls, linewidth=2,
+                        if leg_show:
+                            lab1 = experiment_labels[2*i] + '\n No Time \n' + r'[Success: {:.0f}$\%$]'.format(success)
+                        else:
+                            lab1 = r'[Success: {:.0f}$\%$]'.format(success)
+                        ax.plot(10 ** (2. * xlinspace), probdistr, ls, linewidth=3,
                                 color=colors_list[i], dashes=(10, 10), label=lab1)
 
                         ax.axes.get_yaxis().set_ticks([])
                     else:
                         if success < 100.:
                             ymax_list[2*i+1] = np.max(probdistr) + 0.1
-                        lab2 = experiment_labels[2*i] + '\n Time \n' + r'[Success: {:.0f}$\%$]'.format(success)
-                        ax.plot(10 ** (2. * xlinspace), probdistr, linewidth=2, color=colors_list[i], label=lab2)
+                        if leg_show:
+                            lab2 = experiment_labels[2*i] + '\n Time \n' + r'[Success: {:.0f}$\%$]'.format(success)
+                        else:
+                            lab2 = r'[Success: {:.0f}$\%$]'.format(success)
+                        ax.plot(10 ** (2. * xlinspace), probdistr, linewidth=3, color=colors_list[i], label=lab2)
 
                         #leg_top[i] = 0.7 * ymax_list[i]
                         #ax.text(95, leg_top[i], lab1, color=colors_list[2*i+1], fontsize=18, ha='right')
@@ -774,7 +779,7 @@ def SingleKDE(nsim=50, startsim=1, masses=[50.],
             pl.axvline(10 ** (2. * 0.9), ls='--', color='k', lw=2)
             ymax = np.max([ymax_list])
             ax.set_ylim([0., ymax])
-            plt.legend(loc=1, frameon=True, framealpha=0.5, fontsize=16, ncol=2, fancybox=True,
+            plt.legend(loc=1, frameon=True, framealpha=0.5, fontsize=18, ncol=2, fancybox=True,
                        handlelength=3)
             ax.set_title('True model: {} (mass: {:.0f} GeV)'.format(MODELNAME_TEX[m.name], mass), fontsize=fs)
             pl.xlabel(r'Probability of True Model   [$\%$]', fontsize=fs)
@@ -789,7 +794,7 @@ def OneDhistogram(nsim=50, startsim=1, masses=[50.],
                   hspace = (1.06 * 50. ** (-1. / 5.)), filelabel='', allverbose=True, verbose=True,
                   results_root=os.environ['DMDD_AM_MAIN_PATH']+'/results_uv/', timeonly=False,
                   saveplots=True, alpha=0.3, xoffset=0.1, fs=18, fs2=18, sigma_lim_file=None,
-                  colors_list=['#a6611a','#dfc27d','#80cdc1','#018571']):
+                  colors_list=['#b3cde3','#8c96c6','#8856a7','#810f7c']):
 
     xlinspace = np.linspace(0, 1, 200)
     leg_top = 0.
@@ -973,13 +978,13 @@ def OneDhistogram(nsim=50, startsim=1, masses=[50.],
                         ls = '--'
                         ymax_list[i] = np.max(probdistr) + 0.1
                         label = 'No Time ' + r'[Success: {:.0f}$\%$]'.format(success)
-                        axarr[ax_x, ax_y].plot(10 ** (2. * xlinspace), probdistr, ls, linewidth=2,
+                        axarr[ax_x, ax_y].plot(10 ** (2. * xlinspace), probdistr, ls, linewidth=3,
                                                color=colors_list[ii], dashes=(10, 10), label=label)
                         axarr[ax_x, ax_y].axes.get_yaxis().set_ticks([])
                     else:
                         ymax_list[i] = np.max([ymax_list[i], np.max(probdistr) + 0.1])
                         label = 'Time ' + r'[Success: {:.0f}$\%$]'.format(success)
-                        axarr[ax_x, ax_y].plot(10 ** (2. * xlinspace), probdistr, linewidth=2,
+                        axarr[ax_x, ax_y].plot(10 ** (2. * xlinspace), probdistr, linewidth=3,
                                                color=colors_list[ii], label=label)
                         if i > 1:
                             leg_top[i] = 0.7 * ymax_list[i]
@@ -991,7 +996,7 @@ def OneDhistogram(nsim=50, startsim=1, masses=[50.],
                         axarr[ax_x, ax_y].set_ylim([0., ymax_list[i]])
                         #  axarr[ax_x, ax_y].axhline(y=0, xmin=0, xmax=1, lw=2, color='k')
                         axarr[ax_x, ax_y].legend(loc=3, frameon=True, framealpha=0.5,
-                                                 fontsize=10, ncol=1, fancybox=True, handlelength=3)
+                                                 fontsize=12, ncol=1, fancybox=True, handlelength=3)
 
                         axarr[ax_x, ax_y].axvline(10 ** (2 * 0.9), ls='--', color='k', lw=2)
             #axarr[1, 1].text(10, 0.5 * ymax, 'Solid: Time \n Dashed: No Time', color='k', fontsize=10)
