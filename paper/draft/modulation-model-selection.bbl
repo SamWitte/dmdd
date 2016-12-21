@@ -89,6 +89,18 @@ R.~J. Hill and M.~P. Solon, \emph{{Standard Model anatomy of WIMP dark matter
   D91} (2015) 043505}, [\href{https://arxiv.org/abs/1409.8290}{{\tt
   1409.8290}}].
 
+\bibitem{Akerib:2016vxi}
+D.~S. Akerib et~al., \emph{{Results from a search for dark matter in the
+  complete LUX exposure}},  \href{https://arxiv.org/abs/1608.07648}{{\tt
+  1608.07648}}.
+
+\bibitem{Tan:2016zwf}
+{\scshape PandaX-II} collaboration, A.~Tan et~al., \emph{{Dark Matter Results
+  from First 98.7 Days of Data from the PandaX-II Experiment}},
+  \href{http://dx.doi.org/10.1103/PhysRevLett.117.121303}{\emph{Phys. Rev.
+  Lett.} {\bf 117} (2016) 121303},
+  [\href{https://arxiv.org/abs/1607.07400}{{\tt 1607.07400}}].
+
 \bibitem{Berlin:2015njh}
 A.~Berlin, D.~S. Robertson, M.~P. Solon and K.~M. Zurek, \emph{{The Bino
   Variations: Effective Field Theory Methods for Dark Matter Direct
@@ -127,12 +139,22 @@ A.~L. Fitzpatrick, W.~Haxton, E.~Katz, N.~Lubbers and Y.~Xu, \emph{{The
   \href{http://dx.doi.org/10.1088/1475-7516/2013/02/004}{\emph{JCAP} {\bf 1302}
   (2013) 004}, [\href{https://arxiv.org/abs/1203.3542}{{\tt 1203.3542}}].
 
+\bibitem{Fitzpatrick:2012ib}
+A.~L. Fitzpatrick, W.~Haxton, E.~Katz, N.~Lubbers and Y.~Xu, \emph{{Model
+  Independent Direct Detection Analyses}},
+  \href{https://arxiv.org/abs/1211.2818}{{\tt 1211.2818}}.
+
 \bibitem{Anand:2013yka}
 N.~Anand, A.~L. Fitzpatrick and W.~C. Haxton, \emph{{Weakly interacting massive
   particle-nucleus elastic scattering response}},
   \href{http://dx.doi.org/10.1103/PhysRevC.89.065501}{\emph{Phys. Rev.} {\bf
   C89} (2014) 065501}, [\href{https://arxiv.org/abs/1308.6288}{{\tt
   1308.6288}}].
+
+\bibitem{Bishara:2016hek}
+F.~Bishara, J.~Brod, B.~Grinstein and J.~Zupan, \emph{{Chiral Effective Theory
+  of Dark Matter Direct Detection}},
+  \href{https://arxiv.org/abs/1611.00368}{{\tt 1611.00368}}.
 
 \bibitem{Gresham:2014vja}
 M.~I. Gresham and K.~M. Zurek, \emph{{Effect of nuclear response functions in
@@ -146,6 +168,12 @@ V.~Gluscevic, M.~I. Gresham, S.~D. McDermott, A.~H.~G. Peter and K.~M. Zurek,
   \emph{{Identifying the Theory of Dark Matter with Direct Detection}},
   \href{http://dx.doi.org/10.1088/1475-7516/2015/12/057}{\emph{JCAP} {\bf 1512}
   (2015) 057}, [\href{https://arxiv.org/abs/1506.04454}{{\tt 1506.04454}}].
+
+\bibitem{DEramo:2014nmf}
+F.~D'Eramo and M.~Procura, \emph{{Connecting Dark Matter UV Complete Models to
+  Direct Detection Rates via Effective Field Theory}},
+  \href{http://dx.doi.org/10.1007/JHEP04(2015)054}{\emph{JHEP} {\bf 04} (2015)
+  054}, [\href{https://arxiv.org/abs/1411.3342}{{\tt 1411.3342}}].
 
 \bibitem{Gluscevic:2014vga}
 V.~Gluscevic and A.~H.~G. Peter, \emph{{Understanding WIMP-baryon interactions
@@ -298,11 +326,6 @@ S.~K. Lee, M.~Lisanti, A.~H.~G. Peter and B.~R. Safdi, \emph{{Effect of
   Lett.} {\bf 112} (2014) 011301}, [\href{https://arxiv.org/abs/1308.1953}{{\tt
   1308.1953}}].
 
-\bibitem{Akerib:2016vxi}
-D.~S. Akerib et~al., \emph{{Results from a search for dark matter in the
-  complete LUX exposure}},  \href{https://arxiv.org/abs/1608.07648}{{\tt
-  1608.07648}}.
-
 \bibitem{Bagnasco:1993st}
 J.~Bagnasco, M.~Dine and S.~D. Thomas, \emph{{Detecting technibaryon dark
   matter}}, \href{http://dx.doi.org/10.1016/0370-2693(94)90830-3}{\emph{Phys.
@@ -315,13 +338,6 @@ N.~Weiner and I.~Yavin, \emph{{UV completions of magnetic inelastic and
   \href{http://dx.doi.org/10.1103/PhysRevD.87.023523}{\emph{Phys. Rev.} {\bf
   D87} (2013) 023523}, [\href{https://arxiv.org/abs/1209.1093}{{\tt
   1209.1093}}].
-
-\bibitem{Tan:2016zwf}
-{\scshape PandaX-II} collaboration, A.~Tan et~al., \emph{{Dark Matter Results
-  from First 98.7 Days of Data from the PandaX-II Experiment}},
-  \href{http://dx.doi.org/10.1103/PhysRevLett.117.121303}{\emph{Phys. Rev.
-  Lett.} {\bf 117} (2016) 121303},
-  [\href{https://arxiv.org/abs/1607.07400}{{\tt 1607.07400}}].
 
 \bibitem{pymultinest}
 {Buchner, J.}, {Georgakakis, A.}, {Nandra, K.}, {Hsu, L.}, {Rangel, C.},
@@ -336,5 +352,17 @@ F.~Feroz, M.~P. Hobson and M.~Bridges, \emph{{MultiNest: an efficient and
   \href{http://dx.doi.org/10.1111/j.1365-2966.2009.14548.x}{\emph{Mon. Not.
   Roy. Astron. Soc.} {\bf 398} (2009) 1601--1614},
   [\href{https://arxiv.org/abs/0809.3437}{{\tt 0809.3437}}].
+
+\bibitem{Feroz:2007kg}
+F.~Feroz and M.~P. Hobson, \emph{{Multimodal nested sampling: an efficient and
+  robust alternative to MCMC methods for astronomical data analysis}},
+  \href{http://dx.doi.org/10.1111/j.1365-2966.2007.12353.x}{\emph{Mon. Not.
+  Roy. Astron. Soc.} {\bf 384} (2008) 449},
+  [\href{https://arxiv.org/abs/0704.3704}{{\tt 0704.3704}}].
+
+\bibitem{Feroz:2013hea}
+F.~Feroz, M.~P. Hobson, E.~Cameron and A.~N. Pettitt, \emph{{Importance Nested
+  Sampling and the MultiNest Algorithm}},
+  \href{https://arxiv.org/abs/1306.2144}{{\tt 1306.2144}}.
 
 \end{thebibliography}\endgroup
