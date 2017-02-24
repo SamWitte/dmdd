@@ -110,8 +110,7 @@ def plot_2d_posterior(x, y,xlabel='', ylabel='',
 def ln_evidence(filename='/data/verag/dmdd_2014/chains_uv/sim1_Xe_mass_10.00_sigma_si_7862.18_fitfor_mass_sigma_si_logflat_nlive2000/1-stats.dat'):
     try:
         fev = open(filename,'r')
-    except IOError,e:
-        print e
+    except IOError:
         return 0
 
     line = fev.readline()

@@ -179,7 +179,7 @@ class MultinestRun(object):
                  n_live_points=2000, evidence_tolerance=0.1,
                  sampling_efficiency=0.3, resume=False, basename='1-',
                  silent=False, empty_run=False, time_info='T', GF=False,
-                 TIMEONLY=False):
+                 TIMEONLY=False, kinematic_scan=False):
 
         if GF:
             sim_root += '/'
@@ -202,6 +202,7 @@ class MultinestRun(object):
         
         self.GF = GF
         self.TIMEONLY = TIMEONLY
+        self.kin_scan = kinematic_scan
 
         self.sim_name = sim_name
         self.experiments = experiments
@@ -370,8 +371,7 @@ class MultinestRun(object):
         filename = self.chainspath + self.mn_params['outputfiles_basename'] + 'stats.dat'
         try:
             fev = open(filename,'r')
-        except IOError,e:
-            print e
+        except IOError:
             return 0
     
         line = fev.readline()
@@ -430,7 +430,7 @@ class MultinestRun(object):
     
         if (not os.path.exists(chains_file)) or (not os.path.exists(pickle_file)) or (not os.path.exists(stats_file)):
             force_run = True
-            print 'Chains, pickle, or stats file(s) not found. Forcing run.\n\n'
+            print('Chains, pickle, or stats file(s) not found. Forcing run.\n\n')
         else:
             fin = open(pickle_file,'rb')
             pickle_old = pickle.load(fin)
@@ -1082,7 +1082,8 @@ class UV_Model(Model):
                                     fnfp_si_massless=1.,  fnfp_sd_massless=1.,
                                     fnfp_anapole_massless=1.,  fnfp_magdip_massless=1.,  fnfp_elecdip_massless=1.,
                                     fnfp_LS_massless=1.,  fnfp_f1_massless=1.,  fnfp_f2_massless=1.,  fnfp_f3_massless=1.,
-                                    v_lag=220.,  v_rms=220.,  v_esc=533.,  rho_x=0.3, GF=False, time_info=False)
+                                    v_lag=220.,  v_rms=220.,  v_esc=533.,  rho_x=0.3,
+                                    delta=0., GF=False, time_info=False)
         
         if time_info == 'T':
             self.time_info=True
@@ -1171,7 +1172,7 @@ class Experiment(object):
 
     def NminusNbg(self, sigma_val, sigma_name='sigma_si', fnfp_name='fnfp_si', fnfp_val=None,
                     mass=50., Nbackground=4,
-                    v_esc=533., v_lag=220., v_rms=220., rho_x=0.3):
+                    v_esc=533., v_lag=220., v_rms=220., rho_x=0.3, delta=0.):
         """
         Expected number of events minus background
 
@@ -1209,6 +1210,7 @@ class Experiment(object):
             'element': self.element,
             'Qmin': self.Qmin,
             'Qmax': self.Qmax,
+            'delta': delta
             }
 
         if fnfp_val is not None:
@@ -1219,7 +1221,7 @@ class Experiment(object):
 
     def sigma_limit(self, sigma_name='sigma_si', fnfp_name='fnfp_si', fnfp_val=None,
                     mass=50., Nbackground=4, sigma_guess = 1.e10, mx_guess=1.,
-                    v_esc=533., v_lag=220., v_rms=220., rho_x=0.3):
+                    v_esc=533., v_lag=220., v_rms=220., rho_x=0.3, delta=0.):
         """
         Returns value of sigma at which expected number of dark-matter induced recoil events is equal to the number of expected background events, N = Nbg, in order to get a rough projected exclusion for this experiment.
 
@@ -1236,12 +1238,12 @@ class Experiment(object):
             return np.inf
         res = fsolve(self.NminusNbg, sigma_guess, xtol=1e-3, args=(sigma_name, fnfp_name, fnfp_val,
                                                                     mass, Nbackground,
-                                                                    v_esc, v_lag, v_rms, rho_x))
+                                                                    v_esc, v_lag, v_rms, rho_x, delta))
         return res[0]
 
     def sigma_exclusion(self, sigma_name, fnfp_name='fnfp_si', fnfp_val=None,
                         mass_max=5000, Nbackground=4, mx_guess=1., sigma_guess=1.e10,
-                        v_esc=533., v_lag=220., v_rms=220., rho_x=0.3,
+                        v_esc=533., v_lag=220., v_rms=220., rho_x=0.3, delta=0.,
                         mass_spacing='log', nmass_points=100, make_plot=False,ymax=None):
         """
         Makes exclusion curve for a chosen sigma parameter.
@@ -1278,7 +1280,7 @@ class Experiment(object):
         for i,m in enumerate(masses):
             sigmas[i] = self.sigma_limit(sigma_name=sigma_name, fnfp_name=fnfp_name, fnfp_val=fnfp_val,
                                             mass=m, Nbackground=Nbackground,sigma_guess=sigma_guess,
-                                            v_esc=v_esc, v_lag=v_lag, v_rms=v_rms, rho_x=rho_x)
+                                            v_esc=v_esc, v_lag=v_lag, v_rms=v_rms, rho_x=rho_x, delta=delta)
 
         if make_plot:
             import matplotlib.pyplot as plt
@@ -1296,7 +1298,7 @@ class Experiment(object):
         return masses, sigmas
         
 
-    def VminusVesc(self, mx, v_esc=533., v_lag=220.):
+    def VminusVesc(self, mx, v_esc=533., v_lag=220., delta=0.):
         """
         This function returns the value of the minimum velocity needed to produce
         recoil of energy Qmin, minus escape velocity in Galactic frame.
@@ -1326,7 +1328,7 @@ class Experiment(object):
         q = self.Qmin / GEV_IN_KEV
         mu = mT * mx / ( mT + mx )
         
-        res = mT * q /( 2. * mu**2 ) - (v_esc_lab / C_KMSEC)**2.
+        res = 1. / (2 * mT * q) * np.abs(mT * q / mu + delta / GEV_IN_KEV)**2. - (v_esc_lab / C_KMSEC)**2.
         return res
     
     def find_min_mass(self, v_esc=533., v_lag=220., mx_guess=1.):
@@ -1394,7 +1396,7 @@ def compare_dictionaries(d1,d2,debug=True,rtol=1e-5):
 def Nexpected(element, Qmin, Qmax, exposure, efficiency, start_t, end_t,
               sigma_name, sigma_val, fnfp_name=None, fnfp_val=None,
               mass=50.,
-              v_esc=533., v_lag=220., v_rms=220., rho_x=0.3):
+              v_esc=533., v_lag=220., v_rms=220., rho_x=0.3, delta=0.):
     """
     NOTE: This is only set up for models in rate_UV.
     """
@@ -1409,7 +1411,8 @@ def Nexpected(element, Qmin, Qmax, exposure, efficiency, start_t, end_t,
         'element': element,
         'Qmin': Qmin,
         'Qmax': Qmax,
-        'GF': True
+        'GF': True,
+        'delta': delta
         }
     if (fnfp_val is not None) and (fnfp_name is not None):
         kwargs[fnfp_name] = fnfp_val
